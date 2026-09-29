@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>try{if(localStorage.getItem('sc_theme')!=="dark")document.documentElement.setAttribute("data-theme","light")}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKILLCONNECT GH | Book Event MCs, Artists, Photographers & Skilled Workers</title>
+    <meta name="description" content="Ghana's #1 marketplace to discover, compare and instantly book verified Event MCs, Performing Artists, Photographers, Videographers and Handy Skill Workers. Get quotes in seconds.">
+    <!-- SEO & Social -->
+    <link rel="canonical" href="https://skillconnectgh.com/">
+    <meta name="keywords" content="book MC Ghana, hire artist Accra, photographer booking Ghana, DJ for event, caterer Kumasi, handyman Accra, event vendors Ghana">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#FFCC00">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta property="og:site_name" content="SKILLCONNECT GH">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://skillconnectgh.com/">
+    <meta property="og:title" content="Ghana's #1 Platform for Skilled Service Pros">
+    <meta property="og:description" content="Book verified Event MCs, Artists, Photographers, DJs, Caterers & Handy Workers — near you, within budget. Escrow protected.">
+    <meta property="og:image" content="https://skillconnectgh.com/og-main.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="en_GH">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Ghana's #1 Platform for Skilled Service Pros">
+    <meta name="twitter:description" content="Book verified Event MCs, Artists, Photographers, DJs, Caterers & Handy Workers — near you, within budget. Escrow protected.">
+    <meta name="twitter:image" content="https://skillconnectgh.com/og-main.png">
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Shared SkillConnect Stylesheet -->
+    <link rel="stylesheet" href="styles.css?v=17">
+</head>
+<body>
+
+    <!-- CMS Announcement Bar (managed from Admin → CMS) — sits ABOVE the header -->
+    <div id="cmsAnnounce" class="cms-announce" style="display:none;"></div>
+
+    <!-- Header Section -->
+    <header class="site-header" data-partial></header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h2 id="cmsHeroTitle">GHANA'S #1 BOOKING PLATFORM FOR SKILLED SERVICE PROS!</h2>
+        <p id="cmsHeroSub">Discover, compare and instantly book verified Event MCs, Performing Artists, Photographers, Videographers, DJs, Caterers and Handy Skill Workers — near you, within budget, in minutes.</p>
+        <div class="badges">
+            <span class="badge"><i class="fa-solid fa-bolt"></i> Instant Quotes</span>
+            <span class="badge"><i class="fa-solid fa-shield-halved"></i> Verified Professionals</span>
+            <span class="badge"><i class="fa-solid fa-location-dot"></i> Nationwide - Accra, Kumasi, Takoradi & More</span>
+            <span class="badge"><i class="fa-solid fa-clock"></i> Mon-Sun: 8AM - 9PM Support</span>
+        </div>
+
+        <div class="avail-chip-row">
+            <button type="button" class="avail-chip" id="availTodayChip" onclick="toggleAvailToday()" title="Show only professionals free today">
+                <i class="fa-solid fa-circle-check"></i> Available Today
+                <span class="chip-count" id="availTodayCount"></span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Main Content Grid Layout -->
+    <div class="main-container">
+
+        <!-- Left Column: Categories, How it works, Featured pros & Location -->
+        <div class="left-column">
+
+            <!-- Complete Service Categories List -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-list-check"></i> What Do You Need? — Browse Categories
+                </div>
+                <div class="services-grid">
+                    <div class="service-item" onclick="selectCategory('mc')">
+                        <i class="fa-solid fa-microphone-lines"></i>
+                        <span>Event MCs & Hosts
+                            <small>Weddings, funerals, corporate, parties</small>
+                        </span>
+                    </div>
+                    <div class="service-item" onclick="selectCategory('artist')">
+                        <i class="fa-solid fa-guitar"></i>
+                        <span>Music Artists & Bands
+                            <small>Live performances, hype sets, gospel</small>
+                        </span>
+                    </div>
+                    <div class="service-item" onclick="selectCategory('photographer')">
+                        <i class="fa-solid fa-camera-retro"></i>
+                        <span>Photographers
+                            <small>Events, portraits, products, drone</small>
+                        </span>
+                    </div>
+                    <div class="service-item" onclick="selectCategory('videographer')">
+                        <i class="fa-solid fa-video"></i>
+                        <span>Videographers & Editors
+                            <small>Live coverage, highlight reels</small>
+                        </span>
+                    </div>
+                    <div class="service-item" onclick="selectCategory('dj')">
+                        <i class="fa-solid fa-compact-disc"></i>
+                        <span>DJs & Sound Engineers
+                            <small>Sound systems, lighting setups</small>
+                        </span>
+                    </div>
+                    <div class="service-item" onclick="selectCategory('caterer')">
+                        <i class="fa-solid fa-utensils"></i>
+                        <span>Caterers & Bakers
+                            <small>Dishes, small chops, cakes</small>
+                        </span>
+                    </div>
+                    <div class="service-item" onclick="selectCategory('decorator')">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Decorators & Event Planners
+                            <small>Stage, canopy, floral design</small>
+                        </span>
+                    </div>
+                    <div class="service-item" onclick="selectCategory('handy')">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                        <span>Handy Skill Workers
+                            <small>Electricians, plumbers, carpenters, AC techs</small>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works teaser -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-route"></i> How SkillConnect Works
+                </div>
+                <div class="steps-grid">
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <strong>Tell Us Your Need</strong>
+                        <p>Pick a category, share your event or job details and location.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <strong>Get Matched & Compare</strong>
+                        <p>Receive up to 3 quotes from available verified pros near you.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <strong>Book & Pay Securely</strong>
+                        <p>Confirm your pro, lock the date and pay via MoMo or Paystack escrow.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">4</div>
+                        <strong>Rate & Review</strong>
+                        <p>After the job, rate the service — quality stays high for everyone.</p>
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 15px;">
+                    <a href="how-it-works.html" style="color: var(--accent-text); font-weight: 700; text-decoration: none;">See the full step-by-step guide &rarr;</a>
+                </p>
+            </div>
+
+            <!-- Featured Professionals: Search & Filter Directory -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-award"></i> Search & Book Verified Professionals
+                </div>
+
+                <div class="filter-bar">
+                    <input type="text" id="filterSearch" placeholder="Search name or skill..." aria-label="Search professionals">
+                    <select id="filterCategory" aria-label="Filter by category">
+                        <option value="">All Categories</option>
+                        <option value="mc">Event MCs</option>
+                        <option value="artist">Music Artists / Bands</option>
+                        <option value="photographer">Photographers</option>
+                        <option value="videographer">Videographers</option>
+                        <option value="dj">DJs / Sound</option>
+                        <option value="caterer">Caterers</option>
+                        <option value="decorator">Decorators / Planners</option>
+                        <option value="handy">Handy Workers</option>
+                    </select>
+                    <select id="filterCity" aria-label="Filter by city">
+                        <option value="">All Cities</option>
+                    </select>
+                    <select id="filterPrice" aria-label="Filter by price range">
+                        <option value="">Any Price</option>
+                        <option value="0-500">Under GH₵ 500</option>
+                        <option value="500-1000">GH₵ 500 – 1,000</option>
+                        <option value="1000-2500">GH₵ 1,000 – 2,500</option>
+                        <option value="2500-5000">GH₵ 2,500 – 5,000</option>
+                        <option value="5000+">GH₵ 5,000+</option>
+                    </select>
+                    <select id="filterAvail" aria-label="Filter by availability">
+                        <option value="">Any Availability</option>
+                        <option value="available">Available Today</option>
+                        <option value="booked">Booked</option>
+                        <option value="onrequest">On Request</option>
+                    </select>
+                    <select id="filterSort" aria-label="Sort professionals">
+                        <option value="recommended">Sort: Recommended</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                        <option value="rating">Highest Rated</option>
+                        <option value="bookings">Most Booked</option>
+                    </select>
+                </div>
+
+                <div class="results-meta">
+                    <span id="resultsCount"></span>
+                    <button type="button" class="btn-clear" id="clearFilters"><i class="fa-solid fa-rotate-left"></i> Reset Filters</button>
+                    <button type="button" class="btn-clear" id="shareFilters" title="Copy a link to this filtered view"><i class="fa-solid fa-link"></i> Copy Link</button>
+                </div>
+
+                <div class="talent-grid" id="talentGrid"></div>
+
+                <!-- Load More sits BELOW the grid, centred. The homepage
+                     preview is capped (HOME_MAX_CLICKS expansions) so the
+                     frontpage never grows unbounded — the rest of the list
+                     lives on the dedicated directory page. -->
+                <div class="load-more-row" id="loadMoreRow">
+                    <button type="button" class="btn-clear btn-load-more" id="loadMoreBtn" style="display:none;"><i class="fa-solid fa-circle-chevron-down"></i> Load More</button>
+                    <a class="btn-clear btn-load-more" id="openDirectoryLink" href="directory.html" style="display:none;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Browse All Professionals</a>
+                </div>
+
+                <div id="noResults" class="no-results">
+                    <i class="fa-solid fa-user-slash"></i>
+                    <p><strong>No professionals match your filters.</strong></p>
+                    <p style="font-size: 0.85rem; margin-top: 5px;">Try widening the price range or picking another city — or send us a custom request on WhatsApp and we will match one for you.</p>
+                </div>
+            </div>
+
+            <!-- Why Choose Us -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-circle-check"></i> Why The Public Trusts SkillConnect
+                </div>
+                <div class="why-grid">
+                    <div class="why-item">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <strong>Verified & Background-Checked</strong>
+                        <p>ID, portfolio and skill checks on every professional before listing.</p>
+                    </div>
+                    <div class="why-item">
+                        <i class="fa-solid fa-comments-dollar"></i>
+                        <strong>Transparent Pricing</strong>
+                        <p>Standard rate ranges per category so you never get overcharged.</p>
+                    </div>
+                    <div class="why-item">
+                        <i class="fa-solid fa-lock"></i>
+                        <strong>Escrow-Secured Payment</strong>
+                        <p>MoMo & Paystack payments held safely and released after job completion.</p>
+                    </div>
+                    <div class="why-item">
+                        <i class="fa-solid fa-stopwatch"></i>
+                        <strong>Fast Dispatch</strong>
+                        <p>Emergency requests matched to standby pros within 30 minutes.</p>
+                    </div>
+                    <div class="why-item">
+                        <i class="fa-solid fa-star-half-stroke"></i>
+                        <strong>Real Ratings & Reviews</strong>
+                        <p>Only customers who paid and completed a booking can review.</p>
+                    </div>
+                    <div class="why-item">
+                        <i class="fa-solid fa-handshake-angle"></i>
+                        <strong>Dispute Protection</strong>
+                        <p>No-show or poor service? Our resolution team refunds or rematches you.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonials -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-quote-left"></i> What Customers Say
+                </div>
+                <div class="testimonial">
+                    <p>"Booked an MC and photographer for my wedding in 20 minutes. Everything was handled professionally — no price games!"</p>
+                    <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <div class="who">— Maame Efua, East Legon, Accra</div>
+                </div>
+                <div class="testimonial">
+                    <p>"My generator failed on a Sunday and an electrician arrived within the hour. Escrow payment made me feel safe."</p>
+                    <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <div class="who">— Yaw Osei, Kumasi</div>
+                </div>
+                <div class="testimonial">
+                    <p>"The live band lit up our corporate end-of-year party. The quote assistant estimated the budget almost exactly."</p>
+                    <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i></div>
+                    <div class="who">— Nana Kwame, HR Manager, Tema</div>
+                </div>
+            </div>
+
+            <!-- Location & Contact Details -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-map-location-dot"></i> Head Office & Coverage Map
+                </div>
+                <p><strong><i class="fa-solid fa-location-dot" style="color: var(--accent-text);"></i> Address:</strong> Sixth Circular Road, Cantonment-Labone, Accra, Ghana.</p>
+                <p style="margin-top: 5px;"><strong><i class="fa-solid fa-phone" style="color: var(--accent-text);"></i> Call Us:</strong> +233 24 421 1595</p>
+                <p style="margin-top: 5px;"><strong><i class="fa-solid fa-truck-fast" style="color: var(--accent-text);"></i> Coverage:</strong> Greater Accra, Ashanti, Western, Central, Eastern, Volta regions.</p>
+
+                <!-- Embedded Google Map -->
+                <div class="map-container">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15883.829023192276!2d-0.1782235!3d5.5684307!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x10208226021e0eb5%3A0x6739bc4d62bd09a5!2sLabone%2C%20Accra!5e0!3m2!1sen!2sgh!4v1690000000000!5m2!1sen!2sgh"
+                        allowfullscreen=""
+                        loading="lazy">
+                    </iframe>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Smart Quote Assistant & Booking Form -->
+        <div class="right-column">
+            <div class="assistant-box">
+                <div class="card-title" style="margin-bottom: 10px;">
+                    <i class="fa-solid fa-robot"></i> Smart Assistant & Instant Booking
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
+                    Planning an event or need a skilled worker urgently? Describe it in one line and let the assistant fill the form — or fill in the details below yourself. Either way, our assistant recommends what to prepare, estimates a fair budget, and dispatches your request to matching verified pros.
+                </p>
+
+                <!-- AI booking assistant: one line in → structured request out -->
+                <div id="aiAssistBox" style="margin-bottom: 18px; padding: 14px; background: var(--bg-strong); border: 1px dashed var(--primary-yellow); border-radius: 10px;">
+                    <label for="aiInput" style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--accent-text); margin-bottom: 8px;"><i class="fa-solid fa-wand-magic-sparkles"></i> Describe Your Request In One Line</label>
+                    <div class="ai-row">
+                        <input type="text" id="aiInput" placeholder='e.g. MC for my wedding this Saturday in Takoradi, budget 2500 — Ama, 024 421 1595' autocomplete="off">
+                        <button type="button" class="btn-submit" id="aiParseBtn" style="padding: 10px 18px;" onclick="aiParseClick()"><i class="fa-solid fa-wand-magic-sparkles"></i> Read It</button>
+                    </div>
+                    <div id="aiResult" style="display: none; margin-top: 12px;"></div>
+                </div>
+
+                <form id="bookingForm">
+                    <div class="form-group">
+                        <label for="fullName">Your Full Name</label>
+                        <input type="text" id="fullName" placeholder="e.g. Ama Serwaa" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phoneNum">Phone / WhatsApp Number</label>
+                        <input type="tel" id="phoneNum" placeholder="e.g. 024 421 1595" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jobType">What Service Do You Need?</label>
+                        <select id="jobType" required>
+                            <option value="">-- Choose Category --</option>
+                            <option value="mc">Event MC / Host</option>
+                            <option value="artist">Music Artist / Live Band</option>
+                            <option value="photographer">Photographer</option>
+                            <option value="videographer">Videographer / Editor</option>
+                            <option value="dj">DJ / Sound & Lighting</option>
+                            <option value="caterer">Caterer / Baker</option>
+                            <option value="decorator">Decorator / Event Planner</option>
+                            <option value="handy">Handy Skill Worker (Electrician, Plumber, etc.)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jobDate">Event / Job Date</label>
+                        <input type="date" id="jobDate">
+                    </div>
+                    <div id="formAvailStatus" class="date-status ok" style="display: none;"></div>
+
+                    <div class="form-group">
+                        <label for="jobLocation">Event / Job Location</label>
+                        <input type="text" id="jobLocation" placeholder="e.g. Labone, Cantonment, Osu, Kumasi..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="budget">Your Budget (GH₵) — Optional</label>
+                        <input type="number" id="budget" min="0" placeholder="e.g. 1500" oninput="budgetGuidanceDebounced()">
+                        <div id="budgetGuidance" class="date-status ok" style="display: none; margin-top: 8px;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="urgency">How Urgent Is It?</label>
+                        <select id="urgency">
+                            <option value="planned">Planned (future date)</option>
+                            <option value="soon">Within 48 hours</option>
+                            <option value="urgent">Emergency / Today</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Describe The Job (Optional)</label>
+                        <textarea id="description" rows="3" placeholder="e.g. Traditional wedding of about 200 guests, need MC + photographer..."></textarea>
+                    </div>
+
+                    <button type="button" class="btn-submit" onclick="processAssistantRequest()">
+                        <i class="fa-solid fa-paper-plane"></i> Get Advice, Budget & Match Pros
+                    </button>
+                </form>
+
+                <!-- Assistant Response Box -->
+                <div id="assistantResponse" class="assistant-response">
+                    <h4 id="responseTitle">Recommendation & Budget Guide</h4>
+                    <p id="responseText" style="font-size: 0.9rem; margin-bottom: 10px;"></p>
+                    <p id="budgetHint" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;"></p>
+                    <button type="button" class="btn-submit" onclick="openBookingModal()">
+                        <i class="fa-solid fa-calendar-check"></i> Confirm &amp; Request Match
+                    </button>
+                </div>
+
+                <!-- Recent requests from this device (localStorage) -->
+                <div id="recentRequestsWrap" style="display: none; margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--border);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h4 style="color: var(--accent-text); font-size: 0.82rem; text-transform: uppercase; margin: 0;"><i class="fa-solid fa-clock-rotate-left"></i> Your Recent Requests</h4>
+                        <button type="button" id="recentClear" style="background: transparent; border: none; color: var(--text-faint); font-size: 0.68rem; cursor: pointer; text-transform: uppercase; font-family: inherit;">Clear</button>
+                    </div>
+                    <div id="recentRequests"></div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Platform Tools: Track, Pro Dashboard, Admin, USSD -->
+    <div class="page-wrap" style="padding-top: 0;">
+        <div class="card">
+            <div class="card-title">
+                <i class="fa-solid fa-screwdriver-wrench"></i> Platform Tools
+            </div>
+            <div class="tools-grid">
+                <a class="card-link" href="track.html"><i class="fa-solid fa-location-crosshairs"></i><strong>Track &amp; Escrow</strong><small>Compare quotes, pay into escrow, release, dispute</small></a>
+                <a class="card-link" href="dashboard.html"><i class="fa-solid fa-briefcase"></i><strong>Pro Dashboard</strong><small>Job alerts, availability calendar, MoMo payouts</small></a>
+                <a class="card-link" href="admin.html"><i class="fa-solid fa-tower-broadcast"></i><strong>Admin Console</strong><small>Dispatch board, verification, dispute queue</small></a>
+                <a class="card-link" href="ussd.html"><i class="fa-solid fa-mobile-retro"></i><strong>SMS / USSD</strong><small>SMS 024 421 1595 — no internet needed</small></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- For Professionals: Join Call To Action -->
+    <section class="cta-strip">
+        <h3>Are You a Skilled Professional?</h3>
+        <p>Join SkillConnect with a one-time GH₵ 50 registration &amp; verification fee. List your services and rates, receive instant booking alerts and get paid securely — we only take a small commission when YOU earn.</p>
+        <a href="register.html" class="btn-call" style="display: inline-flex;">
+            <i class="fa-solid fa-user-plus"></i> Register As A Professional
+        </a>
+    </section>
+
+    <!-- Booking Confirmation Modal -->
+    <div class="modal-overlay" id="bookingModal" role="dialog" aria-modal="true" aria-labelledby="bkTitle">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3 id="bkTitle"><i class="fa-solid fa-calendar-check"></i> Confirm Booking Request</h3>
+                <button type="button" class="modal-close" onclick="closeBookingModal()" aria-label="Close">&times;</button>
+            </div>
+
+            <div id="bkSummary"></div>
+
+            <div id="bkDateStatus" class="date-status ok"></div>
+
+            <div id="bkAvailStatus" class="date-status ok" style="display: none;"></div>
+
+            <div class="bk-ref">
+                <div class="ref-label">Your Booking Reference</div>
+                <div class="ref-value" id="bkRef">SC-BK-000000</div>
+                <button type="button" class="btn-copy" id="bkCopyBtn" onclick="copyRef()"><i class="fa-regular fa-copy"></i> Copy Ref</button>
+            </div>
+
+            <p style="font-size: 0.78rem; color: var(--text-muted); text-align: center;">
+                One tap sends this summary + your reference to our dispatch team on WhatsApp. A matching verified pro will contact you.
+            </p>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-wa-send" id="bkWhatsAppBtn">
+                    <i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i> Send Request via WhatsApp
+                </button>
+                <button type="button" class="btn-edit" onclick="closeBookingModal()">
+                    <i class="fa-solid fa-pen"></i> Edit Details
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pro-specific Booking Modal (from 'Request [Name]' buttons) -->
+    <div class="modal-overlay" id="proBookModal" role="dialog" aria-modal="true">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3 id="puTitle"><i class="fa-solid fa-calendar-check"></i> Request Pro</h3>
+                <button type="button" class="modal-close" onclick="closeProModal()" aria-label="Close">&times;</button>
+            </div>
+
+            <div id="puProLine" class="pu-pro-line"></div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="puName">Your Name</label>
+                    <input type="text" id="puName" placeholder="e.g. Ama Serwaa">
+                </div>
+                <div class="form-group">
+                    <label for="puPhone">Phone / WhatsApp</label>
+                    <input type="tel" id="puPhone" placeholder="e.g. 024 421 1595">
+                </div>
+                <div class="form-group">
+                    <label for="puDate">Date</label>
+                    <input type="date" id="puDate">
+                </div>
+                <div class="form-group">
+                    <label for="puLocation">Location</label>
+                    <input type="text" id="puLocation" placeholder="e.g. Labone, Accra">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="puBudget">Budget (GH₵) — Optional</label>
+                <input type="number" id="puBudget" min="0" placeholder="e.g. 1500">
+            </div>
+            <div class="form-group">
+                <label for="puDetails">Details</label>
+                <textarea id="puDetails" rows="2"></textarea>
+            </div>
+
+            <div id="puDateStatus" class="date-status ok"></div>
+
+            <div id="puAvailStatus" class="date-status ok" style="display: none;"></div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-wa-send" id="puWaBtn">
+                    <i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i> Send Request via WhatsApp
+                </button>
+                <button type="button" class="btn-edit" onclick="closeProModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
+        <button type="button" class="lb-btn lb-next" onclick="lightboxNav(1)" aria-label="Next">&#8250;</button>
+    </div>
+
+    <!-- Floating WhatsApp & Phone Call Quick Buttons -->
+    <div class="floating-contact-bar">
+        <a href="https://wa.me/233244211595" class="float-btn whatsapp" target="_blank" title="Chat on WhatsApp">
+            <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <a href="tel:+233244211595" class="float-btn phone" title="Call Us Now">
+            <i class="fa-solid fa-phone"></i>
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <footer></footer>
+
+    <!-- Shared Data Layer -->
+    <script src="data-store.js?v=29"></script>
+    <script src="sc-cities.js?v=2"></script>
+    <script src="pro-cards.js?v=1"></script>
+    <script>window.SC_PARTIALS = {};</script>
+    <script src="header.js?v=3"></script>
+    <script src="site-partials.js?v=10"></script>
+    <script src="nav.js?v=3"></script>
+    <script src="ui.js?v=4"></script>
+    <script src="pro-profile.js?v=6"></script>
+
+    <!-- Assistant Scripting Logic -->
+    <script>
+        // Shared category data now comes from data-store.js
+        const CATEGORY_INFO = SC.CATEGORY_INFO;
+        const URGENCY_INFO = SC.URGENCY_INFO;
+
+        // ===== CMS content (frontpage managed from Admin console) =====
+        // The announcement bar sits ABOVE the header. One announcement per line
+        // in Admin → CMS → Announcement Text; multiple lines auto-rotate every
+        // 5s (pause on hover, prev/next arrows jump between slides).
+        let announceSlides = [];
+        let announceIdx = 0;
+        let announceTimer = null;
+
+        function stopAnnounce() { if (announceTimer) { clearInterval(announceTimer); announceTimer = null; } }
+        function startAnnounce() { stopAnnounce(); announceTimer = setInterval(() => stepAnnounce(1), 5000); }
+
+        function stepAnnounce(dir) {
+            if (announceSlides.length < 2) return;
+            announceIdx = (announceIdx + dir + announceSlides.length) % announceSlides.length;
+            const slide = document.getElementById('anSlide');
+            if (!slide) return;
+            slide.classList.add('fading');
+            setTimeout(() => {
+                const s = document.getElementById('anSlide');
+                if (!s) return;
+                s.innerHTML = '<i class="fa-solid fa-bullhorn"></i> ' + SC.esc(announceSlides[announceIdx] || '');
+                s.classList.remove('fading');
+            }, 300);
+        }
+
+        function renderAnnounce() {
+            const bar = document.getElementById('cmsAnnounce');
+            if (!bar) return;
+            let cms = null;
+            try { cms = SC.getCms(); } catch (e) { /* CMS is optional decoration */ }
+            const text = (cms && cms.announceOn && cms.announceText) ? String(cms.announceText) : '';
+            announceSlides = text.split('\n').map(s => s.trim()).filter(Boolean);
+            stopAnnounce();
+            if (!announceSlides.length) { bar.style.display = 'none'; bar.innerHTML = ''; return; }
+            if (announceIdx >= announceSlides.length) announceIdx = 0;
+            const multi = announceSlides.length > 1;
+            bar.innerHTML =
+                (multi ? '<button type="button" class="an-prev" onclick="stepAnnounce(-1)" aria-label="Previous announcement"><i class="fa-solid fa-chevron-left"></i></button>' : '') +
+                '<div class="an-slide" id="anSlide"><i class="fa-solid fa-bullhorn"></i> ' + SC.esc(announceSlides[announceIdx]) + '</div>' +
+                (multi ? '<button type="button" class="an-next" onclick="stepAnnounce(1)" aria-label="Next announcement"><i class="fa-solid fa-chevron-right"></i></button>' : '');
+            bar.style.display = 'flex';
+            if (multi) {
+                bar.onmouseenter = stopAnnounce;
+                bar.onmouseleave = startAnnounce;
+                startAnnounce();
+            } else {
+                bar.onmouseenter = null;
+                bar.onmouseleave = null;
+            }
+        }
+
+        (function applyCms() {
+            try {
+                const cms = SC.getCms();
+                if (!cms) return;
+                if (cms.heroTitle) document.getElementById('cmsHeroTitle').textContent = cms.heroTitle;
+                if (cms.heroSub) document.getElementById('cmsHeroSub').textContent = cms.heroSub;
+                announceIdx = 0;
+                renderAnnounce();
+            } catch (e) { /* CMS is optional decoration */ }
+        })();
+
+        // Admin published changes in another tab -> refresh the bar without a reload
+        window.addEventListener('storage', e => {
+            if (e.key === 'sc_db_v1') { announceIdx = 0; renderAnnounce(); }
+        });
+
+        /* Legacy inline data (kept for reference)
+        const CATEGORY_INFO = {
+            mc: {
+                name: "Event MC / Host",
+                advice: "Share your program schedule and names of key people (chief, groom, bride, dignitaries) with the MC in advance. Confirm if you need bilingual hosting (Twi, Ewe, Ga, English).",
+                range: [800, 2500]
+            },
+            artist: {
+                name: "Music Artist / Live Band",
+                advice: "Confirm stage size, power supply and performance duration. Provide a playlist or song list, and check if the artist needs backing tracks or live instruments.",
+                range: [2500, 15000]
+            },
+            photographer: {
+                name: "Photographer",
+                advice: "Agree on the shot list and how many edited photos you will receive and when. Confirm whether you want hard copies or digital albums.",
+                range: [600, 3000]
+            },
+            videographer: {
+                name: "Videographer / Editor",
+                advice: "Decide between full-length coverage or a highlight reel. Ask about drone coverage if the venue allows it, and confirm delivery timeline for the final edit.",
+                range: [1000, 5000]
+            },
+            dj: {
+                name: "DJ / Sound & Lighting",
+                advice: "State the audience size so the pro brings a big enough sound system and speakers. Confirm power backup (generator) for outdoor events.",
+                range: [800, 4000]
+            },
+            caterer: {
+                name: "Caterer / Baker",
+                advice: "Give the exact guest count and menu preference. Ask for a tasting where possible and confirm serving staff are included in the quote.",
+                range: [1500, 10000]
+            },
+            decorator: {
+                name: "Decorator / Event Planner",
+                advice: "Share your theme colors and a reference photo. Confirm setup and teardown times so the venue access is arranged.",
+                range: [1500, 8000]
+            },
+            handy: {
+                name: "Handy Skill Worker",
+                advice: "Describe the fault clearly and send a photo if you can. Prepare access to the area (keys, gate pass) so the job starts immediately on arrival.",
+                range: [150, 1200]
+            }
+        };
+
+        end legacy */
+
+        // ===== Featured Professionals Directory (live from the shared data store) =====
+        // `let` + storage/focus refresh so pros verified by an admin in another tab appear instantly
+        let PROS = SC.getPros();
+        const PAGE_SIZE = 6;
+        const HOME_MAX_CLICKS = 2;   /* homepage preview cap: 6 → 12 → 18, then hand off */
+        let visibleCount = PAGE_SIZE;
+        let homeClicks = Math.max(0, Math.ceil((visibleCount - PAGE_SIZE) / PAGE_SIZE));
+
+        const PRICE_RANGES = {
+            '0-500': [0, 500],
+            '500-1000': [500, 1000],
+            '1000-2500': [1000, 2500],
+            '2500-5000': [2500, 5000],
+            '5000+': [5000, Infinity]
+        };
+
+        function formatPrice(p) {
+            return 'GH₵ ' + p.toLocaleString();
+        }
+
+        // 'New' badge: pro verified within the last 30 days (seeded pros are older)
+        function isNewPro(p) {
+            return !!p.joinedAt && (Date.now() - p.joinedAt) < 30 * 86400000;
+        }
+
+        function renderPros() {
+            const q = document.getElementById('filterSearch').value.trim().toLowerCase();
+            const cat = document.getElementById('filterCategory').value;
+            const city = document.getElementById('filterCity').value;
+            const price = document.getElementById('filterPrice').value;
+            const avail = document.getElementById('filterAvail').value;
+            const sort = document.getElementById('filterSort').value;
+
+            let list = PROS.filter(p => {
+                if (cat && p.cat !== cat) return false;
+                if (city && p.city !== city) return false;
+                if (price) {
+                    const [min, max] = PRICE_RANGES[price];
+                    if (p.price < min || p.price >= max) return false;
+                }
+                if (avail && SC.proAvailability(p) !== avail) return false;
+                if (q) {
+                    const hay = (p.name + ' ' + p.role + ' ' + p.note + ' ' + p.city).toLowerCase();
+                    if (!hay.includes(q)) return false;
+                }
+                return true;
+            });
+
+            switch (sort) {
+                case 'price-asc': list.sort((a, b) => a.price - b.price); break;
+                case 'price-desc': list.sort((a, b) => b.price - a.price); break;
+                case 'rating': list.sort((a, b) => b.rating - a.rating); break;
+                case 'bookings': list.sort((a, b) => b.bookings - a.bookings); break;
+                default: list.sort((a, b) => (b.rating - a.rating) || (b.bookings - a.bookings));
+            }
+
+            const grid = document.getElementById('talentGrid');
+            const emptyEl = document.getElementById('noResults');
+            document.getElementById('resultsCount').innerHTML =
+                `Showing <strong>${list.length}</strong> of ${PROS.length} verified professionals`;
+
+            // --- Load More pagination (capped on the homepage) ---
+            const visible = list.slice(0, visibleCount);
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const dirLink = document.getElementById('openDirectoryLink');
+            const remaining = list.length - visible.length;
+            const exhausted = remaining <= 0 || homeClicks >= HOME_MAX_CLICKS;
+            loadMoreBtn.style.display = (remaining > 0 && homeClicks < HOME_MAX_CLICKS) ? 'inline-flex' : 'none';
+            loadMoreBtn.innerHTML = `<i class="fa-solid fa-circle-chevron-down"></i> Load More (${remaining} more)`;
+            /* After the cap (or when everything fits), offer the full directory
+               instead of silently stopping: filters carry over via the URL. */
+            dirLink.style.display = exhausted ? 'inline-flex' : 'none';
+            if (remaining > 0 && exhausted) {
+                dirLink.innerHTML = `<i class="fa-solid fa-arrow-up-right-from-square"></i> Browse All ${list.length} Professionals`;
+            }
+
+            grid.innerHTML = visible.map(p => SCProCards.cardHtml(p)).join('');
+
+            emptyEl.style.display = list.length ? 'none' : 'block';
+
+            // --- Persist filters to the URL so filtered views can be shared ---
+            const params = new URLSearchParams();
+            const rawQ = document.getElementById('filterSearch').value.trim();
+            if (rawQ) params.set('q', rawQ);
+            if (cat) params.set('cat', cat);
+            if (city) params.set('city', city);
+            if (price) params.set('price', price);
+            if (avail) params.set('avail', avail);
+            if (sort && sort !== 'recommended') params.set('sort', sort);
+            const page = Math.max(1, Math.ceil(visibleCount / PAGE_SIZE));
+            if (page > 1) params.set('page', String(page));
+            const qs = params.toString();
+            try { history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '')); } catch (e) { /* older browsers: ignore */ }
+            /* The directory hand-off link carries the active filters (page is
+               directory-specific and resets there). */
+            const dirParams = new URLSearchParams(params);
+            dirParams.delete('page');
+            const dirQs = dirParams.toString();
+            dirLink.href = 'directory.html' + (dirQs ? '?' + dirQs : '');
+        }
+
+        function requestPro(proId) {
+            openProModal(proId);
+        }
+
+        // ===== Pro-specific booking modal ('Request [Name]' buttons) =====
+        let proModalPro = null;
+
+        function openProModal(proId) {
+            const p = SC.getPro(proId);
+            if (!p) return;
+            proModalPro = p;
+            const av = SC.proAvailability(p);
+            const avMeta = SC.AVAIL_META[av];
+
+            document.getElementById('puTitle').innerHTML = '<i class="fa-solid fa-calendar-check"></i> Request ' + esc(p.name);
+            document.getElementById('puProLine').innerHTML =
+                '<i class="fa-solid ' + (SC.PRO_ICONS[p.cat] || 'fa-user-tie') + '"></i> ' +
+                '<strong>' + esc(p.role) + '</strong> · ' + esc(p.city) +
+                ' · ⭐ ' + p.rating.toFixed(1) + ' · From ' + formatPrice(p.price) + '/' + esc(p.unit) +
+                ' <span class="avail-badge ' + avMeta.cls + '" style="position: static; display: inline-flex; padding: 3px 10px; font-size: 0.6rem; margin-left: 6px;"><i class="fa-solid ' + (av === 'booked' ? 'fa-calendar-xmark' : (av === 'available' ? 'fa-circle-check' : 'fa-clock')) + '"></i> ' + avMeta.label + '</span>' +
+                (av === 'booked' ? '<div style="font-size: 0.72rem; color: var(--warn-amber-text); margin-top: 6px;"><i class="fa-solid fa-triangle-exclamation"></i> Marked booked today — pick another date or send the request anyway.</div>' : '');
+
+            // prefill from the main form if the user already typed there
+            document.getElementById('puName').value = document.getElementById('fullName').value.trim();
+            document.getElementById('puPhone').value = document.getElementById('phoneNum').value.trim();
+            document.getElementById('puDate').value = document.getElementById('jobDate').value;
+            document.getElementById('puLocation').value = document.getElementById('jobLocation').value.trim() || '';
+            document.getElementById('puBudget').value = document.getElementById('budget').value;
+            document.getElementById('puDetails').value = 'Requesting ' + p.name + ' (' + p.id + ') for ' + (CATEGORY_INFO[p.cat] || {}).name + '.';
+
+            const dateEl = document.getElementById('puDate');
+            const today = todayISO();
+            dateEl.min = today;
+            puDateStatus();
+            dateEl.oninput = puDateStatus;
+            document.getElementById('puWaBtn').onclick = sendProRequest;
+
+            document.getElementById('proBookModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function puDateStatus() {
+            const info = dateStatusInfo(document.getElementById('puDate').value, 'planned');
+            const st = document.getElementById('puDateStatus');
+            st.className = 'date-status ' + info.cls;
+            st.innerHTML = '<i class="fa-solid ' + info.icon + '" style="margin-top: 3px;"></i><span>' + esc(info.text) + '</span>';
+            renderAvailStatus('puAvailStatus', proModalPro ? proModalPro.cat : null, document.getElementById('puDate').value, proModalPro ? proModalPro.id : null, 'puModal');
+            document.getElementById('puWaBtn').disabled = !info.valid;
+        }
+
+        function closeProModal() {
+            document.getElementById('proBookModal').classList.remove('open');
+            document.body.style.overflow = '';
+            proModalPro = null;
+        }
+
+        function sendProRequest() {
+            const p = proModalPro;
+            if (!p) return;
+            const name = document.getElementById('puName').value.trim();
+            const phone = document.getElementById('puPhone').value.trim();
+            const date = document.getElementById('puDate').value;
+            const location = document.getElementById('puLocation').value.trim();
+            if (!name || !phone || !location) {
+                UI.alert('Please fill in your name, phone number and location so ' + esc(p.short) + ' can reach you.', { title: 'Missing Details', type: 'error', okLabel: 'Fix It' });
+                return;
+            }
+            const budget = document.getElementById('puBudget').value;
+            const details = document.getElementById('puDetails').value.trim();
+            const info = CATEGORY_INFO[p.cat] || { name: p.role, advice: '' };
+            const uInfo = URGENCY_INFO.planned;
+            const b = { name, phone, info, job: p.cat, date, location, budget, urgency: 'planned', uInfo, details, proId: p.id };
+
+            /* Budget guard: a stated budget below the pro's service charge is
+               blocked calmly — the customer picks an alternative instead. */
+            const budgetN = Number(budget) || 0;
+            if (budgetN > 0 && budgetN < p.price) {
+                UI.alert(
+                    esc(p.short) + '\'s service charge is GH\u20B5 ' + Number(p.price).toLocaleString() + ' per booking, which is above your GH\u20B5 ' + Number(budgetN).toLocaleString() + ' budget.\n\n' +
+                    'Two good options:\n' +
+                    '\u2022 Raise your budget to GH\u20B5 ' + Number(p.price).toLocaleString() + ' and book ' + esc(p.short) + ' directly.\n' +
+                    '\u2022 Keep your budget and let SkillConnect match you with a verified pro within it \u2014 same quality standard, fair price.',
+                    {
+                        title: 'Budget Below Service Charge',
+                        type: 'error',
+                        okLabel: 'Got It'
+                    }
+                );
+                return;
+            }
+
+            const booking = SC.createBooking(b);
+            SC.systemChat(booking.id, 'Direct request for ' + p.name + ' (' + p.id + ') from their profile card.');
+            rememberRecent(booking.id, b);
+            renderRecent();
+
+            const msg = 'Hello SkillConnect! New booking request:' +
+                '%0A%0A*Ref:* ' + encodeURIComponent(booking.id) +
+                '%0A*Requested Pro:* ' + encodeURIComponent(p.name + ' (' + p.id + ')') +
+                '%0A*Name:* ' + encodeURIComponent(name) +
+                '%0A*Phone:* ' + encodeURIComponent(phone) +
+                '%0A*Service:* ' + encodeURIComponent(info.name) +
+                '%0A*Date:* ' + encodeURIComponent(date ? fmtDate(date) : 'Flexible') +
+                '%0A*Location:* ' + encodeURIComponent(location) +
+                '%0A*Budget:* ' + encodeURIComponent(budget ? 'GH₵ ' + budget : 'Not stated') +
+                '%0A*Details:* ' + encodeURIComponent(details || '-');
+
+            window.open('track.html?ref=' + booking.id, '_blank');
+            window.open('https://wa.me/233244211595?text=' + msg, '_blank');
+            UI.toast('Request sent to ' + esc(p.short) + '! Ref ' + booking.id + '.', 'success', 4200);
+            closeProModal();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterSearch').value = '';
+            document.getElementById('filterCategory').value = '';
+            document.getElementById('filterCity').value = '';
+            document.getElementById('filterPrice').value = '';
+            document.getElementById('filterAvail').value = '';
+            document.getElementById('filterSort').value = 'recommended';
+            renderPros();
+            renderAvailChip();
+        }
+
+        document.getElementById('loadMoreBtn').addEventListener('click', () => {
+            homeClicks++;
+            visibleCount += PAGE_SIZE;
+            renderPros();
+        });
+
+        // Pro profile modal now lives in shared pro-profile.js (openProfileModal global preserved)
+
+
+        // Wire up filter events
+        ['filterSearch', 'filterCategory', 'filterCity', 'filterPrice', 'filterAvail', 'filterSort'].forEach(id => {
+            document.getElementById(id).addEventListener(
+                id === 'filterSearch' ? 'input' : 'change',
+                () => { visibleCount = PAGE_SIZE; renderPros(); if (id === 'filterAvail') renderAvailChip(); }
+            );
+        });
+        document.getElementById('clearFilters').addEventListener('click', resetFilters);
+
+        document.getElementById('shareFilters').addEventListener('click', () => {
+            const btn = document.getElementById('shareFilters');
+            const done = () => { btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!'; setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-link"></i> Copy Link'; }, 1500); };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(location.href).then(done).catch(done);
+            } else { done(); }
+        });
+
+        function selectCategory(key) {
+            // Prefill the booking form category
+            const el = document.getElementById('jobType');
+            el.value = key;
+            el.style.borderColor = 'var(--primary-yellow)';
+            setTimeout(() => { el.style.borderColor = ''; }, 1500);
+
+            // Sync the directory filter so the cards below update to this category
+            const f = document.getElementById('filterCategory');
+            if (f) {
+                f.value = key;
+                visibleCount = PAGE_SIZE;
+                renderPros();
+                document.getElementById('filterSearch').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                f.style.borderColor = 'var(--primary-yellow)';
+                setTimeout(() => { f.style.borderColor = ''; }, 1500);
+            }
+        }
+
+        function prefillCategory(key) {
+            selectCategory(key);
+        }
+
+        // ===== Hero 'Available Today' chip: one-tap filter to pros free today =====
+        function updateAvailChipState() {
+            document.getElementById('availTodayChip').classList.toggle('active', document.getElementById('filterAvail').value === 'available');
+        }
+
+        function renderAvailChip() {
+            const n = PROS.filter(p => SC.proAvailability(p) === 'available').length;
+            document.getElementById('availTodayCount').textContent = n ? String(n) : '';
+            updateAvailChipState();
+        }
+
+        function showDirectoryFilters() {
+            document.getElementById('filterSearch').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function toggleAvailToday() {
+            const f = document.getElementById('filterAvail');
+            const on = f.value !== 'available';
+            f.value = on ? 'available' : '';
+            visibleCount = PAGE_SIZE;
+            renderPros();
+            renderAvailChip();
+            f.style.borderColor = 'var(--primary-yellow)';
+            setTimeout(() => { f.style.borderColor = ''; }, 1500);
+            showDirectoryFilters();
+        }
+
+        // ===== Booking Confirmation Modal =====
+        let lastBooking = null;
+        let lastRef = null;
+
+        function esc(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function todayISO() {
+            const d = new Date();
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+
+        function fmtDate(iso) {
+            return new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        function generateRef() {
+            return 'SC-BK-' + String(Math.floor(100000 + Math.random() * 900000));
+        }
+
+        // Validates the chosen date; returns { cls, icon, text, valid }
+        function dateStatusInfo(dateStr, urgency) {
+            if (!dateStr) {
+                return { cls: 'ok', icon: 'fa-circle-info', text: 'No date set — your request is treated as flexible and pros will propose dates.', valid: true };
+            }
+            const t = todayISO();
+            if (dateStr < t) {
+                return { cls: 'err', icon: 'fa-circle-xmark', text: '"' + fmtDate(dateStr) + '" is in the past. Please go back and pick today or a future date.', valid: false };
+            }
+            const diff = Math.round((new Date(dateStr + 'T00:00:00') - new Date(t + 'T00:00:00')) / 86400000);
+            const base = 'Valid: ' + fmtDate(dateStr) + ' (in ' + diff + ' day' + (diff === 1 ? '' : 's') + ').';
+            if (diff === 0) {
+                return { cls: 'ok', icon: 'fa-bolt', text: 'Same-day booking — our dispatch team treats this as priority.', valid: true };
+            }
+            if (urgency === 'urgent' && diff > 3) {
+                return { cls: 'warn', icon: 'fa-triangle-exclamation', text: base + ' Note: you selected Emergency/Today but the event is ' + diff + ' days away — pros may treat this as a planned booking.', valid: true };
+            }
+            return { cls: 'ok', icon: 'fa-circle-check', text: base, valid: true };
+        }
+
+        // ===== Date-aware availability: warn when the chosen/matched pros are blocked, suggest alternatives =====
+        // ctx: 'form' (live in-form) | 'bkModal' (confirm modal) | 'puModal' (pro request modal)
+        function renderAvailStatus(elId, cat, date, proId, ctx) {
+            const box = document.getElementById(elId);
+            if (!box) return;
+            box.style.display = 'none';
+            box.innerHTML = '';
+            if (!date) return;
+            const av = SC.dateAvailability({ cat: cat || null, date: date, proId: proId || null });
+            if (!av.ok) return;
+            const pro = proId ? SC.getPro(proId) : null;
+            const link = 'style="color: var(--accent-text); text-decoration: underline; cursor: pointer;"';
+            const proLink = p => '<a href="#" ' + link + ' onclick="' + (ctx === 'form' ? '' : ctx === 'bkModal' ? 'closeBookingModal(); ' : 'closeProModal(); ') + 'openProfileModal(\'' + p.id + '\'); return false;">' + esc(p.name) + '</a>';
+            let cls = null, icon = null, html = '';
+
+            if (pro && av.blocked.some(p => p.id === proId)) {
+                cls = 'warn'; icon = 'fa-calendar-xmark';
+                html = '<strong>' + esc(pro.name) + '</strong> is already booked ' + fmtDate(date) + '. ';
+                if (av.suggest.length) html += 'Free that day: ' + av.suggest.slice(0, 2).map(proLink).join(', ') + '. ';
+                if (av.nextFreeDate && av.nextFreeDate !== date) {
+                    html += 'First free: <a href="#" ' + link + ' onclick="setAvailDate(\'' + ctx + '\', \'' + av.nextFreeDate + '\'); return false;">' + fmtDate(av.nextFreeDate) + '</a>. ';
+                }
+                html += 'You can still send the request — ' + esc(pro.short) + ' will confirm or decline.';
+            } else if (!pro && av.blocked.length) {
+                cls = 'warn'; icon = 'fa-triangle-exclamation';
+                const names = av.blocked.slice(0, 2).map(p => esc(p.name)).join(', ') + (av.blocked.length > 2 ? ' +' + (av.blocked.length - 2) + ' more' : '');
+                html = 'Already booked ' + fmtDate(date) + ': <strong>' + names + '</strong>. ';
+                if (av.free.length) html += 'Free that day: ' + av.free.slice(0, 2).map(proLink).join(', ') + '. ';
+                if (av.nextFreeDate && av.nextFreeDate !== date) {
+                    html += 'Earliest availability: <a href="#" ' + link + ' onclick="setAvailDate(\'' + ctx + '\', \'' + av.nextFreeDate + '\'); return false;">' + fmtDate(av.nextFreeDate) + '</a>. ';
+                }
+                html += 'Unbooked pros will still receive your request.';
+            } else if (pro) {
+                cls = 'ok'; icon = 'fa-circle-check';
+                html = '<strong>' + esc(pro.name) + '</strong> looks free on ' + fmtDate(date) + '.';
+            }
+            if (!cls) return;
+            box.className = 'date-status ' + cls;
+            box.style.display = '';
+            box.innerHTML = '<i class="fa-solid ' + icon + '" style="margin-top: 3px;"></i><span>' + html + '</span>';
+        }
+
+        // Jump to the next free date from an availability hint (context-aware)
+        function setAvailDate(ctx, iso) {
+            if (ctx === 'puModal') {
+                document.getElementById('puDate').value = iso;
+                puDateStatus();
+            } else {
+                document.getElementById('jobDate').value = iso;
+                if (ctx === 'bkModal') {
+                    closeBookingModal();
+                    processAssistantRequest(); // rebuild lastBooking from the updated form
+                    openBookingModal();
+                } else formAvailRefresh();
+            }
+        }
+
+        function formAvailRefresh() {
+            renderAvailStatus('formAvailStatus', document.getElementById('jobType').value || null, document.getElementById('jobDate').value || '', null, 'form');
+        }
+        document.getElementById('jobDate').addEventListener('change', formAvailRefresh);
+        document.getElementById('jobType').addEventListener('change', formAvailRefresh);
+
+        // ===== Recent requests (device memory, localStorage) =====
+        const RECENT_KEY = 'sc_recent_requests';
+
+        function rememberRecent(ref, b) {
+            try {
+                const list = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+                list.unshift({
+                    ref,
+                    cat: b.job,
+                    service: b.info.name,
+                    location: b.location,
+                    date: b.date || '',
+                    amount: '',
+                    at: Date.now()
+                });
+                localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, 5)));
+            } catch (e) { /* best-effort */ }
+        }
+
+        function getRecent() {
+            try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch (e) { return []; }
+        }
+
+        function renderRecent() {
+            const wrap = document.getElementById('recentRequestsWrap');
+            const box = document.getElementById('recentRequests');
+            const list = getRecent();
+            if (!list.length) { wrap.style.display = 'none'; return; }
+            wrap.style.display = 'block';
+            box.innerHTML = list.map(r => {
+                const live = SC.getBooking(r.ref);
+                const status = live ? live.status : 'sent';
+                const pillCls = ({ sent: 'st-quoted', matching: 'st-quoted', quoted: 'st-quoted', booked: 'st-booked', in_progress: 'st-in_progress', completed: 'st-completed', disputed: 'st-disputed', cancelled: 'st-cancelled' }[status] || 'st-quoted');
+                const label = status === 'sent' ? 'sent' : status.replace('_', ' ');
+                return '<div class="recent-row" onclick="location.href=\'track.html?ref=' + r.ref + '\'" role="button" tabindex="0">' +
+                    '<div><strong>' + r.ref + '</strong> <span class="status-pill ' + pillCls + '">' + label + '</span><br>' +
+                    '<small>' + esc(r.service) + ' · ' + esc(r.location) + (r.date ? ' · ' + fmtDate(r.date) : '') + '</small></div>' +
+                    '<i class="fa-solid fa-chevron-right"></i></div>';
+            }).join('');
+        }
+
+        document.getElementById('recentClear').addEventListener('click', e => {
+            e.stopPropagation();
+            localStorage.removeItem(RECENT_KEY);
+            renderRecent();
+        });
+
+        renderRecent();
+
+        function buildBookingMessage(b, ref) {
+            return 'Hello SkillConnect! New booking request:' +
+                '%0A%0A*Ref:* ' + encodeURIComponent(ref) +
+                '%0A*Name:* ' + encodeURIComponent(b.name) +
+                '%0A*Phone:* ' + encodeURIComponent(b.phone) +
+                '%0A*Service:* ' + encodeURIComponent(b.info.name) +
+                '%0A*Date:* ' + encodeURIComponent(b.date ? fmtDate(b.date) : 'Flexible') +
+                '%0A*Location:* ' + encodeURIComponent(b.location) +
+                '%0A*Urgency:* ' + encodeURIComponent(b.uInfo.label) +
+                '%0A*Budget:* ' + encodeURIComponent(b.budget ? 'GH₵ ' + b.budget : 'Not stated') +
+                '%0A*Details:* ' + encodeURIComponent(b.details || '-');
+        }
+
+        function openBookingModal() {
+            if (!lastBooking) return;
+            const b = lastBooking;
+            const dateInfo = dateStatusInfo(b.date, b.urgency);
+            lastRef = generateRef();
+
+            const row = (k, v) => '<div class="bk-row"><span class="k">' + k + '</span><span class="v">' + esc(v) + '</span></div>';
+            document.getElementById('bkSummary').innerHTML =
+                row('Name', b.name) +
+                row('Phone / WhatsApp', b.phone) +
+                row('Service', b.info.name) +
+                row('Date', b.date ? fmtDate(b.date) : 'Flexible') +
+                row('Location', b.location) +
+                row('Urgency', b.uInfo.label) +
+                row('Budget', b.budget ? 'GH₵ ' + Number(b.budget).toLocaleString() : 'Not stated') +
+                row('Details', b.details || '—');
+
+            const st = document.getElementById('bkDateStatus');
+            st.className = 'date-status ' + dateInfo.cls;
+            st.innerHTML = '<i class="fa-solid ' + dateInfo.icon + '" style="margin-top: 3px;"></i><span>' + esc(dateInfo.text) + '</span>';
+            renderAvailStatus('bkAvailStatus', b.job, b.date, null, 'bkModal');
+
+            document.getElementById('bkRef').textContent = lastRef;
+
+            const waBtn = document.getElementById('bkWhatsAppBtn');
+            waBtn.disabled = !dateInfo.valid;
+            waBtn.onclick = dateInfo.valid
+                ? () => {
+                    // Create the booking in the shared store: matching, quotes, escrow pipeline
+                    const booking = SC.createBooking(b);
+                    SC.systemChat(booking.id, 'Customer confirmed request via website. Reference ' + booking.id + '.');
+                    lastRef = booking.id;
+                    document.getElementById('bkRef').textContent = booking.id;
+                    rememberRecent(booking.id, b);
+                    renderRecent();
+
+                    /* No pro matched within the budget: offer the calm
+                       professional alternative (manual search by our team) —
+                       the booking and its reference stay live either way. */
+                    if (booking.matchedProIds.length === 0) {
+                        const bud = b.budget ? 'GH\u20B5 ' + Number(b.budget).toLocaleString() : '';
+                        UI.alert(
+                            'No verified pro is available within ' + (bud ? bud : 'your budget') + ' right now.\n\n' +
+                            'Your request is saved with reference <b>' + esc(booking.id) + '</b>. Here is what happens next:\n' +
+                            '\u2022 Our team runs a manual search among verified pros and reaches out to you directly.\n' +
+                            '\u2022 Or raise your budget on the Track page to widen the match instantly.\n\n' +
+                            'Nothing is charged until you accept a quote and pay into escrow.',
+                            { title: 'Saved \u2014 Manual Search Underway', type: 'success', okLabel: 'Got It' }
+                        );
+                    }
+
+                    window.open('track.html?ref=' + booking.id, '_blank');
+                    window.open('https://wa.me/233244211595?text=' + buildBookingMessage(b, booking.id), '_blank');
+                    UI.toast('Request sent! Ref ' + booking.id + ' \u2014 our dispatch team will confirm on WhatsApp.', 'success', 4200);
+                    closeBookingModal();
+                }
+                : null;
+
+            document.getElementById('bookingModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeBookingModal() {
+            document.getElementById('bookingModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function copyRef() {
+            const btn = document.getElementById('bkCopyBtn');
+            const done = () => {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Ref'; }, 1500);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(lastRef).then(done).catch(() => {});
+            }
+        }
+
+        // Restore filters from a shared URL (e.g. index.html?cat=mc&city=Accra&avail=available)
+        (function applyUrlFilters() {
+            const p = new URLSearchParams(location.search);
+            const set = (id, key) => { const v = p.get(key); if (v !== null && v !== '') document.getElementById(id).value = v; };
+            set('filterSearch', 'q');
+            set('filterCategory', 'cat');
+            set('filterCity', 'city');
+            set('filterPrice', 'price');
+            set('filterAvail', 'avail');
+            set('filterSort', 'sort');
+            const page = parseInt(p.get('page') || '1', 10);
+            if (page > 1) {
+                /* Deep links restore at most the homepage preview cap (18);
+                   beyond that the shared link belongs to the directory page. */
+                visibleCount = Math.min(PROS.length, Math.min(page, HOME_MAX_CLICKS + 1) * PAGE_SIZE);
+                homeClicks = Math.max(0, Math.ceil((visibleCount - PAGE_SIZE) / PAGE_SIZE));
+            }
+
+            // ?focus=directory (from the shared nav's Search link): scroll to the
+            // directory search bar and flash it so the user lands on the search
+            if (p.has('focus') && p.get('focus') === 'directory') {
+                setTimeout(() => {
+                    const bar = document.getElementById('filterSearch');
+                    if (!bar) return;
+                    const wrap = bar.closest('.filter-bar') || bar;
+                    const goTo = () => {
+                        const y = bar.getBoundingClientRect().top + window.scrollY - (window.innerHeight / 2) + 40;
+                        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+                    };
+                    goTo();
+                    // smooth scrolling can be disabled (reduced motion, older browsers) — verify and fall back
+                    setTimeout(() => {
+                        if (window.scrollY < 50) {
+                            const y = bar.getBoundingClientRect().top + window.scrollY - (window.innerHeight / 2) + 40;
+                            window.scrollTo(0, Math.max(0, y));
+                        }
+                    }, 600);
+                    wrap.style.boxShadow = '0 0 0 3px var(--primary-yellow)';
+                    setTimeout(() => { wrap.style.boxShadow = ''; }, 1800);
+                }, 350);
+            }
+            // ?pro=PXXXX (from verification notifications / shared profile links):
+            // open that pro's profile modal once the directory has rendered
+            const proParam = p.get('pro');
+            if (proParam && SC.getPro(proParam.toUpperCase())) {
+                setTimeout(() => {
+                    showDirectoryFilters();
+                    openProfileModal(proParam.toUpperCase());
+                }, 350);
+            }
+        })();
+
+        // Populate the city selector from the shared Ghana list (sc-cities.js)
+        (function fillCities() {
+            const sel = document.getElementById('filterCity');
+            if (!sel || !window.SC_CITIES) return;
+            SC_CITIES.forEach(c => {
+                const o = document.createElement('option');
+                o.value = c[0]; o.textContent = c[0];
+                sel.appendChild(o);
+            });
+        })();
+
+        // Initial render of the professionals directory + availability chip
+        renderPros();
+        renderAvailChip();
+
+        // Keep the directory in sync when the store changes in another tab (e.g. admin verifies an application)
+        window.addEventListener('storage', e => {
+            if (e.key === 'sc_db_v1') { PROS = SC.getPros(); visibleCount = PAGE_SIZE; renderPros(); renderAvailChip(); }
+        });
+        window.addEventListener('focus', () => {
+            PROS = SC.getPros();
+            renderPros();
+            renderAvailChip();
+        });
+
+        // Booking modal wiring: overlay & ESC to close, block past dates in the picker
+        document.getElementById('bookingModal').addEventListener('click', e => {
+            if (e.target.id === 'bookingModal') closeBookingModal();
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeBookingModal();
+        });
+        document.getElementById('jobDate').min = todayISO();
+
+        // Pro booking modal wiring: overlay & ESC to close
+        document.getElementById('proBookModal').addEventListener('click', e => {
+            if (e.target.id === 'proBookModal') closeProModal();
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && document.getElementById('proBookModal').classList.contains('open')) closeProModal();
+        });
+
+        /* ================= AI booking assistant =================
+           One line of free text → the assistant extracts service, date,
+           location, budget, urgency, name and phone, shows a transparent
+           preview (evidence chips + anything it could not read), and fills
+           the normal form. Nothing is booked until the customer confirms
+           through the standard Confirm & Request Match flow — the same
+           matching engine, escrow and dispute machinery as a manual entry. */
+        let aiParsed = null;
+
+        async function aiParseClick() {
+            const input = document.getElementById('aiInput');
+            const btn = document.getElementById('aiParseBtn');
+            const box = document.getElementById('aiResult');
+            const text = (input.value || '').trim();
+            if (!text) {
+                UI.alert('Type your request first — e.g. "MC for my wedding this Saturday in Takoradi, budget 2500".', { title: 'One Line, Please', type: 'error', okLabel: 'Okay' });
+                return;
+            }
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Reading…';
+            try {
+                const r = await fetch('/api/aiParseBooking', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                }).then(x => x.json());
+                if (!r.ok) {
+                    UI.alert(esc(r.error || 'Could not read that request.'), { title: 'Let Me Try Again', type: 'error', okLabel: 'Okay' });
+                    return;
+                }
+                aiParsed = r.parsed;
+                /* Budget reality-check rides along: if the parse found a
+                   category, ask the live pool what that budget would get. */
+                aiParsed.outcome = null;
+                if (aiParsed.cat) {
+                    try {
+                        const o = await fetch('/api/budgetOutcome', {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ cat: aiParsed.cat, budget: aiParsed.budget || '' })
+                        }).then(x => x.json());
+                        if (o.ok && o.outcome) aiParsed.outcome = o.outcome;
+                    } catch (e) { /* optional */ }
+                }
+                renderAiPreview();
+                box.style.display = 'block';
+                box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } catch (e) {
+                UI.alert('The assistant is unreachable right now — please fill the form below instead.', { title: 'Assistant Offline', type: 'error', okLabel: 'Okay' });
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Read It';
+            }
+        }
+
+        function aiChip(ok, label, value) {
+            return '<span class="ai-chip ' + (ok ? 'ok' : 'miss') + '"><i class="fa-solid ' + (ok ? 'fa-circle-check' : 'fa-circle-question') + '"></i> ' + label + ': ' + (ok ? '<strong>' + esc(value) + '</strong>' : 'not found') + '</span>';
+        }
+
+        function renderAiPreview() {
+            const p = aiParsed;
+            const box = document.getElementById('aiResult');
+            const confPct = Math.round((p.confidence || 0) * 100);
+            const dateNice = p.date ? SC.fmtDate(p.date) : '';
+            const missingAdvice = p.missing && p.missing.length
+                ? '<p style="font-size: 0.72rem; color: var(--text-faint); margin: 8px 0 0;">Fields marked “not found” stay empty — check them on the form before confirming.</p>'
+                : '';
+            /* Price guidance: live outcome + typical band for this category */
+            const stats = p.cat && SC.PRICE_STATS ? SC.PRICE_STATS[p.cat] : null;
+            let guidanceHtml = '';
+            if (p.outcome && p.outcome.message) {
+                const chip = guidanceChip(p.outcome.level);
+                guidanceHtml = '<div class="' + chip.cls + '" style="margin: 4px 0 10px;"><i class="fa-solid ' + chip.icon + '" style="margin-top: 3px;"></i><span>' + esc(p.outcome.message);
+                if (stats && stats.observed && stats.observed.pros >= 2) {
+                    guidanceHtml += ' Typical verified rates today: <strong>GH\u20B5 ' + stats.observed.lo.toLocaleString() + ' – ' + stats.observed.hi.toLocaleString() + '</strong>.';
+                }
+                guidanceHtml += '</span></div>';
+            } else if (stats && stats.observed && stats.observed.pros >= 2) {
+                guidanceHtml = '<div class="date-status ok" style="margin: 4px 0 10px;"><i class="fa-solid fa-tag"></i><span>Typical verified ' + esc(stats.name) + ' rates today: <strong>GH\u20B5 ' + stats.observed.lo.toLocaleString() + ' – ' + stats.observed.hi.toLocaleString() + '</strong>.</span></div>';
+            }
+            box.innerHTML =
+                '<div style="font-size: 0.78rem; font-weight: 700; color: var(--accent-text); margin-bottom: 8px;"><i class="fa-solid fa-circle-check"></i> Here is what I understood <span style="color: var(--text-faint); font-weight: 400;">(' + confPct + '% confident' + (p.engine === 'rules+llm' ? ' · AI-refined' : '') + ')</span></div>' +
+                '<div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">' +
+                    aiChip(!!p.cat, 'Service', p.cat ? (CATEGORY_INFO[p.cat] || {}).name : '') +
+                    aiChip(!!p.date, 'Date', dateNice) +
+                    aiChip(!!p.location, 'Location', p.location) +
+                    aiChip(!!p.budget, 'Budget', p.budget ? 'GH\u20B5 ' + Number(p.budget).toLocaleString() : '') +
+                    aiChip(!!p.name, 'Name', p.name) +
+                    aiChip(!!p.phone, 'Phone', p.phone) +
+                    (p.urgency !== 'planned'
+                        ? aiChip(true, 'Urgency', (URGENCY_INFO[p.urgency] || URGENCY_INFO.planned).label)
+                        : aiChip(true, 'Urgency', 'Planned (default)')) +
+                '</div>' +
+                guidanceHtml +
+                missingAdvice +
+                '<div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">' +
+                    '<button type="button" class="btn-submit" style="width: auto; padding: 10px 20px;" onclick="aiApplyToForm()"><i class="fa-solid fa-arrow-down"></i> Use This In The Form</button>' +
+                    '<button type="button" class="btn-edit" style="width: auto;" onclick="document.getElementById(\'aiResult\').style.display=\'none\'">Discard</button>' +
+                '</div>';
+        }
+
+        function aiApplyToForm() {
+            if (!aiParsed) return;
+            const set = (id, v) => { const el = document.getElementById(id); if (el && v) el.value = v; };
+            set('fullName', aiParsed.name);
+            set('phoneNum', aiParsed.phone);
+            if (aiParsed.cat && CATEGORY_INFO[aiParsed.cat]) set('jobType', aiParsed.cat);
+            set('jobDate', aiParsed.date);
+            set('jobLocation', aiParsed.location);
+            set('budget', aiParsed.budget);
+            set('urgency', aiParsed.urgency || 'planned');
+            // Details: keep the original sentence so the pro sees the ask verbatim
+            const cur = document.getElementById('description').value.trim();
+            if (!cur && aiParsed.details) set('description', aiParsed.details.replace(/^From: .*— /, ''));
+            document.getElementById('aiResult').style.display = 'none';
+            if (typeof formAvailRefresh === 'function') formAvailRefresh();
+            document.getElementById('fullName').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            UI.toast('Form filled from your description — check the highlighted fields, then confirm below.', 'success', 4200);
+        }
+
+        document.getElementById('aiInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') { e.preventDefault(); aiParseClick(); }
+        });
+
+        /* ================= AI price guidance =================
+           Live answer to "what will my budget actually get me?" — computed
+           SERVER-SIDE from the real verified pool (same floor the matching
+           engine uses), so the prediction can't drift from reality. Fires
+           as the customer picks a category / types a budget, BEFORE any
+           submission — the no-match killer. */
+        let budgetGuidanceTimer = null;
+        function budgetGuidanceDebounced() {
+            clearTimeout(budgetGuidanceTimer);
+            budgetGuidanceTimer = setTimeout(budgetGuidanceRefresh, 450);
+        }
+
+        function guidanceChip(level, text) {
+            const map = {
+                strong: { cls: 'ok', icon: 'fa-circle-check' },
+                fair: { cls: 'ok', icon: 'fa-circle-check' },
+                thin: { cls: 'warn', icon: 'fa-triangle-exclamation' },
+                unlikely: { cls: 'warn', icon: 'fa-triangle-exclamation' },
+                none: { cls: 'ok', icon: 'fa-circle-info' }
+            };
+            const m = map[level] || map.none;
+            return { cls: 'date-status ' + m.cls, icon: m.icon };
+        }
+
+        async function budgetGuidanceRefresh() {
+            const box = document.getElementById('budgetGuidance');
+            if (!box) return;
+            const cat = document.getElementById('jobType').value;
+            const budget = document.getElementById('budget').value;
+            if (!cat) { box.style.display = 'none'; return; }
+            try {
+                const r = await fetch('/api/budgetOutcome', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cat: cat, budget: budget })
+                }).then(x => x.json());
+                if (!r.ok || !r.outcome || !r.outcome.message) { box.style.display = 'none'; return; }
+                const o = r.outcome;
+                const chip = guidanceChip(o.level);
+                const stats = SC.PRICE_STATS && SC.PRICE_STATS[cat];
+                let html = '<i class="fa-solid ' + chip.icon + '" style="margin-top: 3px;"></i><span>' + esc(o.message);
+                if (stats && stats.observed && stats.observed.pros >= 2) {
+                    html += ' Typical verified rates today: <strong>GH\u20B5 ' + stats.observed.lo.toLocaleString() + ' – ' + stats.observed.hi.toLocaleString() + '</strong>';
+                    if (stats.acceptedAvg) html += ' (recent accepted quotes average GH\u20B5 ' + stats.acceptedAvg.toLocaleString() + ')';
+                    html += '.';
+                }
+                html += '</span>';
+                box.className = chip.cls;
+                box.style.display = 'flex';
+                box.innerHTML = html;
+            } catch (e) {
+                box.style.display = 'none';   /* guidance is optional decoration */
+            }
+        }
+        document.getElementById('jobType').addEventListener('change', budgetGuidanceDebounced);
+
+        function processAssistantRequest() {
+            const name = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phoneNum').value.trim();
+            const job = document.getElementById('jobType').value;
+            const date = document.getElementById('jobDate').value;
+            const location = document.getElementById('jobLocation').value.trim();
+            const budget = document.getElementById('budget').value;
+            const urgency = document.getElementById('urgency').value;
+            const details = document.getElementById('description').value.trim();
+
+            if (!name || !phone || !job || !location) {
+                UI.alert('Please fill in your name, phone number, service category, and location.', { title: 'Almost There', type: 'error', icon: 'triangle-exclamation', okLabel: 'Fix It' });
+                return;
+            }
+
+            const info = CATEGORY_INFO[job];
+            const uInfo = URGENCY_INFO[urgency];
+            const [min, max] = info.range;
+
+            // Budget guidance logic — the market range is highlighted and linked
+            // to the matching row of the pricing page table
+            const rangeTxt = 'GH₵ ' + min.toLocaleString() + ' – ' + max.toLocaleString();
+            const rangeLink = '<a class="range-link" href="pricing.html#price-' + job + '" title="See the full pricing table for ' + esc(info.name) + '">' + rangeTxt + ' <i class="fa-solid fa-table-list"></i></a>';
+            let budgetHint;
+            if (budget && Number(budget) > 0) {
+                const b = Number(budget);
+                if (b < min) {
+                    budgetHint = `Note: Your budget of <strong class="budget-val">GH₵ ${b.toLocaleString()}</strong> is below the typical range ${rangeLink}. We'll still match you, but expect basic scope or negotiate inclusions.`;
+                } else if (b > max) {
+                    budgetHint = `Great news: Your budget of <strong class="budget-val">GH₵ ${b.toLocaleString()}</strong> is above the typical range ${rangeLink} — you can afford premium/top-rated pros or extra services.`;
+                } else {
+                    budgetHint = `Your budget of <strong class="budget-val">GH₵ ${b.toLocaleString()}</strong> sits within the fair market range ${rangeLink}. Expect solid mid-to-top tier professionals.`;
+                }
+            } else {
+                budgetHint = `Typical market rate for ${esc(info.name)} in Ghana: ${rangeLink}. Share a budget to get a sharper match.`;
+            }
+
+            // Display Assistant Analysis
+            document.getElementById('responseText').innerText = info.advice + " " + uInfo.note;
+            document.getElementById('budgetHint').innerHTML = budgetHint;
+            document.getElementById('assistantResponse').style.display = 'block';
+
+            // Stash the request; confirmation & WhatsApp dispatch happen in the modal
+            lastBooking = { name, phone, info, job, date, location, budget, urgency, uInfo, details };
+        }
+    </script>
+</body>
+</html>

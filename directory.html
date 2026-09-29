@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>try{if(localStorage.getItem('sc_theme')!=="dark")document.documentElement.setAttribute("data-theme","light")}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse All Professionals | SKILLCONNECT GH</title>
+    <meta name="description" content="Search and compare every verified professional on SkillConnect — Event MCs, Artists, Photographers, Videographers, DJs, Caterers, Decorators and Handy Workers across Ghana.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#FFCC00">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css?v=17">
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="site-header" data-partial></header>
+
+    <!-- Page Hero -->
+    <section class="hero" style="padding: 42px 5% 34px;">
+        <h2>BROWSE ALL PROFESSIONALS</h2>
+        <p>Every verified pro on SkillConnect — filter by category, city, price and availability. The homepage shows a preview; this is the full, always-current list.</p>
+    </section>
+
+    <!-- Directory -->
+    <div class="main-container" style="padding-top: 26px;">
+        <div class="left-column" style="flex: 1 1 100%; max-width: none;">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-award"></i> Search &amp; Book Verified Professionals
+                </div>
+
+                <div class="filter-bar">
+                    <input type="text" id="filterSearch" placeholder="Search name or skill..." aria-label="Search professionals">
+                    <select id="filterCategory" aria-label="Filter by category">
+                        <option value="">All Categories</option>
+                        <option value="mc">Event MCs</option>
+                        <option value="artist">Music Artists / Bands</option>
+                        <option value="photographer">Photographers</option>
+                        <option value="videographer">Videographers</option>
+                        <option value="dj">DJs / Sound</option>
+                        <option value="caterer">Caterers</option>
+                        <option value="decorator">Decorators</option>
+                        <option value="handy">Handy Workers</option>
+                    </select>
+                    <select id="filterCity" aria-label="Filter by city">
+                        <option value="">All Cities</option>
+                    </select>
+                    <select id="filterPrice" aria-label="Filter by price range">
+                        <option value="">Any Price</option>
+                        <option value="0-500">Under GH₵ 500</option>
+                        <option value="500-1000">GH₵ 500 – 1,000</option>
+                        <option value="1000-2500">GH₵ 1,000 – 2,500</option>
+                        <option value="2500-5000">GH₵ 2,500 – 5,000</option>
+                        <option value="5000+">GH₵ 5,000+</option>
+                    </select>
+                    <select id="filterAvail" aria-label="Filter by availability">
+                        <option value="">Any Availability</option>
+                        <option value="available">Available Today</option>
+                        <option value="booked">Booked</option>
+                        <option value="onrequest">On Request</option>
+                    </select>
+                    <select id="filterSort" aria-label="Sort professionals">
+                        <option value="recommended">Sort: Recommended</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                        <option value="rating">Highest Rated</option>
+                        <option value="bookings">Most Booked</option>
+                    </select>
+                </div>
+
+                <!-- AI sentence → filters: the same booking-assistant parser
+                     (aiParseBooking) reads a typed sentence and translates it
+                     into the structured filters above. Offer-only: the chip
+                     appears when the search box holds a sentence-like input. -->
+                <!-- Browse-time budget reality check: while the customer types
+                     a sentence with a budget cue, the same /api/budgetOutcome
+                     engine as the homepage strips warns BEFORE they press
+                     Enter (client-side cue detection — no parser call per
+                     keystroke, so the rate-limited aiParseBooking stays free
+                     for the actual apply). -->
+                <div id="aiBudgetGuidance" class="date-status ok" style="display:none; margin-top: 10px;"></div>
+                <div id="aiFilterRow" style="display:none; align-items:center; gap:10px; margin-top: 10px;">
+                    <button type="button" class="btn-clear" id="aiFilterBtn" style="border: 1px dashed var(--primary-yellow);">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> <span id="aiFilterLabel">Filter with the assistant</span>
+                    </button>
+                    <small style="color: var(--text-muted);">Looks like a sentence — press <strong>Enter</strong> or tap to translate it into filters.</small>
+                </div>
+                <div id="aiFilterStatus" class="date-status ok" style="display:none; margin-top: 10px;"></div>
+
+                <div class="results-meta">
+                    <span id="resultsCount"></span>
+                    <button type="button" class="btn-clear" id="clearFilters"><i class="fa-solid fa-rotate-left"></i> Reset Filters</button>
+                    <button type="button" class="btn-clear" id="shareFilters" title="Copy a link to this filtered view"><i class="fa-solid fa-link"></i> Copy Link</button>
+                </div>
+
+                <div class="talent-grid" id="talentGrid"></div>
+
+                <div id="noResults" class="no-results">
+                    <i class="fa-solid fa-user-slash"></i>
+                    <p><strong>No professionals match your filters.</strong></p>
+                    <p style="font-size: 0.85rem; margin-top: 5px;">Try widening the price range or picking another city — or send us a custom request on WhatsApp and we will match one for you.</p>
+                </div>
+
+                <div class="load-more-row" id="loadMoreRow">
+                    <button type="button" class="btn-clear btn-load-more" id="loadMoreBtn" style="display:none;"><i class="fa-solid fa-circle-chevron-down"></i> Load More</button>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 16px;">
+                <div class="card-title"><i class="fa-solid fa-circle-info"></i> Booking On SkillConnect</div>
+                <p class="row-sub">Every professional here passed ID, portfolio and skill checks. Money moves through escrow and is only released when the job is done — questions or problems go through our dispute team.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pro-specific Booking Modal (from 'Request [Name]' card buttons) -->
+    <div class="modal-overlay" id="proBookModal" role="dialog" aria-modal="true">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3 id="puTitle"><i class="fa-solid fa-calendar-check"></i> Request Pro</h3>
+                <button type="button" class="modal-close" onclick="closeProModal()" aria-label="Close">&times;</button>
+            </div>
+
+            <div id="puProLine" class="pu-pro-line"></div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="puName">Your Name</label>
+                    <input type="text" id="puName" placeholder="e.g. Ama Serwaa">
+                </div>
+                <div class="form-group">
+                    <label for="puPhone">Phone / WhatsApp</label>
+                    <input type="tel" id="puPhone" placeholder="e.g. 024 421 1595">
+                </div>
+                <div class="form-group">
+                    <label for="puDate">Date</label>
+                    <input type="date" id="puDate">
+                </div>
+                <div class="form-group">
+                    <label for="puLocation">Location</label>
+                    <input type="text" id="puLocation" placeholder="e.g. Labone, Accra">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="puBudget">Budget (GH₵) — Optional</label>
+                <input type="number" id="puBudget" min="0" placeholder="e.g. 1500">
+                <!-- AI price guidance: the parsed/live budget is compared to
+                     the quote pool for THIS pro's category before the request
+                     goes out (same engine as the homepage guidance chip). -->
+                <div id="puBudgetGuidance" class="date-status ok" style="display: none; margin-top: 8px;"></div>
+            </div>
+            <div class="form-group">
+                <label for="puDetails">Details</label>
+                <textarea id="puDetails" rows="2"></textarea>
+            </div>
+
+            <div id="puDateStatus" class="date-status ok"></div>
+
+            <div id="puAvailStatus" class="date-status ok" style="display: none;"></div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-wa-send" id="puWaBtn">
+                    <i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i> Send Request via WhatsApp
+                </button>
+                <button type="button" class="btn-edit" onclick="closeProModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pro profile modal + lightbox are auto-injected by pro-profile.js -->
+
+    <!-- Floating WhatsApp & Phone Call Quick Buttons -->
+    <div class="floating-contact-bar">
+        <a href="https://wa.me/233244211595" class="float-btn whatsapp" target="_blank" title="Chat on WhatsApp">
+            <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <a href="tel:+233244211595" class="float-btn phone" title="Call Us Now">
+            <i class="fa-solid fa-phone"></i>
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <footer></footer>
+
+    <!-- Shared Data Layer -->
+    <script src="data-store.js?v=29"></script>
+    <script src="sc-cities.js?v=2"></script>
+    <script src="pro-cards.js?v=1"></script>
+    <script>window.SC_PARTIALS = {};</script>
+    <script src="header.js?v=3"></script>
+    <script src="ui.js?v=4"></script>
+    <script src="pro-profile.js?v=6"></script>
+    <script src="site-partials.js?v=10"></script>
+    <script src="nav.js?v=3"></script>
+    <script>
+        // ===== Full professionals directory (uncapped pagination) =====
+        const PAGE_SIZE = 12;
+        let PROS = SC.getPros();
+        let visibleCount = PAGE_SIZE;
+
+        const PRICE_RANGES = {
+            '0-500': [0, 500],
+            '500-1000': [500, 1000],
+            '1000-2500': [1000, 2500],
+            '2500-5000': [2500, 5000],
+            '5000+': [5000, Infinity]
+        };
+
+        function esc(s) { return SCProCards.esc(s); }
+
+        /* ===== Pro-specific booking modal ('Request [Name]' buttons) =====
+           Same flow as the homepage: creates a real escrow-backed booking
+           pointed at the requested pro, then opens WhatsApp with a summary. */
+        let proModalPro = null;
+
+        function openProModal(proId) {
+            const p = SC.getPro(proId);
+            if (!p) return;
+            proModalPro = p;
+            const av = SC.proAvailability(p);
+            const avMeta = SC.AVAIL_META[av];
+
+            document.getElementById('puTitle').innerHTML = '<i class="fa-solid fa-calendar-check"></i> Request ' + esc(p.name);
+            document.getElementById('puProLine').innerHTML =
+                '<i class="fa-solid ' + (SC.PRO_ICONS[p.cat] || 'fa-user-tie') + '"></i> ' +
+                '<strong>' + esc(p.role) + '</strong> · ' + esc(p.city) +
+                ' · ⭐ ' + p.rating.toFixed(1) + ' · From ' + SC.cedi(p.price) + '/' + esc(p.unit) +
+                ' <span class="avail-badge ' + avMeta.cls + '" style="position: static; display: inline-flex; padding: 3px 10px; font-size: 0.6rem; margin-left: 6px;"><i class="fa-solid ' + (av === 'booked' ? 'fa-calendar-xmark' : (av === 'available' ? 'fa-circle-check' : 'fa-clock')) + '"></i> ' + avMeta.label + '</span>' +
+                (av === 'booked' ? '<div style="font-size: 0.72rem; color: var(--warn-amber-text); margin-top: 6px;"><i class="fa-solid fa-triangle-exclamation"></i> Marked booked today — pick another date or send the request anyway.</div>' : '');
+
+            document.getElementById('puName').value = '';
+            document.getElementById('puPhone').value = '';
+            document.getElementById('puDate').value = '';
+            document.getElementById('puLocation').value = '';
+            document.getElementById('puBudget').value = '';
+            document.getElementById('puDetails').value = 'Requesting ' + p.name + ' (' + p.id + ') for ' + ((SC.CATEGORY_INFO[p.cat] || {}).name || p.role) + '.';
+
+            const dateEl = document.getElementById('puDate');
+            dateEl.min = SC.todayISO();
+            puDateStatus();
+            dateEl.oninput = puDateStatus;
+            document.getElementById('puBudgetGuidance').style.display = 'none';   /* fresh modal, no stale guidance */
+            document.getElementById('puWaBtn').onclick = sendProRequest;
+
+            document.getElementById('proBookModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function puDateStatus() {
+            const info = dateStatusInfo(document.getElementById('puDate').value);
+            const st = document.getElementById('puDateStatus');
+            st.className = 'date-status ' + info.cls;
+            st.innerHTML = '<i class="fa-solid ' + info.icon + '" style="margin-top: 3px;"></i><span>' + esc(info.text) + '</span>';
+            renderAvailStatus('puAvailStatus', proModalPro ? proModalPro.cat : null, document.getElementById('puDate').value, proModalPro ? proModalPro.id : null, 'puModal');
+            document.getElementById('puWaBtn').disabled = !info.valid;
+        }
+
+        function closeProModal() {
+            document.getElementById('proBookModal').classList.remove('open');
+            document.body.style.overflow = '';
+            proModalPro = null;
+        }
+
+        function sendProRequest() {
+            const p = proModalPro;
+            if (!p) return;
+            const name = document.getElementById('puName').value.trim();
+            const phone = document.getElementById('puPhone').value.trim();
+            const date = document.getElementById('puDate').value;
+            const location = document.getElementById('puLocation').value.trim();
+            if (!name || !phone || !location) {
+                UI.alert('Please fill in your name, phone number and location so ' + esc(p.short) + ' can reach you.', { title: 'Missing Details', type: 'error', okLabel: 'Fix It' });
+                return;
+            }
+            const budget = document.getElementById('puBudget').value;
+            const details = document.getElementById('puDetails').value.trim();
+            const info = SC.CATEGORY_INFO[p.cat] || { name: p.role, advice: '' };
+            const uInfo = SC.URGENCY_INFO.planned;
+            const b = { name, phone, info, job: p.cat, date, location, budget, urgency: 'planned', uInfo, details, proId: p.id };
+
+            /* Budget guard: a stated budget below the pro's service charge is
+               blocked calmly — the customer picks an alternative instead. */
+            const budgetN = Number(budget) || 0;
+            if (budgetN > 0 && budgetN < p.price) {
+                UI.alert(
+                    esc(p.short) + '\'s service charge is ' + SC.cedi(p.price) + ' per booking, which is above your ' + SC.cedi(budgetN) + ' budget.\n\n' +
+                    'Two good options:\n' +
+                    '\u2022 Raise your budget to ' + SC.cedi(p.price) + ' and book ' + esc(p.short) + ' directly.\n' +
+                    '\u2022 Keep your budget and let SkillConnect match you with a verified pro within it \u2014 same quality standard, fair price.',
+                    {
+                        title: 'Budget Below Service Charge',
+                        type: 'error',
+                        okLabel: 'Got It'
+                    }
+                );
+                return;
+            }
+
+            const booking = SC.createBooking(b);
+            SC.systemChat(booking.id, 'Direct request for ' + p.name + ' (' + p.id + ') from the professionals directory.');
+            const msg = 'Hello SkillConnect! New booking request:' +
+                '%0A%0A*Ref:* ' + encodeURIComponent(booking.id) +
+                '%0A*Requested Pro:* ' + encodeURIComponent(p.name + ' (' + p.id + ')') +
+                '%0A*Name:* ' + encodeURIComponent(name) +
+                '%0A*Phone:* ' + encodeURIComponent(phone) +
+                '%0A*Service:* ' + encodeURIComponent(info.name) +
+                '%0A*Date:* ' + encodeURIComponent(date ? SC.fmtDate(date) : 'Flexible') +
+                '%0A*Location:* ' + encodeURIComponent(location) +
+                '%0A*Budget:* ' + encodeURIComponent(budget ? 'GH₵ ' + budget : 'Not stated') +
+                '%0A*Details:* ' + encodeURIComponent(details || '-');
+
+            window.open('track.html?ref=' + booking.id, '_blank');
+            window.open('https://wa.me/233244211595?text=' + msg, '_blank');
+            UI.toast('Request sent to ' + esc(p.short) + '! Ref ' + booking.id + '.', 'success', 4200);
+            closeProModal();
+        }
+
+        /* Date validation (same rules as the homepage form) */
+        function dateStatusInfo(dateStr) {
+            if (!dateStr) {
+                return { cls: 'ok', icon: 'fa-circle-info', text: 'No date set — your request is treated as flexible and pros will propose dates.', valid: true };
+            }
+            const t = SC.todayISO();
+            if (dateStr < t) {
+                return { cls: 'err', icon: 'fa-circle-xmark', text: '"' + SC.fmtDate(dateStr) + '" is in the past. Please pick today or a future date.', valid: false };
+            }
+            const diff = Math.round((new Date(dateStr + 'T00:00:00') - new Date(t + 'T00:00:00')) / 86400000);
+            return { cls: 'ok', icon: 'fa-circle-check', text: 'Valid: ' + SC.fmtDate(dateStr) + ' (in ' + diff + ' day' + (diff === 1 ? '' : 's') + ').', valid: true };
+        }
+
+        /* Date-aware availability hint ('puModal' context: links reopen the
+           profile modal, and the date-jump helper feeds the request modal) */
+        function renderAvailStatus(elId, cat, date, proId, ctx) {
+            const box = document.getElementById(elId);
+            if (!box) return;
+            box.style.display = 'none';
+            box.innerHTML = '';
+            if (!date) return;
+            const av = SC.dateAvailability({ cat: cat || null, date: date, proId: proId || null });
+            if (!av.ok) return;
+            const pro = proId ? SC.getPro(proId) : null;
+            const link = 'style="color: var(--accent-text); text-decoration: underline; cursor: pointer;"';
+            const proLink = pp => '<a href="#" ' + link + ' onclick="closeProModal(); openProfileModal(\'' + pp.id + '\'); return false;">' + esc(pp.name) + '</a>';
+            let cls = null, icon = null, html = '';
+
+            if (pro && av.blocked.some(x => x.id === proId)) {
+                cls = 'warn'; icon = 'fa-calendar-xmark';
+                html = '<strong>' + esc(pro.name) + '</strong> is already booked ' + SC.fmtDate(date) + '. ';
+                if (av.suggest.length) html += 'Free that day: ' + av.suggest.slice(0, 2).map(proLink).join(', ') + '. ';
+                if (av.nextFreeDate && av.nextFreeDate !== date) {
+                    html += 'First free: <a href="#" ' + link + ' onclick="setAvailDate(\'' + av.nextFreeDate + '\'); return false;">' + SC.fmtDate(av.nextFreeDate) + '</a>. ';
+                }
+                html += 'You can still send the request — ' + esc(pro.short) + ' will confirm or decline.';
+            } else if (!pro && av.blocked.length) {
+                cls = 'warn'; icon = 'fa-triangle-exclamation';
+                const names = av.blocked.slice(0, 2).map(x => esc(x.name)).join(', ') + (av.blocked.length > 2 ? ' +' + (av.blocked.length - 2) + ' more' : '');
+                html = 'Already booked ' + SC.fmtDate(date) + ': <strong>' + names + '</strong>. ';
+                if (av.free.length) html += 'Free that day: ' + av.free.slice(0, 2).map(proLink).join(', ') + '. ';
+                if (av.nextFreeDate && av.nextFreeDate !== date) {
+                    html += 'Earliest availability: <a href="#" ' + link + ' onclick="setAvailDate(\'' + av.nextFreeDate + '\'); return false;">' + SC.fmtDate(av.nextFreeDate) + '</a>. ';
+                }
+                html += 'Unbooked pros will still receive your request.';
+            } else if (pro) {
+                cls = 'ok'; icon = 'fa-circle-check';
+                html = '<strong>' + esc(pro.name) + '</strong> looks free on ' + SC.fmtDate(date) + '.';
+            }
+            if (!cls) return;
+            box.className = 'date-status ' + cls;
+            box.style.display = '';
+            box.innerHTML = '<i class="fa-solid ' + icon + '" style="margin-top: 3px;"></i><span>' + html + '</span>';
+        }
+
+        function setAvailDate(iso) {
+            document.getElementById('puDate').value = iso;
+            puDateStatus();
+        }
+
+        document.getElementById('proBookModal').addEventListener('click', e => {
+            if (e.target.id === 'proBookModal') closeProModal();
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && document.getElementById('proBookModal').classList.contains('open')) closeProModal();
+        });
+
+        function renderPros() {
+            const q = document.getElementById('filterSearch').value.trim().toLowerCase();
+            const cat = document.getElementById('filterCategory').value;
+            const city = document.getElementById('filterCity').value;
+            const price = document.getElementById('filterPrice').value;
+            const avail = document.getElementById('filterAvail').value;
+            const sort = document.getElementById('filterSort').value;
+
+            let list = PROS.filter(p => p.verified !== false);
+            if (q) list = list.filter(p => (p.name + ' ' + p.role + ' ' + (p.note || '')).toLowerCase().includes(q));
+            if (cat) list = list.filter(p => p.cat === cat);
+            if (city) list = list.filter(p => p.city === city);
+            if (price) { const r = PRICE_RANGES[price]; list = list.filter(p => p.price >= r[0] && p.price <= r[1]); }
+            if (avail) list = list.filter(p => SC.proAvailability(p) === avail);
+
+            if (sort === 'price-asc') list.sort((a, b) => a.price - b.price);
+            else if (sort === 'price-desc') list.sort((a, b) => b.price - a.price);
+            else if (sort === 'rating') list.sort((a, b) => b.rating - a.rating);
+            else if (sort === 'bookings') list.sort((a, b) => b.bookings - a.bookings);
+            else list.sort((a, b) => (b.rating - a.rating) || (b.bookings - a.bookings));
+
+            const grid = document.getElementById('talentGrid');
+            const emptyEl = document.getElementById('noResults');
+            document.getElementById('resultsCount').innerHTML =
+                `Showing <strong>${list.length}</strong> of ${PROS.length} verified professionals`;
+
+            const visible = list.slice(0, visibleCount);
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const remaining = list.length - visible.length;
+            loadMoreBtn.style.display = remaining > 0 ? 'inline-flex' : 'none';
+            loadMoreBtn.innerHTML = `<i class="fa-solid fa-circle-chevron-down"></i> Load More (${remaining} more)`;
+
+            grid.innerHTML = visible.map(p => SCProCards.cardHtml(p)).join('');
+            emptyEl.style.display = list.length ? 'none' : 'block';
+
+            // Persist filters + page to the URL for shareable views
+            const params = new URLSearchParams();
+            if (q) params.set('q', q);
+            if (cat) params.set('cat', cat);
+            if (city) params.set('city', city);
+            if (price) params.set('price', price);
+            if (avail) params.set('avail', avail);
+            if (sort && sort !== 'recommended') params.set('sort', sort);
+            const page = Math.max(1, Math.ceil(visibleCount / PAGE_SIZE));
+            if (page > 1) params.set('page', String(page));
+            const qs = params.toString();
+            try { history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '')); } catch (e) { /* ignore */ }
+        }
+
+        document.getElementById('loadMoreBtn').addEventListener('click', () => {
+            visibleCount += PAGE_SIZE;
+            renderPros();
+        });
+
+        /* ---- browse-time budget reality check (live, while typing) ----
+           Conservative client-side detection: a budget only counts when a
+           cue word (budget/under/below/max/around/about) or a currency mark
+           introduces the number, and guest-count phrasing is excluded —
+           "about 200 guests" is people, not cedis. Category comes from the
+           sentence keywords, falling back to the active Category filter. */
+        const CAT_KEYWORDS = {
+            mc: ['mc', 'emcee', 'master of ceremony', 'host'],
+            artist: ['artist', 'band', 'musician', 'gospel', 'afrobeats', 'highlife'],
+            photographer: ['photographer', 'photography', 'photoshoot', 'photo'],
+            videographer: ['videographer', 'videography', 'video', 'cinematographer'],
+            dj: ['dj', 'sound system', 'sound'],
+            caterer: ['caterer', 'catering', 'cater', 'small chops', 'baker', 'cake'],
+            decorator: ['decorator', 'decor', 'decoration', 'planner', 'canopy', 'floral'],
+            handy: ['handy', 'plumber', 'electrician', 'carpenter', 'wiring', 'repair', 'technician']
+        };
+        function kwRe(k) { return new RegExp('\\b' + k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i'); }
+        function detectCatInSentence(s) {
+            for (const [cat, kws] of Object.entries(CAT_KEYWORDS)) {
+                if (kws.some(kw => kwRe(kw).test(s))) return cat;
+            }
+            return null;
+        }
+        const GUEST_WORDS = 'guests?|people|attendees|persons?|pax|invited';
+        function detectBudgetInSentence(s) {
+            /* (?![\d,]) after each digit run blocks regex backtracking —
+               without it "about 200 guests" matches as "20" (the shorter
+               digit run sneaks past the guest-word lookahead). */
+            let m = s.match(new RegExp('\\b(?:budget|below|under|max|maximum|around|about)\\s*(?:of|is|:)?\\s*(?:gh\u20b5|ghs|ghc|\u20b5)?\\s*([\\d,]{2,7})(?![\\d,])(?!\\s*(?:' + GUEST_WORDS + '))', 'i'));
+            if (!m) m = s.match(/(?:gh\u20b5|ghs|ghc|\u20b5)\s*([\d,]{2,7})(?![\d,])/i);
+            if (!m) m = s.match(new RegExp('([\\d,]{2,7})(?![\\d,])\\s*(?:cedis|cedi|ghs|ghc)(?!\\s*(?:' + GUEST_WORDS + '))', 'i'));
+            if (!m) return 0;
+            const n = Number(m[1].replace(/,/g, ''));
+            return (isFinite(n) && n >= 20 && n <= 100000) ? n : 0;
+        }
+        const aiBudgetBox = document.getElementById('aiBudgetGuidance');
+        let aiBudgetTimer = null;
+        function aiBudgetGuidanceRefresh() {
+            if (!aiBudgetBox) return;
+            const text = searchInput.value.trim();
+            const budget = detectBudgetInSentence(text);
+            const cat = budget ? (detectCatInSentence(text) || document.getElementById('filterCategory').value) : null;
+            if (!budget || !cat) { aiBudgetBox.style.display = 'none'; return; }
+            fetch('/api/budgetOutcome', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cat: cat, budget: budget })
+            }).then(r => r.json()).then(r => {
+                if (!r.ok || !r.outcome || !r.outcome.message) { aiBudgetBox.style.display = 'none'; return; }
+                const chip = guidanceChip(r.outcome.level);
+                aiBudgetBox.className = chip.cls;
+                aiBudgetBox.style.display = 'flex';
+                aiBudgetBox.innerHTML = '<i class="fa-solid ' + chip.icon + '" style="margin-top: 3px;"></i><span><strong>Price check:</strong> ' + SC.esc(r.outcome.message) + typicalBandHtml(cat) + '</span>';
+            }).catch(() => { aiBudgetBox.style.display = 'none'; });
+        }
+
+        /* ---------------- AI price guidance (live DB quote ranges) ----------------
+           Shared by the sentence→filters flow and the pro-request modal:
+           POST /api/budgetOutcome compares a budget to the LIVE pool for the
+           category (verified pro rates + quoted history), and SC.PRICE_STATS
+           (boot payload, 60s server cache) supplies the typical band.
+           Guidance is optional decoration — every failure path hides it. */
+        function guidanceChip(level) {
+            const map = {
+                strong: { cls: 'date-status ok', icon: 'fa-circle-check' },
+                fair: { cls: 'date-status ok', icon: 'fa-circle-check' },
+                thin: { cls: 'date-status warn', icon: 'fa-triangle-exclamation' },
+                unlikely: { cls: 'date-status warn', icon: 'fa-triangle-exclamation' },
+                none: { cls: 'date-status ok', icon: 'fa-circle-info' }
+            };
+            return map[level] || map.none;
+        }
+        function typicalBandHtml(cat) {
+            const stats = cat && SC.PRICE_STATS ? SC.PRICE_STATS[cat] : null;
+            if (!stats || !stats.observed || stats.observed.pros < 2) return '';
+            return ' Typical verified rates today: <strong>GH\u20B5 ' + stats.observed.lo.toLocaleString() + ' \u2013 ' + stats.observed.hi.toLocaleString() + '</strong>.';
+        }
+
+        /* Modal strip: compares the typed budget against the CHOSEN pro's
+           category pool — fires on input (debounced) and on modal open. */
+        let puGuidanceTimer = null;
+        function puBudgetGuidanceRefresh() {
+            const box = document.getElementById('puBudgetGuidance');
+            if (!box || !proModalPro) return;
+            const cat = proModalPro.cat;
+            const budget = document.getElementById('puBudget').value;
+            if (!cat || !budget) { box.style.display = 'none'; return; }
+            fetch('/api/budgetOutcome', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cat: cat, budget: budget })
+            }).then(r => r.json()).then(r => {
+                if (!r.ok || !r.outcome || !r.outcome.message) { box.style.display = 'none'; return; }
+                const chip = guidanceChip(r.outcome.level);
+                box.className = chip.cls;
+                box.style.display = 'flex';
+                box.innerHTML = '<i class="fa-solid ' + chip.icon + '" style="margin-top: 3px;"></i><span>' + SC.esc(r.outcome.message) + typicalBandHtml(cat) + '</span>';
+            }).catch(() => { box.style.display = 'none'; });
+        }
+        document.getElementById('puBudget').addEventListener('input', () => {
+            clearTimeout(puGuidanceTimer);
+            puGuidanceTimer = setTimeout(puBudgetGuidanceRefresh, 450);
+        });
+
+        /* ---------------- AI sentence → filters (directory search bar) ----------------
+           The booking assistant's parser (server aiParseBooking — same engine
+           the homepage form uses) reads a typed sentence and maps it onto the
+           structured filters: category, city, price bucket, availability.
+           Nothing is applied blindly: the result strip shows exactly which
+           filters were set, and Undo restores the pre-sentence state. */
+        const aiRow = document.getElementById('aiFilterRow');
+        const aiBtn = document.getElementById('aiFilterBtn');
+        const aiLabel = document.getElementById('aiFilterLabel');
+        const aiStatus = document.getElementById('aiFilterStatus');
+        const searchInput = document.getElementById('filterSearch');
+
+        function aiSentenceLike() {
+            const v = searchInput.value.trim();
+            return v.length >= 8 && v.split(/\s+/).length >= 3;
+        }
+        function aiRowUpdate() { aiRow.style.display = aiSentenceLike() ? 'flex' : 'none'; }
+
+        function aiFilterSnapshot() {
+            return ['filterCategory', 'filterCity', 'filterPrice', 'filterAvail', 'filterSort']
+                .map(id => ({ id, v: document.getElementById(id).value }));
+        }
+        function aiFilterRestore(snap) {
+            snap.forEach(s => { document.getElementById(s.id).value = s.v; });
+            visibleCount = PAGE_SIZE;
+            renderPros();
+        }
+
+        async function aiFilterApply() {
+            const text = searchInput.value.trim();
+            if (!text || aiBtn.disabled) return;
+            const snap = aiFilterSnapshot();
+            aiBtn.disabled = true;
+            aiLabel.textContent = 'Reading…';
+            try {
+                const res = await fetch('/api/aiParseBooking', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+                const j = await res.json();
+                if (!j.ok || !j.parsed) throw new Error(j.error || 'not parsed');
+                const P = j.parsed;
+                const applied = [];
+                /* category → filterCategory (only known options) */
+                if (P.cat) {
+                    const sel = document.getElementById('filterCategory');
+                    if (Array.from(sel.options).some(o => o.value === P.cat)) {
+                        sel.value = P.cat; applied.push(sel.selectedOptions[0].textContent);
+                    }
+                }
+                /* location → filterCity via the shared Ghana city list
+                   (accepts 'Takoradi', 'Tema Community 25' → Tema, …) */
+                if (P.location) {
+                    const sel = document.getElementById('filterCity');
+                    const loc = String(P.location).toLowerCase();
+                    const hit = Array.from(sel.options).find(o => o.value &&
+                        (o.value.toLowerCase() === loc || o.value.toLowerCase().includes(loc) || loc.includes(o.value.toLowerCase())));
+                    if (hit) { sel.value = hit.value; applied.push(hit.value); }
+                }
+                /* budget → nearest price bucket */
+                if (P.budget !== undefined && P.budget !== null && P.budget !== '') {
+                    const b = Number(String(P.budget).replace(/[^\d.]/g, ''));
+                    if (b > 0) {
+                        const sel = document.getElementById('filterPrice');
+                        const bucket = b <= 500 ? '0-500' : b <= 1000 ? '500-1000' : b <= 2500 ? '1000-2500' : b <= 5000 ? '2500-5000' : '5000+';
+                        sel.value = bucket; applied.push(sel.selectedOptions[0].textContent);
+                    }
+                }
+                /* emergency phrasing → show pros available today */
+                if (P.urgency === 'urgent') {
+                    document.getElementById('filterAvail').value = 'available';
+                    applied.push('Available today');
+                }
+                if (applied.length) {
+                    /* Clear the sentence so its words don't fight the
+                       structured filters as a substring query. */
+                    searchInput.value = '';
+                    visibleCount = PAGE_SIZE;
+                    renderPros();
+                    aiRowUpdate();
+                    if (aiBudgetBox) aiBudgetBox.style.display = 'none';   /* the status chip takes over */
+                    /* AI price-guidance chip: the parsed budget rides the SAME
+                       outcome engine the homepage uses — warn BEFORE the customer
+                       goes any further (async; the strip updates in place). */
+                    let guideHtml = '';
+                    const parsedCat = P.cat && Array.from(document.getElementById('filterCategory').options).some(o => o.value === P.cat) ? P.cat : null;
+                    const parsedBudget = P.budget !== undefined && P.budget !== null && P.budget !== '' ? Number(String(P.budget).replace(/[^\d.]/g, '')) : 0;
+                    const guidanceDone = fetch('/api/budgetOutcome', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ cat: P.cat || parsedCat || '', budget: parsedBudget })
+                    }).then(r => r.json()).then(g => {
+                        if (g && g.ok && g.outcome && g.outcome.message && (parsedBudget > 0 || g.outcome.level !== 'none')) {
+                            const chip = guidanceChip(g.outcome.level);
+                            guideHtml = '<div class="' + chip.cls + '" style="margin-top: 8px;"><i class="fa-solid ' + chip.icon + '" style="margin-top: 3px;"></i><span><strong>Price check:</strong> ' + SC.esc(g.outcome.message) + typicalBandHtml(P.cat || parsedCat) + '</span></div>';
+                        }
+                    }).catch(() => {});
+                    aiStatus.style.display = 'flex';
+                    aiStatus.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i><span>Read \u201C' + SC.esc(text) + '\u201D \u2192 <strong>' + applied.map(SC.esc).join(' \u00B7 ') + '</strong></span>' +
+                        ' <button type="button" class="btn-clear" id="aiFilterUndo"><i class="fa-solid fa-rotate-left"></i> Undo</button>';
+                    document.getElementById('aiFilterUndo').onclick = () => {
+                        aiFilterRestore(snap);
+                        aiStatus.style.display = 'none';
+                    };
+                    guidanceDone.then(() => {
+                        if (guideHtml && aiStatus.style.display !== 'none') aiStatus.insertAdjacentHTML('beforeend', guideHtml);
+                    });
+                } else {
+                    /* Nothing mapped — keep the sentence as a plain search. */
+                    aiStatus.style.display = 'flex';
+                    aiStatus.innerHTML = '<i class="fa-solid fa-circle-info"></i><span>Could not read a category, city or budget from that — showing plain search results instead.</span>';
+                    setTimeout(() => { aiStatus.style.display = 'none'; }, 4000);
+                }
+            } catch (e) {
+                aiStatus.style.display = 'flex';
+                aiStatus.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i><span>Assistant unavailable right now — the plain search still works.</span>';
+                setTimeout(() => { aiStatus.style.display = 'none'; }, 4000);
+            } finally {
+                aiBtn.disabled = false;
+                aiLabel.textContent = 'Filter with the assistant';
+            }
+        }
+
+        aiBtn.addEventListener('click', aiFilterApply);
+        searchInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && aiSentenceLike()) { e.preventDefault(); aiFilterApply(); }
+        });
+
+        ['filterSearch', 'filterCategory', 'filterCity', 'filterPrice', 'filterAvail', 'filterSort'].forEach(id => {
+            document.getElementById(id).addEventListener(
+                id === 'filterSearch' ? 'input' : 'change',
+                () => {
+                    visibleCount = PAGE_SIZE; renderPros();
+                    if (id === 'filterSearch') { aiRowUpdate(); clearTimeout(aiBudgetTimer); aiBudgetTimer = setTimeout(aiBudgetGuidanceRefresh, 450); }
+                }
+            );
+        });
+
+        document.getElementById('clearFilters').addEventListener('click', () => {
+            document.getElementById('filterSearch').value = '';
+            document.getElementById('filterCategory').value = '';
+            document.getElementById('filterCity').value = '';
+            document.getElementById('filterPrice').value = '';
+            document.getElementById('filterAvail').value = '';
+            document.getElementById('filterSort').value = 'recommended';
+            aiStatus.style.display = 'none';
+            if (aiBudgetBox) aiBudgetBox.style.display = 'none';
+            visibleCount = PAGE_SIZE;
+            renderPros();
+            aiRowUpdate();
+        });
+
+        document.getElementById('shareFilters').addEventListener('click', () => {
+            const btn = document.getElementById('shareFilters');
+            const done = () => { btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!'; setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-link"></i> Copy Link'; }, 1500); };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(location.href).then(done).catch(done);
+            } else { done(); }
+        });
+
+        // Restore filters/page from a shared URL (?q=&cat=&city=&price=&avail=&sort=&page=)
+        (function restoreFromUrl() {
+            const p = new URLSearchParams(location.search);
+            const set = (id, key) => { const v = p.get(key); if (v !== null && v !== '') document.getElementById(id).value = v; };
+            set('filterSearch', 'q');
+            set('filterCategory', 'cat');
+            set('filterCity', 'city');
+            set('filterPrice', 'price');
+            set('filterAvail', 'avail');
+            set('filterSort', 'sort');
+            const page = parseInt(p.get('page') || '1', 10);
+            if (page > 1) visibleCount = Math.min(PROS.length, page * PAGE_SIZE);
+            // ?pro=PXXXX: open that profile once rendered
+            const proParam = p.get('pro');
+            if (proParam && SC.getPro(proParam.toUpperCase())) {
+                setTimeout(() => openProfileModal(proParam.toUpperCase()), 350);
+            }
+            /* A shared link can carry a sentence as ?q= — offer the assistant
+               for it exactly as if the user had typed it. */
+            if (typeof aiRowUpdate === 'function') aiRowUpdate();
+        })();
+
+        // Live refresh when a pro is verified in another tab
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'sc_db_v1') { PROS = SC.getPros(); renderPros(); }
+        });
+
+        // Populate the city selector from the shared Ghana list (sc-cities.js)
+        (function fillCities() {
+            const sel = document.getElementById('filterCity');
+            if (!sel || !window.SC_CITIES) return;
+            SC_CITIES.forEach(c => {
+                const o = document.createElement('option');
+                o.value = c[0]; o.textContent = c[0];
+                sel.appendChild(o);
+            });
+        })();
+
+        renderPros();
+    </script>
+</body>
+</html>

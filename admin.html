@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>try{if(localStorage.getItem('sc_theme')!=="dark")document.documentElement.setAttribute("data-theme","light")}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Console | SKILLCONNECT GH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css?v=17">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta name="theme-color" content="#FFCC00">
+    <style>
+/* Document viewer lightbox + Ghana Card thumbnails (page-local) */
+        #docLightbox {
+            position: fixed; inset: 0; z-index: 5500; display: none;
+            background: rgba(0,0,0,.92); backdrop-filter: blur(3px);
+            flex-direction: column; align-items: center; justify-content: center; padding: 18px;
+        }
+        #docLightbox.open { display: flex; }
+        #docLightbox .doc-photo { max-width: min(88vw, 480px); max-height: 62vh; border-radius: 10px; border: 2px solid var(--primary-yellow); object-fit: contain; }
+/* admin-specific: sticky tab bar + CMS editor + search */
+        .admin-tabs {
+            display: flex; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+            background: var(--bg-strong); border: 1px solid var(--card-black); border-radius: 10px;
+            padding: 6px; margin-bottom: 16px; position: sticky; top: 8px; z-index: 50;
+            scrollbar-width: none;
+        }
+        .admin-tabs::-webkit-scrollbar { display: none; }
+        .admin-tab {
+            flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px;
+            padding: 10px 16px; border-radius: 8px; border: none; background: transparent;
+            color: var(--text-muted); font-weight: 800; font-size: 0.78rem; cursor: pointer;
+            text-transform: uppercase; white-space: nowrap; transition: 0.2s;
+        }
+        .admin-tab i { font-size: 0.9rem; }
+        .admin-tab.active { background: var(--primary-yellow); color: var(--dark-black); }
+        .admin-tab .cnt {
+            background: var(--danger-red); color: var(--on-accent); font-size: 0.6rem; border-radius: 10px;
+            padding: 1px 6px; min-width: 17px; text-align: center;
+        }
+        .admin-tab.active .cnt { background: var(--dark-black); color: var(--accent-text); }
+        .btn-danger { background: var(--danger-red); color: var(--on-accent); border: none; padding: 9px 16px; border-radius: 6px; font-weight: 800; cursor: pointer; font-size: 0.78rem; text-transform: uppercase; }
+        .btn-danger:hover { filter: brightness(1.1); }
+        .cms-field { margin-bottom: 14px; }
+        .cms-field label { display: block; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
+        .cms-field input, .cms-field textarea { width: 100%; }
+        .cms-toggle { display: flex; align-items: center; gap: 10px; background: var(--bg-strong); border: 1px solid var(--card-black); border-radius: 8px; padding: 12px; margin-bottom: 14px; }
+        .cms-toggle input { width: 20px; height: 20px; accent-color: var(--accent-text); }
+        .search-row { display: flex; gap: 8px; margin-bottom: 12px; }
+        .search-row input { flex: 1; }
+        /* Session bar (persistent admin login) */
+        .session-bar { display: flex; align-items: center; gap: 10px; justify-content: flex-end; padding: 8px 2px; font-size: 0.72rem; color: var(--text-muted); }
+        .session-bar button { margin-left: auto; }
+        /* Customer history detail view */
+        .cust-detail { background: var(--bg-strong); border: 1px solid var(--card-black); border-radius: 8px; padding: 12px; margin: 4px 0 10px; }
+        .cust-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 8px; margin-bottom: 10px; }
+        .cust-stat { background: var(--bg-raised); border: 1px solid var(--card-black); border-radius: 8px; padding: 8px 10px; text-align: center; }
+        .cust-stat strong { display: block; color: var(--accent-text); font-size: 0.9rem; }
+        .cust-stat span { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .cust-bk { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px dashed var(--card-black); }
+        .section-h { color: var(--accent-text); font-size: 0.95rem; font-weight: 900; text-transform: uppercase; margin: 18px 0 10px; }
+        /* Pre-verification edit grid: admin corrects rate/city/category before listing */
+        .edit-grid {
+            display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 10px;
+            background: var(--bg-strong); border: 1px dashed var(--border); border-radius: 8px;
+            padding: 12px; margin-top: 10px;
+        }
+        .edit-field label { display: block; font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .edit-field input, .edit-field select { width: 100%; }
+        .edit-hint { grid-column: 1 / -1; font-size: 0.68rem; color: var(--text-faint); }
+        .edit-hint i { color: var(--accent-text); margin-right: 4px; }
+        /* Verification outreach panel */
+        .notify-link-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: var(--bg-strong); border: 1px solid var(--card-black); border-radius: 8px; padding: 10px 12px; margin: 10px 0; }
+        .notify-link-row .k { font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .notify-link { font-size: 0.72rem; color: var(--accent-text); word-break: break-all; flex: 1; min-width: 160px; font-family: monospace; }
+        .notify-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .mini-btn.green { background: var(--success-green); color: var(--on-accent); }
+        a.mini-btn { text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    </style>
+</head>
+<body>
+
+<header class="site-header" data-partial></header>
+
+<section class="hero">
+    <h2>OPERATIONS & PAYMENTS CONSOLE</h2>
+    <p>Manage workers, customers, bookings and every cedi — registration fees, platform commission and worker payouts — plus the frontpage CMS.</p>
+</section>
+
+<div class="page-wrap">
+
+    <!-- Login -->
+    <div id="loginArea" class="card login-box">
+        <div class="card-title" style="justify-content: center;"><i class="fa-solid fa-key"></i> Admin Sign-In</div>
+        <div class="form-group">
+            <label for="pinInput">Enter Admin Password</label>
+            <input type="password" id="pinInput" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <button type="button" class="btn-submit" onclick="doLogin()"><i class="fa-solid fa-unlock"></i> Unlock Console</button>
+        <div id="loginErr" class="error-box" style="margin-top: 12px;"></div>
+        <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 14px;">Default password: <strong style="color: var(--accent-text);">4321</strong> — change it under <strong>CMS → Security</strong> after signing in.</p>
+    </div>
+
+    <div id="consoleArea" style="display: none;"></div>
+
+</div>
+
+<div class="floating-contact-bar">
+    <a href="https://wa.me/233244211595" class="float-btn whatsapp" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+    <a href="tel:+233244211595" class="float-btn phone"><i class="fa-solid fa-phone"></i></a>
+</div>
+
+<!-- Document viewer lightbox -->
+<div id="docLightbox" onclick="if(event.target===this)closeDoc()">
+    <div class="id-ph" style="width: min(80vw, 420px); height: 260px; font-size: 4rem;"></div>
+    <div class="lb-cap" id="docLbCap"></div>
+    <button type="button" class="mini-btn" onclick="closeDoc()" style="margin-top: 6px;">Close</button>
+</div>
+
+<footer></footer>
+
+<script src="data-store.js?v=29"></script>
+    <script>window.SC_PARTIALS = {logoIcon: "fa-tower-broadcast", logoTag: "Admin Console", actions: [{kind: "whatsapp", label: "Escalate"}]};</script>
+    <script src="header.js?v=3"></script>
+    <script src="site-partials.js?v=10"></script>
+    <script src="nav.js?v=3"></script>
+    <script src="ui.js?v=4"></script>
+    <script src="sc-session.js?v=3"></script>
+    <script src="admin-session.js?v=3"></script>
+<script>
+    const $ = id => document.getElementById(id);
+    let loggedIn = false;
+    let activeTab = 'overview';
+    let custQuery = '';
+
+    async function doLogin() {
+        const ok = await SC.adminLogin($('pinInput').value.trim());
+        if (ok) {
+            SCSession.create();
+            openConsole();
+        } else {
+            $('loginErr').textContent = 'Wrong password. Default is 4321 — change it under CMS → Security once signed in.';
+            $('loginErr').style.display = 'block';
+        }
+    }
+
+    function openConsole() {
+        loggedIn = true;
+        $('loginArea').style.display = 'none';
+        $('consoleArea').style.display = 'block';
+        renderConsole();
+    }
+
+    function logout() {
+        SCSession.clear();
+        loggedIn = false;
+        activeTab = 'overview';
+        $('consoleArea').style.display = 'none';
+        $('consoleArea').innerHTML = '';
+        $('loginArea').style.display = 'block';
+        $('pinInput').value = '';
+        $('loginErr').style.display = 'none';
+        try { localStorage.removeItem('sc_admin_tab'); } catch (e) {}
+    }
+
+    // Restore the last active tab before first render (auto-login runs at the
+    // script's end, after every helper below is defined — restoring a tab like
+    // Workers renders immediately and touches those helpers).
+    function initSession() {
+        try {
+            const saved = localStorage.getItem('sc_admin_tab');
+            if (saved) activeTab = saved;
+        } catch (e) {}
+        if (SCSession.active()) openConsole();
+    }
+
+    /* ================= helpers ================= */
+    const money = (sign, amt) => '<span class="' + (sign === '+' ? 'money-in' : sign === '-' ? 'money-out' : 'money-fee') + '">' + (sign ? sign + '' : '') + SC.cedi(amt).replace('GH₵ ', 'GH₵ ') + '</span>';
+    const catName = c => SC.CAT_LABELS[c] || c;
+    const dt = ts => new Date(ts).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+    function renderConsole() {
+        if (!loggedIn) return;
+        const s = SC.adminStats();
+        const apps = SC.getApplications();
+        const pendingApps = apps.filter(a => a.status === 'pending').length;
+        const openDisputes = s.disputesOpen;
+        const openSupport = SC.supportMessages().filter(m => m.status === 'open').length;
+
+        let html = '';
+
+        // ---- Stats ----
+        html += '<div class="stat-grid">' +
+            tile(s.pros, 'Service Workers') +
+            tile(s.customers, 'Customers') +
+            tile(s.bookings, 'Bookings') +
+            tile(s.openJobs, 'Open Jobs') +
+            tile(SC.cedi(s.revenue), 'Platform Revenue') +
+            tile(SC.cedi(s.commission), 'Commission') +
+            tile(SC.cedi(s.regFees), 'Reg Fees') +
+            tile(SC.cedi(s.escrowHeld), 'In Escrow') +
+            '</div>';
+
+        // ---- Tab bar ----
+        const noMatchCount = SC.adminNoMatchQueue().length;
+        html += '<div class="admin-tabs">' +
+            tab('overview', 'fa-gauge-high', 'Overview') +
+            tab('matching', 'fa-hand-holding', 'Matching', noMatchCount) +
+            tab('availability', 'fa-calendar-day', 'Availability') +
+            tab('bookings', 'fa-calendar-check', 'Bookings', s.openJobs) +
+            tab('workers', 'fa-helmet-safety', 'Workers', pendingApps) +
+            tab('customers', 'fa-users', 'Customers') +
+            tab('payments', 'fa-money-bill-transfer', 'Payments', (s.payoutRequests || 0) > 0 ? s.payoutRequests : (s.awaitingPayout > 0 ? '!' : '')) +
+            tab('disputes', 'fa-gavel', 'Disputes', openDisputes) +
+            tab('support', 'fa-headset', 'Support', openSupport) +
+            tab('cms', 'fa-pen-to-square', 'CMS') +
+            '</div>';
+
+        html += '<div id="tabBody"></div>';
+        html += '<div class="session-bar"><i class="fa-solid fa-shield-halved" style="color: var(--success-green);"></i> Session active · expires in ~' + SCSession.minutesLeft() + ' min' +
+            '<button class="mini-btn ghost-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button></div>';
+
+        $('consoleArea').innerHTML = html;
+        renderTab();
+    }
+
+    function tile(v, k) { return '<div class="stat-tile"><div class="v">' + v + '</div><div class="k">' + k + '</div></div>'; }
+
+    function tab(id, icon, label, cnt) {
+        return '<button type="button" class="admin-tab' + (activeTab === id ? ' active' : '') + '" onclick="switchTab(\'' + id + '\')">' +
+            '<i class="fa-solid ' + icon + '"></i> ' + label + (cnt ? ' <span class="cnt">' + cnt + '</span>' : '') + '</button>';
+    }
+
+    function switchTab(t) { activeTab = t; try { localStorage.setItem('sc_admin_tab', t); } catch (e) {} renderConsole(); }
+
+    function renderTab() {
+        const body = $('tabBody');
+        if (!body) return;
+        if (activeTab === 'overview') body.innerHTML = tabOverview();
+        else if (activeTab === 'matching') body.innerHTML = tabMatching();
+        else if (activeTab === 'availability') body.innerHTML = tabAvailability();
+        else if (activeTab === 'bookings') body.innerHTML = tabBookings();
+        else if (activeTab === 'workers') body.innerHTML = tabWorkers();
+        else if (activeTab === 'customers') body.innerHTML = tabCustomers();
+        else if (activeTab === 'payments') { body.innerHTML = tabPayments(); if (SC.apiMode) loadGatewayInfo(); }
+        else if (activeTab === 'disputes') body.innerHTML = tabDisputes();
+        else if (activeTab === 'support') body.innerHTML = tabSupport();
+        else if (activeTab === 'cms') {
+            body.innerHTML = tabCms();
+            fillPwWarn();
+            /* load the current shortcode for the CMS field (server truth) */
+            if (SC.apiMode) {
+                fetch('/api/settings').then(r => r.json()).then(j => {
+                    ussdCodeValue = (j && j.settings && j.settings.ussd_code) || '';
+                    const inp = document.getElementById('cmsUssdCode');
+                    if (inp) inp.value = ussdCodeValue;
+                }).catch(() => {});
+            }
+        }
+    }
+
+    /* ================= MATCHING QUEUE ================= */
+    function tabMatching() {
+        const queue = SC.adminNoMatchQueue();
+        if (!queue.length) {
+            return '<div class="card"><div class="card-title"><i class="fa-solid fa-hand-holding"></i> Manual Match Queue</div>' +
+                '<p class="empty-note"><i class="fa-solid fa-circle-check" style="color: var(--success-green);"></i> Queue is clear — every open request has at least one verified pro invited.</p></div>';
+        }
+        let html = '<div class="card"><div class="card-title"><i class="fa-solid fa-hand-holding"></i> Manual Match Queue (' + queue.length + ')</div>' +
+            '<p class="row-sub" style="margin-bottom: 12px;">These requests matched no verified pro within the customer\'s budget. Assign a pro to send them a quote — the customer is notified instantly. Rates shown are each pro\'s listed charge.</p>';
+        html += queue.map(q => {
+            const b = q.booking;
+            const statusCls = b.status === 'quoted' ? 'pending' : 'pending';
+            return '<div class="row-card"><div class="row-head"><div style="flex:1;">' +
+                '<span class="row-title">' + b.id + '</span> <span class="pill ' + statusCls + '">' + b.status.replace('_', ' ') + '</span>' +
+                (b.urgency === 'urgent' ? ' <span class="pill rejected">emergency</span>' : '') + '<br>' +
+                '<span class="row-sub">' + catName(b.cat) + ' · ' + SC.esc(b.location) + ' · ' + (b.date ? SC.fmtDate(b.date) : 'flexible') +
+                '<br>Customer: ' + SC.esc(b.name) + ' (' + SC.esc(b.phone) + ') · Budget: <strong style="color: var(--accent-text);">' + (b.budget ? SC.cedi(b.budget) : 'not stated') + '</strong>' +
+                (b.details ? '<br>“' + SC.esc(b.details) + '”' : '') +
+                '</span></div></div>' +
+                '<div class="mini-input"><select id="assign_' + b.id.replace(/-/g, '_') + '">' +
+                    q.pool.map(p => '<option value="' + p.id + '">' + SC.esc(p.name) + ' — ' + SC.cedi(p.price) + (p.city ? ' · ' + p.city : '') + (b.budget && p.price > Number(b.budget) ? ' (above budget)' : '') + '</option>').join('') +
+                '</select><button class="mini-btn green" onclick="assignFromQueue(\'' + b.id + '\')"><i class="fa-solid fa-user-plus"></i> Assign &amp; Quote</button></div>' +
+                (!q.pool.length ? '<p class="row-sub" style="color: var(--danger-red);"><i class="fa-solid fa-triangle-exclamation"></i> No verified pro in this category yet — verify an application first.</p>' : '') +
+                '</div>';
+        }).join('');
+        return html + '</div>';
+    }
+
+    async function assignFromQueue(bookingId) {
+        const sel = document.getElementById('assign_' + bookingId.replace(/-/g, '_'));
+        if (!sel || !sel.value) return;
+        const pro = SC.getPro(sel.value);
+        const b = SC.getBooking(bookingId);
+        if (!pro || !b) return;
+        const overBudget = b.budget && pro.price > Number(b.budget);
+        const ok = await UI.confirm(
+            'Assign ' + pro.name + ' to ' + bookingId + ' at ' + SC.cedi(pro.price) + '?' +
+            (b.budget ? '\nCustomer budget: ' + SC.cedi(b.budget) : '') +
+            (overBudget ? '\n\nNote: this is above the customer\'s budget — they will see the rate before paying anything.' : '') +
+            '\n\nThe pro is notified to quote; the customer sees it on their track page.',
+            { title: 'Manual Match', okLabel: 'Assign & Quote', okGreen: true, icon: 'hand-holding' }
+        );
+        if (!ok) return;
+        const r = SC.adminAssign(bookingId, sel.value);
+        if (r.ok) {
+            SC.rehydrate();
+            UI.toast(pro.name + ' assigned to ' + bookingId + ' — quote sent.', 'success');
+            renderConsole();
+        } else {
+            UI.alert(r.error || 'Assignment failed — try again.', { title: 'Not Assigned', type: 'error', okLabel: 'Got It' });
+        }
+    }
+
+    /* ================= OVERVIEW ================= */
+    function tabOverview() {
+        const s = SC.adminStats();
+        const feed = SC.notificationsFor('admin').slice(0, 12);
+        let html = '<div class="card"><div class="card-title"><i class="fa-solid fa-bolt"></i> Today At A Glance</div>' +
+            '<div class="bk-row"><span class="k">Verified workers</span><span class="v">' + s.pros + '</span></div>' +
+            '<div class="bk-row"><span class="k">Customers served</span><span class="v">' + s.customers + '</span></div>' +
+            '<div class="bk-row"><span class="k">Open jobs</span><span class="v">' + s.openJobs + '</span></div>' +
+            '<div class="bk-row"><span class="k">Platform revenue (fees + commission)</span><span class="v money-fee">' + SC.cedi(s.revenue) + '</span></div>' +
+            '<div class="bk-row"><span class="k">Awaiting worker payout</span><span class="v money-out">' + SC.cedi(s.awaitingPayout) + '</span></div>' +
+            '<div class="bk-row"><span class="k">Customer money in escrow</span><span class="v">' + SC.cedi(s.escrowHeld) + '</span></div>' +
+            '</div>';
+
+        // ---- Manual-match queue teaser (only when work is waiting) ----
+        const noMatchQueue = SC.adminNoMatchQueue();
+        if (noMatchQueue.length) {
+            html += '<div class="card" style="border-color: var(--warn-amber-text);"><div class="card-title"><i class="fa-solid fa-hand-holding"></i> Manual Match Queue — ' + noMatchQueue.length + ' waiting</div>' +
+                '<p class="row-sub" style="margin-bottom: 10px;">' + noMatchQueue.slice(0, 3).map(q => q.booking.id + ' (' + catName(q.booking.cat) + ', ' + (q.booking.budget ? SC.cedi(q.booking.budget) : 'no budget') + ')').join(' · ') + (noMatchQueue.length > 3 ? ' · +' + (noMatchQueue.length - 3) + ' more' : '') + '</p>' +
+                '<button class="mini-btn green" onclick="switchTab(\'matching\')"><i class="fa-solid fa-user-plus"></i> Open Queue &amp; Assign</button></div>';
+        }
+
+        html += '<div class="card"><div class="card-title"><i class="fa-solid fa-inbox"></i> Operations Feed</div>' +
+            (feed.length ? feed.map(n => '<div class="row-sub" style="padding: 7px 0; border-bottom: 1px dashed var(--card-black);"><i class="fa-solid fa-circle-info" style="color: var(--accent-text); margin-right: 8px;"></i>' + SC.esc(n.text) + ' <small style="color:var(--text-faint);">· ' + dt(n.at) + '</small></div>').join('') : '<p class="empty-note">Feed is empty.</p>') +
+            '</div>';
+
+        // ---- Category health: cancellation rate per category ----
+        const cbc = (s.cancellationsByCat || []).filter(c => c.total >= 2 && c.cancelled > 0);
+        if (cbc.length) {
+            html += '<div class="card"><div class="card-title"><i class="fa-solid fa-chart-pie"></i> Category Health — Cancellation Rate</div>' +
+                '<p class="row-sub" style="margin-bottom: 10px;">Categories with dropped requests (2+ requests). High rates signal a matching problem — thin pro pool, pricing, or slow quotes.</p>' +
+                cbc.map(c => {
+                    const hot = c.rate >= 50, warm = c.rate >= 25 && c.rate < 50;
+                    return '<div class="row-sub" style="padding: 7px 0; border-bottom: 1px dashed var(--card-black); display:flex; align-items:center; gap:10px;">' +
+                        '<span style="flex:1;"><strong style="color: var(--text-light);">' + catName(c.cat) + '</strong> · ' + c.cancelled + ' of ' + c.total + ' requests dropped</span>' +
+                        '<span class="pill ' + (hot ? 'rejected' : warm ? 'pending' : 'success') + '">' + c.rate + '%</span>' +
+                        '</div>';
+                }).join('') +
+                '</div>';
+        }
+
+        // ---- Why customers cancel (dropped requests, newest first) ----
+        const cx = SC.cancellationSummary();
+        if (cx.length) {
+            const total = cx.length;
+            const withReason = cx.filter(c => c.reason).length;
+            const rebooked = cx.filter(c => c.rebookedAs).length;
+            html += '<div class="card"><div class="card-title"><i class="fa-solid fa-circle-xmark"></i> Why Customers Cancel <span class="cnt">' + total + '</span></div>' +
+                '<p class="row-sub" style="margin-bottom: 10px;">Dropped requests, newest first — the reason customers gave at cancellation' + (rebooked ? ' · ' + rebooked + ' already rebooked' : '') + (withReason < total ? ' · ' + (total - withReason) + ' gave no reason' : '') + '.</p>' +
+                cx.map(c =>
+                    '<div class="row-sub" style="padding: 8px 0; border-bottom: 1px dashed var(--card-black);">' +
+                    '<strong style="color: var(--text-light);">' + c.ref + '</strong> · ' + catName(c.cat) + ' · ' + SC.esc(c.location) +
+                    (c.hadQuotes ? ' <span class="pill pending_txn" title="quotes were declined">' + (c.quotesDeclined || '') + ' quote' + (c.quotesDeclined === 1 ? '' : 's') + ' declined</span>' : '') +
+                    (c.rebookedAs ? ' <span class="pill success" title="customer rebooked this request">rebooked → ' + c.rebookedAs + '</span>' : '') +
+                    '<br>' + (c.reason
+                        ? '<i class="fa-solid fa-quote-left" style="color: var(--accent-text); margin-right: 6px;"></i>"' + SC.esc(c.reason) + '"'
+                        : '<span style="color: var(--text-faint);"><i class="fa-solid fa-circle-minus" style="margin-right: 6px;"></i>No reason given</span>') +
+                    ' <small style="color:var(--text-faint);">· ' + dt(c.cancelledAt) + '</small>' +
+                    '</div>').join('') +
+                '</div>';
+        }
+
+        html += '<div class="card" style="border-color: var(--danger-red);"><div class="card-title" style="color: var(--danger-red); border-bottom-color: var(--danger-red);"><i class="fa-solid fa-triangle-exclamation"></i> Sandbox Controls</div>' +
+            '<button class="mini-btn red" onclick="resetDb()"><i class="fa-solid fa-rotate-left"></i> Reset Demo Database</button></div>';
+        return html;
+    }
+
+    /* ================= AVAILABILITY OVERVIEW ================= */
+    function tabAvailability() {
+        const pros = SC.getPros();
+        const groups = { available: [], booked: [], onrequest: [] };
+        pros.forEach(p => groups[SC.proAvailability(p)].push(p));
+        const icon = c => SC.PRO_ICONS[c] || 'fa-user-tie';
+
+        // Reassignment candidates: open jobs, optionally filtered by the source pro's category
+        function reassignableBookings(cat, selfId) {
+            return SC.allBookings().filter(b =>
+                ['matching', 'quoted', 'booked', 'in_progress'].includes(b.status) &&
+                b.chosenProId && b.chosenProId !== selfId && (!cat || b.cat === cat));
+        }
+        const freePool = cat => pros.filter(p => p.cat === cat && SC.proAvailability(p) === 'available');
+
+        function proRow(p) {
+            const idAttr = p.id.replace(/-/g, '_');
+            const jobs = reassignableBookings(p.cat, p.id);
+            return '<div class="row-card"><div class="row-head"><div style="flex:1;">' +
+                '<span class="row-title"><i class="fa-solid ' + icon(p.cat) + '" style="color: var(--accent-text); margin-right: 6px;"></i>' + SC.esc(p.name) + '</span>' +
+                '<br><span class="row-sub">' + catName(p.cat) + ' · ' + SC.esc(p.city) + ' · ⭐ ' + p.rating.toFixed(1) + ' · ' + (p.bookings || 0) + ' jobs · ' + (p.blocked || []).length + ' blocked day(s)</span>' +
+                '</div></div>' +
+                (jobs.length
+                    ? '<div class="mini-input"><select id="rs_' + idAttr + '">' +
+                      jobs.map(b => '<option value="' + b.id + '">' + b.id + ' — ' + catName(b.cat) + ', ' + (b.date ? SC.fmtDate(b.date) : 'flexible') + '</option>').join('') +
+                      '</select><button class="mini-btn" onclick="doReassign(\'' + p.id + '\')"><i class="fa-solid fa-right-left"></i> Reassign Job Here</button></div>'
+                    : '') +
+                '</div>';
+        }
+
+        function group(title, iconCls, cls, list, note) {
+            let h = '<div class="section-h"><i class="fa-solid ' + iconCls + '"></i> ' + title + ' (' + list.length + ')</div>' +
+                '<div class="card">' +
+                (list.length ? list.map(proRow).join('') : '<p class="empty-note">' + note + '</p>') +
+                '</div>';
+            return h;
+        }
+
+        let html = '';
+        html += '<div class="stat-grid">' +
+            tile(groups.available.length, 'Free Today') +
+            tile(groups.booked.length, 'Booked Today') +
+            tile(groups.onrequest.length, 'On Request') +
+            tile(pros.length, 'Total Pros') +
+            '</div>';
+        html += '<div class="section-h"><i class="fa-solid fa-gauge-simple-high"></i> Quick Status Toggles</div>';
+        html += '<div class="card">' + pros.map(p =>
+            '<div class="row-card"><div class="row-head"><div style="flex:1;"><span class="row-title">' + SC.esc(p.name) + '</span>' +
+            ' <span class="pill ' + ({ available: 'success', booked: 'rejected', onrequest: 'pending' }[SC.proAvailability(p)]) + '">' + SC.AVAIL_META[SC.proAvailability(p)].label + '</span>' +
+            '</div>' +
+            '<div>' +
+            '<button class="mini-btn ' + (SC.proAvailability(p) === 'available' ? 'red' : '') + '" ' + (SC.proAvailability(p) === 'available' ? '' : 'disabled') + ' onclick="setAvail(\'' + p.id + '\', \'booked\')"><i class="fa-solid fa-calendar-xmark"></i> Block</button> ' +
+            '<button class="mini-btn ' + (SC.proAvailability(p) === 'booked' ? '' : 'red') + '" ' + (SC.proAvailability(p) === 'booked' ? '' : 'disabled') + ' onclick="setAvail(\'' + p.id + '\', \'available\')"><i class="fa-solid fa-unlock"></i> Unblock</button> ' +
+            '<button class="mini-btn ghost-btn" onclick="setAvail(\"' + p.id + '\", \'onrequest\')"><i class="fa-solid fa-clock-rotate-left"></i> On-Request</button>' +
+            '</div></div></div>').join('') +
+            '</div>';
+        html += group('Available Today', 'fa-circle-check', 'avail-available', groups.available, 'No one is marked free today.');
+        html += group('Booked Today', 'fa-calendar-xmark', 'avail-booked', groups.booked, 'No pros are blocked today.');
+        html += group('On Request (No Calendar)', 'fa-clock', 'avail-onrequest', groups.onrequest, 'All pros have published calendars.');
+        return html;
+    }
+
+    /* ================= BOOKINGS ================= */
+    function tabBookings() {
+        const bookings = SC.allBookings();
+        if (!bookings.length) return '<div class="card"><p class="empty-note">No bookings yet. Make one from the Home page to see the flow.</p></div>';
+        let html = '<div class="card"><div class="card-title"><i class="fa-solid fa-calendar-check"></i> All Bookings (' + bookings.length + ')</div>';
+        html += bookings.map(b => {
+            const pro = b.chosenProId ? SC.getPro(b.chosenProId) : null;
+            const needsPro = !b.matchedProIds.length;
+            const statusCls = ({ matching: 'pending', quoted: 'pending', booked: 'st-booked', in_progress: 'st-in_progress', completed: 'st-completed', disputed: 'st-disputed', cancelled: 'st-cancelled' }[b.status] || 'pending');
+            let pay = '';
+            if (b.status === 'completed') {
+                pay = b.proPaid
+                    ? ' <span class="pill success">worker paid</span>'
+                    : ' <span class="pill pending">payout due ' + SC.cedi((b.amount || 0) - (b.commission || 0)) + '</span>';
+            } else if (b.escrow && !b.escrow.released) {
+                pay = ' <span class="pill pending_txn">escrow ' + SC.cedi(b.escrow.amount) + '</span>';
+            }
+            return '<div class="row-card"><div class="row-head"><div style="flex:1;">' +
+                '<span class="row-title">' + b.id + '</span> <span class="pill ' + statusCls + '">' + b.status.replace('_', ' ') + '</span>' +
+                (b.urgency === 'urgent' ? ' <span class="pill rejected">emergency</span>' : '') + pay + '<br>' +
+                '<span class="row-sub">' + catName(b.cat) + ' · ' + SC.esc(b.location) + ' · ' + (b.date ? SC.fmtDate(b.date) : 'flexible') +
+                '<br>Customer: ' + SC.esc(b.name) + ' (' + SC.esc(b.phone) + ')' +
+                (pro ? '<br>Worker: <strong style="color: var(--accent-text);">' + SC.esc(pro.name) + '</strong> · ' + SC.cedi(b.amount) : '') +
+                '</span></div></div>' +
+                (needsPro
+                    ? '<div class="mini-input"><select id="assign_' + b.id.replace(/-/g, '_') + '">' +
+                      SC.getPros().filter(p => p.cat === b.cat).map(p => '<option value="' + p.id + '">' + SC.esc(p.name) + ' (' + p.city + ')</option>').join('') +
+                      '</select><button class="mini-btn" onclick="assignPro(\'' + b.id + '\')"><i class="fa-solid fa-user-plus"></i> Assign & Quote</button></div>'
+                    : '') +
+                '</div>';
+        }).join('');
+        return html + '</div>';
+    }
+
+    /* ================= WORKERS ================= */
+    function tabWorkers() {
+        const apps = SC.getApplications();
+        const pros = SC.getPros();
+        let html = '';
+
+        if (apps.length) {
+            html += '<div class="section-h"><i class="fa-solid fa-user-plus"></i> Applications — Document Verification <a href="review.html" style="float: right; font-size: 0.7rem; color: var(--accent-text); text-transform: none;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Review Page</a></div>';
+            html += apps.map(a => {
+                const eid = a.id.replace(/-/g, '_');
+                const docsOk = !!(a.idFrontName && a.idBackName);
+                const idNumOk = /^GHA[- ]?\d{9}[- ]?\d$/.test(a.idNumber || '');
+                return '<div class="row-card"><div class="row-head"><div style="flex:1;">' +
+                '<span class="row-title">' + SC.esc(a.name) + '</span> <span class="pill ' + a.status + '">' + a.status + '</span><br>' +
+                '<span class="row-sub">' + catName(a.cat) + ' · ' + SC.esc(a.city) + ' · ' + SC.esc(a.phone) + ' · rate ' + SC.cedi(a.rate) + '/' + SC.esc(a.unit || 'job') +
+                '<br>' + a.id + ' · ' + dt(a.submittedAt) +
+                (a.regFeePaid ? ' · <span class="money-in">reg fee paid</span>' : ' · <span class="money-fee">reg fee pending</span>') +
+                '</span></div></div>' +
+                // Verification documents block
+                '<div class="doc-review">' +
+                '<div class="doc-row"><span class="doc-k">Ghana Card No.</span><span class="doc-v ' + (idNumOk ? 'ok' : 'bad') + '">' + SC.esc(a.idNumber || '— missing —') +
+                (idNumOk ? ' <i class="fa-solid fa-circle-check"></i>' : ' <i class="fa-solid fa-triangle-exclamation"></i>') + '</span></div>' +
+                '<div class="doc-row"><span class="doc-k">TIN</span><span class="doc-v">' + (a.tin ? SC.esc(a.tin) : '<em>not provided (optional)</em>') + '</span></div>' +
+                '<div class="doc-row"><span class="doc-k">Documents</span><span class="doc-v ' + (docsOk ? 'ok' : 'bad') + '">' +
+                (docsOk ? 'Front ✔ + Back ✔ received' : '<i class="fa-solid fa-triangle-exclamation"></i> Front/back images missing') + '</span></div>' +
+                (docsOk
+                    ? '<div class="doc-thumbs">' +
+                      '<figure onclick="viewDoc(\'' + a.id + '\',\'front\')">' + (a.idFrontData ? '<div class="id-ph"><img src="' + a.idFrontData + '" alt="Card front"></div>' : '<div class="id-ph"><i class="fa-solid fa-id-card"></i></div>') + '<figcaption>FRONT — tap to view</figcaption></figure>' +
+                      '<figure onclick="viewDoc(\'' + a.id + '\',\'back\')">' + (a.idBackData ? '<div class="id-ph"><img src="' + a.idBackData + '" alt="Card back"></div>' : '<div class="id-ph"><i class="fa-solid fa-id-card-clip"></i></div>') + '<figcaption>BACK — tap to view</figcaption></figure>' +
+                      '</div>'
+                    : '') +
+                '</div>' +
+                (a.status === 'pending'
+                    ? '<div class="edit-grid">' +
+                      '<div class="edit-field"><label>Listed Rate (GH₵ / ' + SC.esc(a.unit || 'job') + ')</label><input type="number" min="1" id="er_' + eid + '" value="' + (Number(a.rate) || '') + '"></div>' +
+                      '<div class="edit-field"><label>City</label><input type="text" id="ec_' + eid + '" value="' + SC.esc(a.city || '') + '"></div>' +
+                      '<div class="edit-field"><label>Category</label><select id="ek_' + eid + '">' +
+                      Object.keys(SC.CAT_LABELS).map(k => '<option value="' + k + '"' + (k === a.cat ? ' selected' : '') + '>' + SC.CAT_LABELS[k] + '</option>').join('') +
+                      '</select></div>' +
+                      '<div class="edit-hint"><i class="fa-solid fa-pen-to-square"></i> Correct before verifying — the live profile uses these values. Originals stay on record.</div>' +
+                      '</div>' +
+                      '<div class="mini-input">' +
+                      '<button class="mini-btn green" ' + (docsOk && idNumOk ? '' : 'disabled style="opacity:.45; cursor:not-allowed;" title="Front & back images and a valid card number are required"') + ' onclick="decideApp(\'' + a.id + '\',\'verified\')"><i class="fa-solid fa-check"></i> Verify & List</button>' +
+                      '<button class="mini-btn red" onclick="decideApp(\'' + a.id + '\',\'rejected\')"><i class="fa-solid fa-xmark"></i> Reject</button></div>'
+                    : (a.editedFields ? '<div class="edit-hint" style="margin-top: 8px;"><i class="fa-solid fa-clock-rotate-left"></i> Verified with corrections: ' +
+                      Object.keys(a.editedFields).map(k => (k === 'rate' ? 'rate ' + SC.cedi(a.editedFields[k]) + ' → ' + SC.cedi(a.rate) : k + ' ' + SC.esc(a.editedFields[k]) + ' → ' + SC.esc(a[k]))).join(', ') + '</div>'
+                    : (a.reviewNote ? '<span class="row-sub">Note: ' + SC.esc(a.reviewNote) + '</span>' : ''))) +
+                '</div>';
+            }).join('');
+        }
+
+        html += '<div class="section-h"><i class="fa-solid fa-helmet-safety"></i> Service Workers (' + pros.length + ')</div>';
+        html += '<div class="card">';
+
+        // ---- ID expiry watchlist: expired / flagged / awaiting-approval pros ----
+        const watch = pros.map(p => ({ p, st: SC.idStatus(p) }))
+            .filter(x => ['expired', 'flagged', 'pending'].includes(x.st.state));
+        if (watch.length) {
+            html += '<div class="section-h" style="font-size: 0.78rem;"><i class="fa-solid fa-id-card-clip"></i> ID Re-Verification Watchlist</div>';
+            html += watch.map(x => {
+                const st = x.st, p = x.p;
+                const g = SC.idGateSync ? SC.idGateSync(p) : { stage: st.state };
+                const pill = st.state === 'expired' ? '<span class="pill rejected">' + st.label + ' · ' + st.expiredDays + 'd</span>'
+                    : st.state === 'pending' ? '<span class="pill pending">' + st.label + '</span>'
+                    : '<span class="pill rejected">Docs requested</span>';
+                /* Staged gate indicator: what the enforcement ladder is doing to this pro */
+                const gatePill = g.stage === 'delisted' ? '<span class="pill rejected">Hidden from new matches · delisted ' + (g.delistDays || 0) + 'd</span>'
+                    : (g.stage === 'expired' && g.graceDaysLeft ? '<span class="pill pending">In grace · ' + g.graceDaysLeft + 'd left</span>'
+                    : (g.overrideDaysLeft ? '<span class="pill pending">Override · ' + g.overrideDaysLeft + 'd left</span>' : ''));
+                const age = p.idVerifiedAt ? Math.floor((Date.now() - p.idVerifiedAt) / 86400000) + ' days old' : 'no date on file';
+                let actions;
+                if (st.state === 'pending') {
+                    const hasPhotos = p.idFrontData && p.idBackData;
+                    actions = (hasPhotos ? '<div class="doc-thumbs">' +
+                        '<figure onclick="viewProDoc(\'' + p.id + '\',\'front\')"><div class="id-ph"><img src="' + p.idFrontData + '" alt="new card front"></div><figcaption>NEW FRONT</figcaption></figure>' +
+                        '<figure onclick="viewProDoc(\'' + p.id + '\',\'back\')"><div class="id-ph"><img src="' + p.idBackData + '" alt="new card back"></div><figcaption>NEW BACK</figcaption></figure></div>' : '') +
+                        '<div class="mini-input"><button class="mini-btn green" onclick="approveReverify(\'' + p.id + '\')"><i class="fa-solid fa-check"></i> Approve Renewal</button>' +
+                        '<button class="mini-btn red" onclick="requestIdDocs(\'' + p.id + '\')"><i class="fa-solid fa-rotate-right"></i> Ask For Better Photos</button></div>';
+                } else if (st.state === 'flagged') {
+                    actions = '<div class="mini-input"><button class="mini-btn ghost" disabled style="opacity:.55;"><i class="fa-solid fa-hourglass-half"></i> Waiting for ' + SC.esc(p.name.split(' ')[0]) + '</button></div>';
+                } else {
+                    actions = '<div class="mini-input"><button class="mini-btn red" onclick="requestIdDocs(\'' + p.id + '\')"><i class="fa-solid fa-file-export"></i> Request Documents</button></div>' +
+                        '<div class="mini-input"><button class="mini-btn ghost" onclick="extendIdGate(\'' + p.id + '\')"><i class="fa-solid fa-calendar-plus"></i> Extend Listing Window</button></div>';
+                }
+                return '<div class="row-card"><div class="row-head"><div style="flex:1;">' +
+                    '<span class="row-title">' + SC.esc(p.name) + '</span> <span style="color:var(--text-faint); font-size: 0.72rem;">' + p.id + '</span> ' + pill + ' ' + gatePill + '<br>' +
+                    '<span class="row-sub">' + catName(p.cat) + ' · ' + p.city + ' · ID check ' + age + ' · card ' + SC.esc(p.idNumber || '—') + '</span>' +
+                    '</div></div>' + actions + '</div>';
+            }).join('');
+        }
+
+        html += pros.map(p =>
+            '<div class="row-card"><div class="row-head"><div style="flex:1;">' +
+            '<span class="row-title">' + SC.esc(p.name) + '</span> ' + (p.verified ? '<i class="fa-solid fa-circle-check" style="color:var(--success-green);"></i>' : '') + '<br>' +
+            '<span class="row-sub">' + catName(p.cat) + ' · ' + p.city + ' · ⭐ ' + p.rating.toFixed(1) + ' (' + p.ratingCount + ') · ' + p.bookings + ' jobs' +
+            '<br>Rate: ' + SC.cedi(p.price) + '/' + SC.esc(p.unit) + ' · Wallet: <strong style="color: var(--accent-text);">' + SC.cedi(p.balance || 0) + '</strong>' +
+            '<br>Reg fee: ' + (p.regFeePaid ? '<span class="money-in">paid</span>' : '<span class="money-fee">unpaid</span>') + ' · ID: ' + SC.esc(p.id) + '</span>' +
+            '</div></div>' +
+            '<div class="mini-input">' +
+            '<button class="mini-btn ghost" onclick="suspendPro(\'' + p.id + '\')"><i class="fa-solid fa-' + (p.verified ? 'eye-slash' : 'eye') + '"></i> ' + (p.verified ? 'Suspend' : 'Reinstate') + '</button>' +
+            '<button class="mini-btn ghost" onclick="editProRate(\'' + p.id + '\')"><i class="fa-solid fa-coins"></i> Set Rate</button>' +
+            '<button class="mini-btn ghost" onclick="requestIdDocs(\'' + p.id + '\')" ' + (['flagged', 'pending'].includes((SC.idStatus(p) || {}).state) ? 'disabled style="opacity:.5;"' : '') + '><i class="fa-solid fa-id-card-clip"></i> ' +
+            ({ expired: '<span style="color:var(--danger-red);">ID Expired</span>', expiring: 'ID Expiring', flagged: 'Docs Requested', pending: 'Docs In Review', verified: 'ID Check', missing: 'ID Check' }[(SC.idStatus(p) || {}).state] || 'ID Check') + '</button>' +
+            '</div></div>'
+        ).join('');
+        return html + '</div>';
+    }
+
+    function suspendPro(id) {
+        const p = SC.getPro(id);
+        SC.updateProProfile(id, { verified: !p.verified });
+        renderTab();
+    }
+
+    // ---- ID re-verification actions ----
+    async function requestIdDocs(proId) {
+        const r = SC.requestIdDocs(proId);
+        if (!r.ok) { UI.toast(r.error, 'error'); return; }
+        UI.toast('Document request sent to ' + r.pro.name + ' — they get an alert in their dashboard', 'success', 3600);
+        renderTab();
+    }
+
+    function approveReverify(proId) {
+        const p = SC.getPro(proId);
+        SC.approveReverify(proId);
+        UI.toast(p.name + "'s renewed ID verified — fully listed again", 'success');
+        renderTab();
+    }
+
+    // Admin override of the staged ID gate: pause the delisting clock (e.g.
+    // renewal delayed at the NIA). 0/negative days clears the override.
+    function extendIdGate(proId) {
+        const p = SC.getPro(proId);
+        const raw = prompt('Pause the ID enforcement clock for ' + (p ? SC.esc(p.name.split(' ')[0]) : 'this pro') + ' by how many days? (0 clears an existing override)', '14');
+        if (raw === null) return;
+        const days = Math.floor(Number(raw));
+        const r = SC.setIdGateOverride(proId, days);
+        if (!r || !r.ok) { UI.toast((r && r.error) || 'Override failed.', 'error'); return; }
+        UI.toast(days > 0 ? 'Listing window extended by ' + days + ' day(s) — they stay fully listed' : 'Override cleared — the standard enforcement clock resumes', 'success', 3600);
+        renderTab();
+    }
+
+    function viewProDoc(proId, side) {
+        const p = SC.getPro(proId);
+        if (!p) return;
+        const data = side === 'front' ? p.idFrontData : p.idBackData;
+        if (!data) return;
+        const lb = document.getElementById('docLightbox');
+        lb.querySelector('.id-ph').style.display = 'none';
+        const cap = document.getElementById('docLbCap');
+        let img = lb.querySelector('.doc-photo');
+        if (!img) { img = document.createElement('img'); img.className = 'doc-photo'; document.getElementById('docLightbox').insertBefore(img, cap); }
+        img.src = data; img.style.display = 'block';
+        cap.textContent = p.name + ' — Renewed Ghana Card ' + side.toUpperCase();
+        lb.classList.add('open');
+    }
+
+    async function editProRate(id) {
+        const p = SC.getPro(id);
+        const v = await UI.prompt('New starting rate (GH₵) for ' + SC.esc(p.name) + ':', p.price, { title: 'Set Rate', inputType: 'number', okLabel: 'Update' });
+        if (v === null) return;
+        const n = Number(v);
+        if (!n || n <= 0) { await UI.alert('Enter a valid amount.', { title: 'Invalid Amount', type: 'error' }); return; }
+        SC.updateProProfile(id, { price: n });
+        UI.toast('Rate updated for ' + SC.esc(p.name), 'success');
+        renderTab();
+    }
+
+    async function decideApp(id, decision) {
+        let note = '';
+        if (decision === 'rejected') {
+            note = await UI.prompt('Reason for rejection (sent to the applicant):', '', { title: 'Reject Application', okLabel: 'Reject', icon: 'user-slash' });
+            if (note === null) return;
+        }
+        // Collect admin corrections (rate/city/category) before listing
+        let edits = null;
+        if (decision === 'verified') {
+            const eid = id.replace(/-/g, '_');
+            const rEl = document.getElementById('er_' + eid);
+            const cEl = document.getElementById('ec_' + eid);
+            const kEl = document.getElementById('ek_' + eid);
+            if (rEl && cEl && kEl) {
+                edits = { rate: rEl.value, city: cEl.value, cat: kEl.value };
+                if (!Number(edits.rate) || Number(edits.rate) <= 0) {
+                    await UI.alert('Listed rate must be a positive number — fix it before verifying.', { title: 'Invalid Rate', type: 'error' });
+                    return;
+                }
+                if (!edits.city.trim()) {
+                    await UI.alert('City cannot be empty — fix it before verifying.', { title: 'City Required', type: 'error' });
+                    return;
+                }
+            }
+        }
+        SC.reviewApplication(id, decision, note, edits);
+        UI.toast(decision === 'verified' ? 'Application verified — worker is live' : 'Application rejected', 'success');
+        if (decision === 'verified') {
+            showNotifyPanel(id);
+            return; // panel render replaces the console view
+        }
+        renderConsole();
+    }
+
+    /* ================= VERIFICATION OUTREACH ================= */
+    // WhatsApp / SMS / email drafts with the pro's personal directory link,
+    // shown right after verification so the admin can send them on the spot.
+    function showNotifyPanel(appRef) {
+        const n = SC.verifiedNotices(appRef);
+        const body = document.getElementById('tabBody');
+        if (!n.ok) { renderConsole(); return; }
+        body.innerHTML =
+            '<div class="section-h"><i class="fa-solid fa-paper-plane"></i> Notify The New Pro</div>' +
+            '<div class="card" style="border-color: var(--success-green);">' +
+                '<div class="card-title"><i class="fa-solid fa-user-check"></i> ' + SC.esc(n.name) + ' verified — ' + n.proId + '</div>' +
+                '<p style="font-size: 0.82rem; color: var(--text-muted);">Send the congratulations message with their personal directory link. The WhatsApp draft opens pre-filled — just hit send.</p>' +
+                '<div class="notify-link-row"><span class="k">Directory link</span><code class="notify-link">' + SC.esc(n.link) + '</code>' +
+                '<button class="mini-btn" onclick="copyProLink(\'' + n.proId + '\')"><i class="fa-regular fa-copy"></i> Copy</button></div>' +
+                '<div class="notify-actions">' +
+                    '<a class="mini-btn green" href="' + n.channels.wa + '" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Send on WhatsApp</a>' +
+                    (n.channels.sms ? '<a class="mini-btn" href="' + n.channels.sms + '"><i class="fa-solid fa-comment-sms"></i> Send SMS</a>' : '') +
+                    (n.channels.email ? '<a class="mini-btn ghost-btn" href="' + n.channels.email + '"><i class="fa-solid fa-envelope"></i> Send Email</a>' : '<span class="row-sub">No email on file — WhatsApp/SMS only.</span>') +
+                '</div>' +
+                '<button class="mini-btn ghost-btn" onclick="renderConsole()" style="margin-top: 12px;"><i class="fa-solid fa-arrow-left"></i> Back To Console</button>' +
+            '</div>';
+    }
+
+    function copyProLink(proId) {
+        const done = () => UI.toast('Directory link copied', 'success');
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(SC.proDirectoryUrl(proId)).then(done, done);
+        else done();
+    }
+
+    async function resetDb() {
+        const ok = await UI.confirm('Reset ALL SkillConnect demo data? This clears pros, bookings, wallets and transactions permanently.', { title: 'Reset Database', danger: true, okLabel: 'Yes, Reset Everything', icon: 'triangle-exclamation' });
+        if (!ok) return;
+        SC.reset();
+        renderConsole();
+        UI.toast('Demo database restored to seed', 'success');
+    }
+
+    // ---- Document verification viewer ----
+    function viewDoc(appId, side) {
+        const lb = document.getElementById('docLightbox');
+        const cap = document.getElementById('docLbCap');
+        const a = SC.getApplications().find(x => x.id === appId);
+        const name = a ? (side === 'front' ? a.idFrontName : a.idBackName) : '';
+        const data = a ? (side === 'front' ? a.idFrontData : a.idBackData) : '';
+        cap.textContent = (a ? a.name + ' — ' : '') + 'Ghana Card ' + side.toUpperCase() + (name ? ' · ' + name : '');
+        const ph = lb.querySelector('.id-ph');
+        let img = lb.querySelector('.doc-photo');
+        if (data) {
+            ph.style.display = 'none';
+            if (!img) { img = document.createElement('img'); img.className = 'doc-photo'; img.alt = 'Ghana Card ' + side; lb.insertBefore(img, cap); }
+            img.src = data; img.style.display = 'block';
+        } else {
+            if (img) img.style.display = 'none';
+            ph.style.display = 'flex';
+        }
+        lb.classList.add('open');
+    }
+    function closeDoc() { document.getElementById('docLightbox').classList.remove('open'); }
+
+    function assignPro(bookingId) {
+        const sel = document.getElementById('assign_' + bookingId.replace(/-/g, '_'));
+        if (!sel || !sel.value) return;
+        const r = SC.adminAssign(bookingId, sel.value);
+        if (r.ok) renderTab();
+    }
+
+    /* ================= AVAILABILITY ACTIONS ================= */
+    function setAvail(proId, status) {
+        const r = SC.setAvailabilityStatus(proId, status);
+        if (r.ok) {
+            UI.toast('Availability updated', 'success');
+            renderConsole();
+        } else {
+            UI.toast(r.error || 'Could not update availability', 'error');
+        }
+    }
+
+    async function doReassign(proId) {
+        const sel = document.getElementById('rs_' + proId.replace(/-/g, '_'));
+        if (!sel || !sel.value) return;
+        const b = SC.getBooking(sel.value);
+        if (!b) return;
+        const target = SC.getPro(proId);
+        const ok = await UI.confirm('Move ' + b.id + ' to ' + target.name + ' at ' + SC.cedi(target.price) + '?\n\nThe customer and both pros will be notified; the price resets to the new pro\'s listed rate.', { title: 'Reassign Job', okLabel: 'Reassign', okGreen: true, icon: 'right-left' });
+        if (!ok) return;
+        const r = SC.reassignBooking(b.id, proId);
+        if (r.ok) {
+            UI.toast('Job reassigned to ' + target.name, 'success', 3600);
+            renderConsole();
+        } else {
+            await UI.alert(r.error, { title: 'Cannot Reassign', type: 'error' });
+        }
+    }
+
+    /* ================= CUSTOMERS ================= */
+    function tabCustomers() {
+        const list = SC.adminCustomers().filter(c =>
+            !custQuery || (c.name + ' ' + c.phone).toLowerCase().includes(custQuery.toLowerCase()));
+        let html = '<div class="card"><div class="card-title"><i class="fa-solid fa-users"></i> Customers (' + SC.adminCustomers().length + ')</div>' +
+            '<div class="search-row"><input type="text" id="custSearch" placeholder="Search name or phone…" value="' + SC.esc(custQuery) + '" oninput="custFilter(this.value)"></div>';
+        if (!list.length) return html + '<p class="empty-note">No customers yet — they appear here after their first booking.</p></div>';
+        html += list.map(c =>
+            '<div class="row-card"><div class="row-head"><div style="flex:1;">' +
+            '<span class="row-title">' + SC.esc(c.name) + '</span><br>' +
+            '<span class="row-sub">' + SC.esc(c.phone) + ' · ' + c.bookings + ' booking' + (c.bookings > 1 ? 's' : '') +
+            ' · paid: <strong style="color: var(--accent-text);">' + SC.cedi(c.spent) + '</strong>' +
+            '</span></div>' +
+            '<button class="mini-btn ghost-btn" onclick="toggleCustDetail(\'' + c.key + '\')" title="Show full booking history & spend"><i class="fa-solid fa-chevron-down"></i> History</button></div>' +
+            '<div id="cust_' + c.key + '" style="display:none;"></div>' +
+            '</div>'
+        ).join('');
+        return html + '</div>';
+    }
+
+    function custFilter(q) { custQuery = q; renderTab(); const inp = $('custSearch'); if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); } }
+
+    /* ================= CUSTOMER HISTORY DETAIL ================= */
+    function toggleCustDetail(key) {
+        const box = document.getElementById('cust_' + key);
+        if (!box) return;
+        if (box.style.display !== 'none') { box.style.display = 'none'; return; }
+        box.innerHTML = custDetailHtml(key);   // fresh data on every open
+        box.style.display = 'block';
+    }
+
+    function custDetailHtml(phone) {
+        const h = SC.customerHistory(phone);
+        const s = h.stats;
+        const stat = (v, label) => '<div class="cust-stat"><strong>' + v + '</strong><span>' + label + '</span></div>';
+        let html = '<div class="cust-detail">' +
+            '<div class="cust-stat-grid">' +
+            stat(SC.cedi(s.spend), 'Total paid') +
+            stat(s.total, 'Bookings') +
+            stat(s.paidCount ? SC.cedi(s.avg) : '—', 'Avg paid job') +
+            stat(s.escrowHeld ? SC.cedi(s.escrowHeld) : '—', 'In escrow') +
+            stat(s.active, 'Active now') +
+            stat(s.reviews, 'Reviews left') +
+            '</div>' +
+            '<div class="row-sub" style="margin: 2px 0 8px;">Customer since ' + (s.firstAt ? dt(s.firstAt) : '—') +
+            (s.topCat ? ' · favourite category: <strong style="color: var(--accent-text);">' + SC.esc(catName(s.topCat)) + '</strong>' : '') + '</div>' +
+            '<div class="cust-bookings">';
+        html += h.bookings.map(b => {
+            const pro = b.chosenProId ? SC.getPro(b.chosenProId) : null;
+            const statusCls = ({ matching: 'pending', quoted: 'pending', booked: 'st-booked', in_progress: 'st-in_progress', completed: 'st-completed', disputed: 'st-disputed', cancelled: 'st-cancelled' }[b.status] || 'pending');
+            const pay = b.paidAt ? '<span class="row-sub" style="color:var(--success-green);">paid</span>' : (b.escrow && !b.escrow.released ? '<span class="row-sub">escrow held</span>' : '<span class="row-sub">no payment yet</span>');
+            return '<div class="cust-bk"><div style="flex:1;">' +
+                '<span class="row-title" style="font-size: 0.8rem;">' + b.id + '</span> <span class="pill ' + statusCls + '">' + b.status.replace('_', ' ') + '</span><br>' +
+                '<span class="row-sub">' + catName(b.cat) + ' · ' + SC.esc(b.location) + ' · ' + (b.date ? SC.fmtDate(b.date) : 'flexible') + ' · ' + dt(b.createdAt) +
+                (pro ? '<br>Worker: ' + SC.esc(pro.name) + (b.amount ? ' · ' + SC.cedi(b.amount) : '') : '') + '</span></div>' +
+                '<div style="text-align: right; flex-shrink: 0;">' +
+                (b.amount ? '<strong style="color: var(--accent-text);">' + SC.cedi(b.amount) + '</strong><br>' : '') + pay +
+                '</div></div>';
+        }).join('');
+        return html + '</div></div>';
+    }
+
+    /* ================= PAYMENTS / TRANSACTIONS ================= */
+    /* ---------------- Withdrawal approval queue ----------------
+       Money never leaves a wallet here — only processBatch() debits,
+       atomically, after the operator confirms count + total. */
+    let payoutSel = {};   // requestId -> true (checkbox state survives re-renders)
+
+    function withdrawalQueueHtml() {
+        /* Money decisions need live data: rehydrate the mirror first so a
+           request filed on another page/device shows up immediately. */
+        if (SC.apiMode && SC.rehydrate) { try { SC.rehydrate(); } catch (e) {} }
+        let q;
+        try { q = SC.payoutQueue(); } catch (e) { q = { pending: [], approved: [], batches: [] }; }
+        const claimable = (q.pending || []).concat(q.approved || []);
+        const totalSel = claimable.filter(r => payoutSel[r.id]).reduce((s, r) => s + Number(r.amount), 0);
+        let html = '<div class="section-h"><i class="fa-solid fa-user-clock"></i> Withdrawal Requests (' + claimable.length + ')</div>';
+        if (!claimable.length) {
+            html += '<div class="card"><p class="empty-note">No withdrawal requests waiting. Pros file these from their dashboard — they appear here for approval before any money moves.</p></div>';
+        } else {
+            html += '<div class="card">';
+            html += claimable.map(r => {
+                const over = Number(r.amount) > Number(r.proBalance);
+                return '<div class="row-card" style="border-left: 3px solid ' + (r.status === 'approved' ? 'var(--success-green)' : 'var(--primary-yellow)') + ';"><div class="row-head">' +
+                    '<div style="display:flex; align-items:center; gap:10px; flex:1;">' +
+                    '<input type="checkbox" id="posel_' + r.id + '" ' + (payoutSel[r.id] ? 'checked' : '') + ' onchange="payoutSel[\'' + r.id + '\']=this.checked" style="width:18px;height:18px;">' +
+                    '<div><span class="row-title">' + SC.esc(r.id) + '</span> · <strong class="money-in">' + SC.cedi(r.amount) + '</strong> <span class="pill ' + (r.status === 'approved' ? 'success' : 'pending') + '">' + r.status + '</span><br>' +
+                    '<span class="row-sub">' + SC.esc(r.proName) + ' (' + SC.esc(r.proId) + ') · MoMo ' + SC.esc(r.proPhone || 'n/a') + ' · wallet ' + SC.cedi(r.proBalance) +
+                    ' · ' + new Date(r.requestedAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) +
+                    (over ? ' <strong style="color: var(--danger-red);">· amount exceeds wallet (stale?)</strong>' : '') + '</span></div></div>' +
+                    '</div></div>';
+            }).join('');
+            html += '<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">' +
+                '<button type="button" class="mini-btn green" onclick="payoutApproveSelected()"><i class="fa-solid fa-check"></i> Approve Selected</button>' +
+                '<button type="button" class="mini-btn ghost-btn" onclick="payoutRejectSelected()"><i class="fa-solid fa-ban"></i> Reject Selected…</button>' +
+                '<button type="button" class="mini-btn" onclick="payoutBatchSelected(false)"><i class="fa-solid fa-layer-group"></i> Create Batch From Selected</button>' +
+                '<button type="button" class="mini-btn green" onclick="payoutBatchSelected(true)"><i class="fa-solid fa-bolt"></i> Approve &amp; Pay Selected…</button>' +
+                '<span class="row-sub" style="align-self:center;">selected: <strong>' + SC.cedi(totalSel) + '</strong></span></div>';
+            html += '</div>';
+        }
+        if ((q.batches || []).length) {
+            html += '<div class="section-h"><i class="fa-solid fa-layer-group"></i> Payout Batches</div>';
+            html += q.batches.slice(0, 8).map(b =>
+                '<div class="row-card" style="border-left: 3px solid ' + (b.status === 'completed' ? 'var(--success-green)' : 'var(--warn-amber-text)') + ';"><div class="row-head"><div style="flex:1;">' +
+                '<span class="row-title">' + SC.esc(b.id) + '</span> · <strong>' + SC.cedi(b.total) + '</strong> · ' + b.count + ' withdrawal(s) <span class="pill ' + (b.status === 'completed' ? 'success' : 'pending') + '">' + b.status + '</span>' +
+                '<br><span class="row-sub">' + new Date(b.processedAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + (b.note ? ' · ' + SC.esc(b.note) : '') + '</span></div>' +
+                (b.status === 'processing' ? '<button type="button" class="mini-btn green" onclick="payoutPayBatch(\'' + b.id + '\')"><i class="fa-solid fa-money-bill-transfer"></i> Pay Batch Now</button>' : '') +
+                '</div></div>').join('');
+        }
+        return html;
+    }
+
+    function payoutCheckedIds() {
+        return Object.keys(payoutSel).filter(id => payoutSel[id]);
+    }
+
+    function payoutApproveSelected() {
+        const ids = payoutCheckedIds();
+        if (!ids.length) { UI.alert('Tick at least one request first.', { title: 'Nothing Selected', type: 'error' }); return; }
+        const r = SC.approvePayouts(ids);
+        if (!r.ok) { UI.alert(r.error || 'Nothing was approved (already processed?).', { title: 'Approve Failed', type: 'error' }); return; }
+        ids.forEach(id => delete payoutSel[id]);
+        UI.toast(r.approved + ' withdrawal(s) approved — pros notified.', 'success', 3600);
+        renderConsole();
+    }
+
+    async function payoutRejectSelected() {
+        const ids = payoutCheckedIds();
+        if (!ids.length) { UI.alert('Tick at least one request first.', { title: 'Nothing Selected', type: 'error' }); return; };
+        const note = await UI.prompt('Reason for rejecting ' + ids.length + ' withdrawal(s)? (sent to the pro)', 'Amount under review', { title: 'Reject Withdrawals', okLabel: 'Reject' });
+        if (note === null) return;
+        let rejected = 0;
+        ids.forEach(id => { const r = SC.rejectPayout(id, note); if (r.ok) { delete payoutSel[id]; rejected++; } });
+        if (!rejected) { UI.alert('Nothing was rejected — selected requests may already be batched or paid.', { title: 'Reject Failed', type: 'error' }); return; }
+        UI.toast(rejected + ' withdrawal(s) rejected — pros notified.', 'success', 3600);
+        renderConsole();
+    }
+
+    async function payoutBatchSelected(payNow) {
+        const ids = payoutCheckedIds();
+        if (!ids.length) { UI.alert('Tick at least one request first.', { title: 'Nothing Selected', type: 'error' }); return; }
+        const q = SC.payoutQueue();
+        const all = (q.pending || []).concat(q.approved || []);
+        const chosen = all.filter(r => ids.includes(r.id));
+        const total = chosen.reduce((s, r) => s + Number(r.amount), 0);
+        const over = chosen.filter(r => Number(r.amount) > Number(r.proBalance));
+        if (over.length) {
+            const go = await UI.confirm(over.length + ' selected request(s) exceed the pro\'s current wallet (balance changed since filing). They will fail the batch. Continue anyway?', { title: 'Stale Amounts', type: 'error', okLabel: 'Continue' });
+            if (!go) return;
+        }
+        if (payNow) {
+            const go = await UI.confirm('Pay <b>' + chosen.length + '</b> withdrawal(s) totalling <b>' + SC.cedi(total) + '</b>? Wallets are debited immediately and this cannot be undone.', { title: 'Confirm Batch Payment', okLabel: 'Pay ' + SC.cedi(total), okGreen: true, icon: 'money-bill-transfer' });
+            if (!go) return;
+        }
+        const cb = SC.createPayoutBatch(ids, payNow ? 'approved & paid via queue' : 'staged from queue');
+        if (!cb.ok) { UI.alert(cb.error, { title: 'Batch Failed', type: 'error' }); return; }
+        ids.forEach(id => delete payoutSel[id]);
+        if (!payNow) {
+            UI.toast('Batch ' + cb.batchId + ' created (' + cb.count + ' items, ' + SC.cedi(cb.total) + ') — review it below, then Pay Batch Now.', 'success', 5000);
+            renderConsole();
+            return;
+        }
+        const pr = SC.processPayoutBatch(cb.batchId);
+        if (!pr.ok) {
+            await UI.alert(pr.error, { title: 'Batch Aborted — Nothing Was Paid', type: 'error', icon: 'triangle-exclamation' });
+            renderConsole();
+            return;
+        }
+        UI.toast('Batch ' + cb.batchId + ' paid: ' + pr.paid + ' withdrawal(s), ' + SC.cedi(pr.total) + '.', 'success', 5000);
+        renderConsole();
+    }
+
+    async function payoutPayBatch(batchId) {
+        const q = SC.payoutQueue();
+        const b = (q.batches || []).find(x => x.id === batchId);
+        if (!b) return;
+        const go = await UI.confirm('Pay batch <b>' + batchId + '</b> — <b>' + b.count + '</b> withdrawal(s), total <b>' + SC.cedi(b.total) + '</b>? Wallets are debited immediately and this cannot be undone.', { title: 'Confirm Batch Payment', okLabel: 'Pay ' + SC.cedi(b.total), okGreen: true, icon: 'money-bill-transfer' });
+        if (!go) return;
+        const pr = SC.processPayoutBatch(batchId);
+        if (!pr.ok) {
+            await UI.alert(pr.error, { title: 'Batch Aborted — Nothing Was Paid', type: 'error', icon: 'triangle-exclamation' });
+            renderConsole();
+            return;
+        }
+        UI.toast('Batch ' + batchId + ' paid: ' + pr.paid + ' withdrawal(s), ' + SC.cedi(pr.total) + '.', 'success', 5000);
+        renderConsole();
+    }
+
+    function tabPayments() {
+        const txns = SC.getTransactions();
+        const s = SC.adminStats();
+        let html = '<div class="stat-grid" style="margin-bottom: 14px;">' +
+            tile(SC.cedi(s.revenue), 'Platform Revenue') +
+            tile(SC.cedi(s.escrowHeld), 'In Escrow') +
+            tile(SC.cedi(s.awaitingPayout), 'Payouts Due') +
+            tile(SC.cedi(s.regFees), 'Reg Fees') +
+            '</div>';
+
+        // Gateway toggle (server-backed builds only — the sandbox has no gateway)
+        if (SC.apiMode) html += gatewayCardHtml();
+
+        // ---- Withdrawal approval queue (controlled payout workflow) ----
+        // Pros file requests → admin approves → requests are grouped into a
+        // batch → paying the batch is the single, atomic money move.
+        html += withdrawalQueueHtml();
+
+        // Payout queue: completed jobs not yet paid to worker
+        const dueList = SC.allBookings().filter(b => b.status === 'completed' && !b.proPaid && b.amount);
+        html += '<div class="section-h"><i class="fa-solid fa-hand-holding-dollar"></i> Pay Workers (customer paid — release to worker)</div>';
+        html += dueList.length ? dueList.map(b => {
+            const pro = SC.getPro(b.chosenProId);
+            const payout = b.amount - (b.commission || 0);
+            return '<div class="row-card" style="border-left: 3px solid var(--primary-yellow);"><div class="row-head"><div style="flex:1;">' +
+                '<span class="row-title">' + b.id + '</span> <span class="pill pending">payout due</span><br>' +
+                '<span class="row-sub">' + SC.esc(pro ? pro.name : b.chosenProId) + ' receives <strong class="money-in">' + SC.cedi(payout) + '</strong>' +
+                ' (job ' + SC.cedi(b.amount) + ' − commission ' + SC.cedi(b.commission || 0) + ') via ' + SC.esc((pro && pro.phone) || 'MoMo on file') +
+                '</span></div></div>' +
+                '<div class="mini-input">' +
+                '<select id="paym_' + b.id.replace(/-/g, '_') + '">' +
+                '<option value="momo">MoMo Transfer</option><option value="bank">Bank Transfer</option><option value="cash">Cash</option>' +
+                '</select>' +
+                '<button class="mini-btn green" onclick="payWorker(\'' + b.id + '\')"><i class="fa-solid fa-check"></i> Mark Paid</button>' +
+                '</div></div>';
+        }).join('') : '<div class="card"><p class="empty-note">No worker payouts due. Completed jobs appear here after customer payment clears.</p></div>';
+
+        // Ledger
+        html += '<div class="section-h"><i class="fa-solid fa-receipt"></i> Transaction Ledger (' + txns.length + ')' +
+            (txns.length ? '<button type="button" class="mini-btn" style="float: right; margin-top: -4px;" onclick="exportLedgerCsv()" title="Download the full ledger as a spreadsheet"><i class="fa-solid fa-file-csv"></i> Export CSV</button>' : '') +
+            '</div>';
+        html += '<div class="card">';
+        html += txns.length ? txns.slice(0, 40).map(t => {
+            const sign = t.type === 'payout' ? '-' : (t.type === 'commission' || t.type === 'registration_fee' ? '' : '+');
+            const label = ({ service_payment: 'Service payment', commission: 'Platform commission', payout: 'Worker payout', registration_fee: 'Registration fee', refund: 'Refund' }[t.type] || t.type);
+            return '<div class="row-card" style="padding: 10px 12px;"><div class="row-head"><div style="flex:1;">' +
+                '<span class="row-title">' + label + '</span> <span class="pill success">' + t.status + '</span><br>' +
+                '<span class="row-sub">' + (t.bookingId || '') + (t.proId ? ' · ' + SC.esc((SC.getPro(t.proId) || {}).name || t.proId) : '') + ' · ' + t.method + ' · ' + dt(t.at) +
+                (t.note ? '<br>' + SC.esc(t.note) : '') + '</span>' +
+                '</div><div style="text-align: right;">' + money(sign, t.amount) + '</div></div></div>';
+        }).join('') : '<p class="empty-note">No transactions yet. Complete a booking or pay a registration fee to populate the ledger.</p>';
+        return html + '</div>';
+    }
+
+    /* ================= PAYMENT GATEWAY TOGGLE =================
+       Which provider collects money is business config (settings table),
+       decided here at runtime — never hardcoded. Secrets live only in
+       server/.env; this card just reports whether they are present. */
+    let gwInfo = null;
+    function gatewayCardHtml() {
+        if (!gwInfo) return '<div class="card" id="gwCard"><div class="card-title"><i class="fa-solid fa-building-columns"></i> Payment Gateway</div><p class="empty-note">Loading gateway status…</p></div>';
+        const GWS = [
+            { v: '', icon: 'fa-flask', label: 'Simulated', desc: 'Sandbox parity — payments confirm instantly, no real money moves' },
+            { v: 'paystack', icon: 'fa-credit-card', label: 'Paystack', desc: 'Hosted checkout: MTN/Telecel/AirtelTigo MoMo + cards' },
+            { v: 'mtn_momo', icon: 'fa-mobile-screen', label: 'MTN MoMo (direct)', desc: 'Direct Collections push — customer approves on their handset' }
+        ];
+        const btns = GWS.map(g => {
+            const active = gwInfo.gateway === g.v;
+            return '<button type="button" class="mini-btn ' + (active ? 'green' : 'ghost-btn') + '" style="min-width: 150px; justify-content: center;" ' +
+                'onclick="setGateway(\'' + g.v + '\')">' +
+                '<i class="fa-solid ' + g.icon + '"></i> ' + g.label + (active ? ' ✓' : '') + '</button>';
+        }).join('');
+        const warn = (gwInfo.gateway && !gwInfo.configured)
+            ? '<p class="empty-note" style="color: var(--danger-red);">Active gateway is missing credentials — payments will fail until ' + SC.esc(gwInfo.needs.join('; ')) + '.</p>'
+            : '';
+        const counts = gwInfo.intents.total
+            ? '<p class="empty-note">' + gwInfo.intents.total + ' payment attempt(s) — ' +
+              ['initiated', 'pending', 'success', 'failed'].map(k => k + ': ' + (gwInfo.intents.byStatus[k] || 0)).join(' · ') + '</p>'
+            : '';
+        return '<div class="card" id="gwCard"><div class="card-title"><i class="fa-solid fa-building-columns"></i> Payment Gateway' +
+            '<span class="pill ' + (gwInfo.gateway === '' ? 'pending' : 'success') + '" style="margin-left: auto;">' + (gwInfo.gateway === '' ? 'simulated' : SC.esc(gwInfo.gateway)) + '</span></div>' +
+            '<div class="mini-input" style="flex-wrap: wrap; gap: 8px;">' + btns + '</div>' +
+            '<p class="empty-note">Active: <strong>' + (gwInfo.gateway === '' ? 'Simulated (sandbox)' : SC.esc(gwInfo.gateway)) + '</strong> — ' +
+            SC.esc(GWS.find(g => g.v === gwInfo.gateway).desc) + (gwInfo.configured ? '' : ' · credentials missing: ' + SC.esc(gwInfo.needs.join('; '))) + '</p>' +
+            warn + counts + '</div>';
+    }
+    async function loadGatewayInfo() {
+        try {
+            const r = await fetch('/api/payments/gateway', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminSession: '1' })
+            });
+            const j = await r.json();
+            if (j && j.ok) { gwInfo = j; const c = document.getElementById('gwCard'); if (c) c.outerHTML = gatewayCardHtml(); }
+        } catch (e) { /* server offline — card keeps its loading note */ }
+    }
+    async function setGateway(v) {
+        try {
+            const r = await fetch('/api/payments/gateway', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminSession: '1', gateway: v })
+            });
+            const j = await r.json();
+            if (j && j.ok) { UI.toast('Payment gateway switched to ' + (v === '' ? 'Simulated' : v), 'success'); }
+            else { UI.toast((j && j.error) || 'Switch failed', 'error'); }
+        } catch (e) { UI.toast('API unreachable — is the server running?', 'error'); }
+        await loadGatewayInfo();
+    }
+
+    /* ================= LEDGER CSV EXPORT ================= */
+    // Escape one CSV cell: quote when needed, double inner quotes, and neutralise
+    // spreadsheet formula injection (=+-@ prefixes) for safety.
+    function csvCell(v) {
+        let s = String(v === null || v === undefined ? '' : v);
+        if (/^[=+\-@\t]/.test(s)) s = "'" + s;   // neutralise spreadsheet formula injection
+        return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }
+
+    // Build the full ledger CSV (all transactions, not just the 40 shown).
+    // Pure function so callers can inspect the output before download.
+    function buildLedgerCsv() {
+        const txns = SC.getTransactions();
+        const proName = id => { const p = id ? SC.getPro(id) : null; return p ? p.name : (id || ''); };
+        const p2 = n => String(n).padStart(2, '0');
+        const stamp = ts => {
+            const d = new Date(ts);
+            return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes()) + ':' + p2(d.getSeconds());
+        };
+        const typeLabel = { service_payment: 'Service payment', commission: 'Platform commission', payout: 'Worker payout', registration_fee: 'Registration fee', refund: 'Refund' };
+        const head = ['Txn ID', 'Date & Time', 'Type', 'Status', 'Amount (GHS)', 'Method', 'Booking', 'Pro ID', 'Pro Name', 'Note'];
+        const rows = txns.map(t => [t.id, stamp(t.at), typeLabel[t.type] || t.type, t.status || 'success', Number(t.amount).toFixed(2), t.method || '', t.bookingId || '', t.proId || '', proName(t.proId), t.note || '']);
+        return '\uFEFF' + [head].concat(rows).map(r => r.map(csvCell).join(',')).join('\r\n');
+    }
+
+    function exportLedgerCsv() {
+        const txns = SC.getTransactions();
+        if (!txns.length) { UI.toast('Ledger is empty — nothing to export', 'error'); return; }
+        const csv = buildLedgerCsv();
+        const d = new Date(), p2 = n => String(n).padStart(2, '0');
+        const fname = 'skillconnect-ledger-' + d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + '.csv';
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = fname;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+        UI.toast('Exported ' + txns.length + ' transactions to ' + fname, 'success', 3600);
+    }
+
+    async function payWorker(bookingId) {
+        const sel = document.getElementById('paym_' + bookingId.replace(/-/g, '_'));
+        const r = SC.markProPaid(bookingId, sel ? sel.value : 'momo');
+        if (!r.ok) { await UI.alert(r.error, { title: 'Cannot Mark Paid', type: 'error' }); return; }
+        UI.toast('Worker marked as paid — ledger updated', 'success');
+        renderTab();
+    }
+
+    /* ================= DISPUTES ================= */
+    function tabDisputes() {
+        const disputes = SC.getDisputes();
+        if (!disputes.length) return '<div class="card"><p class="empty-note">No disputes. Open one from a booking on the Track page to test the flow.</p></div>';
+        let html = '<div class="card"><div class="card-title"><i class="fa-solid fa-gavel"></i> Disputes — Resolution Queue</div>';
+        html += disputes.map(ds => {
+            const b = SC.getBooking(ds.bookingId);
+            return '<div class="row-card"><div class="row-head"><div style="flex:1;">' +
+                '<span class="row-title">' + ds.id + '</span> <span class="pill ' + ds.status + '">' + ds.status.replace('resolved_', '') + '</span><br>' +
+                '<span class="row-sub">' + ds.bookingId + (b ? ' · ' + SC.cedi(b.amount) + (b.escrow && !b.escrow.released ? ' in escrow' : ' · escrow released') : '') +
+                '<br>Reason: <strong style="color: var(--text-light);">' + SC.esc(ds.reason) + '</strong>' + (ds.details ? ' — "' + SC.esc(ds.details) + '"' : '') + '</span>' +
+                '</div></div>' +
+                (ds.status === 'open'
+                    ? '<div class="mini-input">' +
+                      '<button class="mini-btn ghost" onclick="resolveDs(\'' + ds.id + '\',\'resolved_refund\')">Refund Customer</button>' +
+                      '<button class="mini-btn ghost" onclick="resolveDs(\'' + ds.id + '\',\'resolved_rematch\')">Rematch New Pro</button>' +
+                      '<button class="mini-btn ghost" onclick="resolveDs(\'' + ds.id + '\',\'resolved_release\')">Release To Pro</button></div>'
+                    : '') +
+                '</div>';
+        }).join('');
+        return html + '</div>';
+    }
+
+    async function resolveDs(id, resolution) {
+        const note = await UI.prompt('Resolution note (visible in the audit trail):', '', { title: 'Resolve Dispute', okLabel: 'Resolve', icon: 'gavel' });
+        if (note === null) return;
+        SC.resolveDispute(id, resolution, note);
+        UI.toast(resolution === 'resolved_rematch'
+            ? 'Rematch started — the customer now picks a replacement from their tracking page. Escrow stays held.'
+            : 'Dispute resolved', 'success', 4200);
+        renderConsole();
+    }
+
+    /* ================= SUPPORT (contact-form inbox) ================= */
+    function tabSupport() {
+        const msgs = SC.supportMessages();
+        const open = msgs.filter(m => m.status === 'open');
+        const done = msgs.filter(m => m.status !== 'open');
+        if (!msgs.length) return '<div class="card"><p class="empty-note"><i class="fa-solid fa-headset"></i>No support messages yet. Contact-form submissions from the site land here.</p></div>';
+
+        const card = m => {
+            const wa = 'https://wa.me/233' + String(m.phone).replace(/\D/g, '').replace(/^0/, '') + '?text=' +
+                encodeURIComponent('Hello ' + m.name + ', this is SkillConnect Support about your message ' + m.ref + '.');
+            return '<div class="row-card"><div class="row-head"><div style="flex:1;">' +
+                '<span class="row-title">' + m.ref + '</span> <span class="pill ' + (m.status === 'open' ? 'pending' : 'success') + '">' + m.status + '</span>' +
+                (m.bookingRef ? ' <span class="pill pending_txn">ref ' + SC.esc(m.bookingRef) + '</span>' : '') + '<br>' +
+                '<span class="row-sub"><strong style="color: var(--text-light);">' + SC.esc(m.name) + '</strong> · ' + SC.esc(m.phone) + ' · ' +
+                SC.SUPPORT_TOPICS[m.topic] + ' · ' + dt(m.at) + '</span>' +
+                '<div class="doc-box" style="margin-top:8px;">' + SC.esc(m.message) + '</div>' +
+                (m.handledAt ? '<span class="row-sub">Resolved ' + dt(m.handledAt) + ' by ' + SC.esc(m.handledBy || 'admin') + '</span>' : '') +
+                '</div></div>' +
+                (m.status === 'open'
+                    ? '<div class="mini-input">' +
+                      '<a class="mini-btn green" style="text-decoration:none;" href="' + wa + '" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Reply on WhatsApp</a>' +
+                      '<a class="mini-btn ghost-btn" style="text-decoration:none;" href="tel:' + SC.esc(m.phone) + '"><i class="fa-solid fa-phone"></i> Call</a>' +
+                      '<button class="mini-btn" onclick="markSupportDone(\'' + m.id + '\')"><i class="fa-solid fa-check"></i> Mark Resolved</button>' +
+                      '</div>'
+                    : '') +
+                '</div>';
+        };
+
+        let html = '<div class="card"><div class="card-title"><i class="fa-solid fa-headset"></i> Support Inbox</div>' +
+            '<p class="row-sub" style="margin-bottom: 12px;">Messages from the site contact form. WhatsApp is the fastest follow-up — the pre-filled chat opens with the customer\'s reference.</p>' +
+            (open.length ? open.map(card).join('') : '<p class="row-sub"><i class="fa-solid fa-circle-check" style="color: var(--success-green);"></i> Inbox zero — nothing waiting.</p>') +
+            (done.length ? '<div class="card-title" style="margin-top: 14px;"><i class="fa-solid fa-box-archive"></i> Resolved</div>' + done.map(card).join('') : '') +
+            '</div>';
+        return html;
+    }
+
+    async function markSupportDone(id) {
+        const r = SC.resolveSupportMessage(id);
+        if (!r.ok) { UI.alert(r.error, { title: 'Cannot Resolve', type: 'error' }); return; }
+        UI.toast('Support message resolved', 'success');
+        renderConsole();
+    }
+
+    /* ================= CMS ================= */
+    let ussdCodeValue = '';
+    function tabCms() {
+        const cms = SC.getCms();
+        return '<div class="card"><div class="card-title"><i class="fa-solid fa-pen-to-square"></i> Frontpage Content Manager</div>' +
+            '<p class="row-sub" style="margin-bottom: 14px;">Edits appear instantly on the Home page (index.html). Last updated ' + dt(cms.updatedAt) + '.</p>' +
+            '<div class="cms-field"><label>Hero Title</label><input type="text" id="cmsTitle" value="' + SC.esc(cms.heroTitle) + '"></div>' +
+            '<div class="cms-field"><label>Hero Subtitle</label><textarea id="cmsSub" rows="3">' + SC.esc(cms.heroSub) + '</textarea></div>' +
+            '<div class="cms-toggle"><input type="checkbox" id="cmsAnnounceOn"' + (cms.announceOn ? ' checked' : '') + '>' +
+            '<label for="cmsAnnounceOn" style="margin:0; text-transform:none; font-size: 0.8rem; color: var(--text-light);">Show announcement bar</label></div>' +
+            '<div class="cms-field"><label>Announcement Text &mdash; one announcement per line; they auto-slide above the header on the homepage</label><textarea id="cmsAnnounceText" rows="4">' + SC.esc(cms.announceText) + '</textarea></div>' +
+            '<div class="cms-field"><label>Registration Fee (GH₵, one-time for new professionals)</label><input type="number" min="0" step="1" id="cmsRegFee" value="' + Number(cms.regFee || 50) + '"></div>' +
+            '<div class="cms-field"><label>USSD Shortcode &mdash; shown on the SMS/USSD page once the network provisions it (leave empty to show &ldquo;coming soon&rdquo;)</label><input type="text" id="cmsUssdCode" placeholder="e.g. *384*444" value="' + SC.esc(ussdCodeValue) + '"></div>' +
+            '<button class="mini-btn" onclick="saveCms()"><i class="fa-solid fa-floppy-disk"></i> Publish Changes</button>' +
+            '<div id="cmsSaved" class="error-box" style="background:var(--success-surface); border-color:var(--success-green); color:var(--success-green); display:none; margin-top: 12px;"><i class="fa-solid fa-check"></i> Published! Open the Home page to see it live.</div>' +
+            '</div>' +
+            platformSettingsCard() +
+            '<div class="card" style="margin-top: 14px;"><div class="card-title"><i class="fa-solid fa-shield-halved"></i> Security — Admin Password</div>' +
+            '<div id="pwWarn" class="row-sub" style="margin-bottom: 12px;"></div>' +
+            '<div class="cms-field"><label>Current Password</label><input type="password" id="pwCur" autocomplete="current-password"></div>' +
+            '<div class="cms-field"><label>New Password (min 8 characters)</label><input type="password" id="pwNew" autocomplete="new-password"></div>' +
+            '<div class="cms-field"><label>Repeat New Password</label><input type="password" id="pwNew2" autocomplete="new-password"></div>' +
+            '<button class="mini-btn" onclick="changeAdminPw()"><i class="fa-solid fa-key"></i> Update Password</button>' +
+            '</div>';
+    }
+
+    /* ================= Platform Settings =================
+       Tunables that used to live only in code: registration fee (CMS),
+       the ID validity/warn/grace windows (settings table), and the
+       platform commission rate (settings table — applies to FUTURE
+       escrow releases; completed jobs keep their captured commission). */
+    function platformSettingsCard() {
+        const s = (SC.load && SC.load().settings) || {};
+        const cms = SC.getCms();
+        const regFee = Number(cms.regFee || 50);
+        const idYears = Number(s.id_valid_years) > 0 ? Number(s.id_valid_years) : 5;
+        const idWarn = Number(s.id_warn_days) >= 0 ? Number(s.id_warn_days) : 60;
+        const idGrace = Number(s.id_grace_days) >= 0 ? Number(s.id_grace_days) : 14;
+        const commRaw = Number(s.commission_rate);
+        const comm = (isFinite(commRaw) && commRaw > 0 && commRaw <= 0.5) ? commRaw : (SC.COMMISSION_RATE || 0.10);
+        const commPct = Math.round(comm * 10000) / 100;
+        return '<div class="card" style="margin-top: 14px;"><div class="card-title"><i class="fa-solid fa-sliders"></i> Platform Settings</div>' +
+            '<p class="row-sub" style="margin-bottom: 14px;">Business tunables that used to be code-only. Changes take effect immediately across the site.</p>' +
+            '<div class="cms-field"><label>Registration Fee (GH₵, one-time for new professionals)</label><input type="number" min="0" step="1" id="psRegFee" value="' + regFee + '"></div>' +
+            '<div class="cms-field"><label>ID Validity (years a Ghana Card check stays valid)</label><input type="number" min="1" max="10" step="1" id="psIdYears" value="' + idYears + '"></div>' +
+            '<div class="cms-field"><label>ID Expiry Warning (days before expiry to start showing the renewal prompt)</label><input type="number" min="0" max="365" step="1" id="psIdWarn" value="' + idWarn + '"></div>' +
+            '<div class="cms-field"><label>ID Grace Period (days after expiry before a pro is hidden from NEW matches)</label><input type="number" min="0" max="365" step="1" id="psIdGrace" value="' + idGrace + '"></div>' +
+            '<div class="cms-field"><label>Platform Commission (% of each completed job — applies to future releases only)</label><input type="number" min="0" max="50" step="0.5" id="psCommission" value="' + commPct + '"></div>' +
+            '<div class="mini-input" style="margin-top: 4px;"><button class="mini-btn" onclick="savePlatformSettings()"><i class="fa-solid fa-floppy-disk"></i> Save Platform Settings</button>' +
+            '<span id="psSavedNote" style="display:none; color:var(--success-green); font-size: 0.78rem; font-weight:600;"><i class="fa-solid fa-check"></i> Saved — live everywhere</span></div>' +
+            '<p class="row-sub" style="margin-top: 10px; font-size: 0.72rem;">Commission example: at ' + commPct + '%, a GH₵ 1,000 job pays the pro ' + SC.cedi(Math.round(1000 * (1 - comm))) + ' and the platform ' + SC.cedi(Math.round(1000 * comm)) + '.</p>' +
+            '</div>';
+    }
+
+    async function savePlatformSettings() {
+        const fee = Number($('psRegFee').value);
+        const idYears = Math.floor(Number($('psIdYears').value));
+        const idWarn = Math.floor(Number($('psIdWarn').value));
+        const idGrace = Math.floor(Number($('psIdGrace').value));
+        const commPct = Number($('psCommission').value);
+        if (!isFinite(fee) || fee < 0) { UI.alert('Registration fee must be 0 or a positive number.', { title: 'Invalid Fee', type: 'error' }); return; }
+        if (!isFinite(idYears) || idYears < 1 || idYears > 10) { UI.alert('ID validity must be between 1 and 10 years.', { title: 'Invalid Window', type: 'error' }); return; }
+        if (!isFinite(idWarn) || idWarn < 0 || idWarn > 365) { UI.alert('ID expiry warning must be between 0 and 365 days.', { title: 'Invalid Window', type: 'error' }); return; }
+        if (!isFinite(idGrace) || idGrace < 0 || idGrace > 365) { UI.alert('ID grace period must be between 0 and 365 days.', { title: 'Invalid Window', type: 'error' }); return; }
+        if (!isFinite(commPct) || commPct < 0 || commPct > 50) { UI.alert('Commission must be between 0% and 50%.', { title: 'Invalid Commission', type: 'error' }); return; }
+
+        SC.updateCms({ regFee: fee });
+
+        if (SC.apiMode) {
+            const r = await fetch('/api/adminSetSetting', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ entries: [
+                    { key: 'id_valid_years', value: idYears },
+                    { key: 'id_warn_days', value: idWarn },
+                    { key: 'id_grace_days', value: idGrace },
+                    { key: 'commission_rate', value: commPct > 1 ? commPct / 100 : commPct }
+                ] })
+            }).then(x => x.json()).catch(() => null);
+            if (!r || !r.ok) { UI.alert((r && r.error) || 'Could not save the settings — check the values and try again.', { title: 'Not Saved', type: 'error' }); return; }
+            SC.rehydrate();
+        }
+        const note = $('psSavedNote');
+        if (note) {
+            note.style.display = 'inline';
+            setTimeout(() => { const n = $('psSavedNote'); if (n) n.style.display = 'none'; }, 3200);
+        }
+        UI.toast('Platform settings saved — registration fee, ID windows and commission are live.', 'success', 3600);
+    }
+
+    async function saveCms() {
+        const fee = Number($('cmsRegFee').value);
+        if (!isFinite(fee) || fee < 0) {
+            UI.alert('Registration fee must be 0 or a positive number.', { title: 'Invalid Fee', type: 'error' });
+            return;
+        }
+        SC.updateCms({
+            heroTitle: $('cmsTitle').value.trim(),
+            heroSub: $('cmsSub').value.trim(),
+            announceOn: $('cmsAnnounceOn').checked,
+            announceText: $('cmsAnnounceText').value.trim(),
+            regFee: fee
+        });
+        /* USSD shortcode is a settings-table value (server-validated format);
+           empty clears it back to “coming soon”. API mode only — the sandbox
+           has no settings service. */
+        if (SC.apiMode) {
+            const r = await fetch('/api/adminSetSetting', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: 'ussd_code', value: $('cmsUssdCode').value.trim() })
+            }).then(x => x.json()).catch(() => null);
+            if (r && !r.ok) { UI.alert(r.error || 'Could not save the USSD code.', { title: 'Not Saved', type: 'error' }); return; }
+            ussdCodeValue = r ? r.value : ussdCodeValue;
+        }
+        $('cmsSaved').style.display = 'block';
+        setTimeout(() => { const el = $('cmsSaved'); if (el) el.style.display = 'none'; }, 3000);
+    }
+
+    async function fillPwWarn() {
+        const el = $('pwWarn');
+        if (!el) return;
+        const usingDefault = await SC.adminUsesDefaultPassword();
+        el.innerHTML = usingDefault
+            ? '<i class="fa-solid fa-triangle-exclamation"></i> You are using the default admin password — set a real one below before going live.'
+            : '<i class="fa-solid fa-circle-check"></i> Custom admin password is set. Stored as a salted scrypt hash — never in plain text.';
+        el.style.color = usingDefault ? 'var(--warn-amber-text)' : 'var(--success-green)';
+    }
+
+    async function changeAdminPw() {
+        const cur = $('pwCur').value, n1 = $('pwNew').value, n2 = $('pwNew2').value;
+        if (n1 !== n2) { UI.alert('New passwords do not match.', { title: 'Mismatch', type: 'error' }); return; }
+        const r = await SC.setAdminPassword(cur, n1);
+        if (!r.ok) { UI.alert(r.error, { title: 'Could Not Change Password', type: 'error' }); return; }
+        $('pwCur').value = $('pwNew').value = $('pwNew2').value = '';
+        UI.toast('Admin password updated — use it on the sign-in screen from now on.', 'success', 4200);
+        fillPwWarn();
+    }
+
+    // Auto-login on load when a valid session exists (last statement on purpose)
+    initSession();
+</script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>try{if(localStorage.getItem('sc_theme')!=="dark")document.documentElement.setAttribute("data-theme","light")}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMS / USSD Access | SKILLCONNECT GH</title>
+    <meta name="description" content="No smartphone? No problem. Use SkillConnect via SMS keywords to 024 421 1595 on any phone — USSD shortcode awaiting network approval. Built for every Ghanaian artisan.">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css?v=17">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta name="theme-color" content="#FFCC00">
+    <style>
+/* ussd-specific */
+        .ussd-wrap { display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; }
+        .ussd-wrap > .left-col { flex: 1 1 46%; min-width: 300px; }
+        .ussd-wrap > .right-col { flex: 1 1 46%; min-width: 300px; }
+        .phone {
+            width: 280px; margin: 0 auto; background: var(--bg-strong); border: 3px solid var(--card-black);
+            border-radius: 22px; padding: 18px 14px; box-shadow: 0 8px 30px rgba(0,0,0,.6);
+        }
+        .phone-screen {
+            background: #0e2f0e; color: #cfe8cf; font-family: 'Courier New', monospace;
+            font-size: 0.72rem; line-height: 1.45; border-radius: 6px; padding: 10px;
+            min-height: 240px; white-space: pre-wrap; border: 1px solid #1d4a1d;
+        }
+        .phone-input-row { display: flex; gap: 8px; margin-top: 12px; }
+        .phone-input-row input {
+            flex: 1; background: var(--bg-strong); border: 1px solid var(--card-black); color: var(--text-light);
+            border-radius: 6px; padding: 9px; font-family: 'Courier New', monospace;
+        }
+        .phone-btn {
+            background: var(--success-green); border: none; color: var(--on-accent); font-weight: 900; border-radius: 6px;
+            padding: 9px 14px; cursor: pointer;
+        }
+        .kw-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        .kw-table td { padding: 8px 10px; border-bottom: 1px dashed var(--card-black); }
+        .kw-table td:first-child { color: var(--accent-text); font-weight: 800; white-space: nowrap; }
+        .sms-example { background: var(--bg-strong); border: 1px solid var(--card-black); border-radius: 10px; padding: 14px; font-size: 0.8rem; margin-bottom: 10px; }
+        .sms-bubble { background: var(--bg-raised); border-radius: 10px; padding: 10px 12px; margin-top: 6px; display: inline-block; }
+        .sms-bubble.out { background: var(--primary-yellow); color: var(--dark-black); float: right; }
+        .sms-clear { clear: both; }
+    </style>
+</head>
+<body>
+
+<header class="site-header" data-partial></header>
+
+<section class="hero">
+    <h2>NO SMARTPHONE? NO PROBLEM.</h2>
+    <p id="ussdHeroLine">Use SkillConnect on <strong style="color: var(--accent-text);">any phone</strong> with SMS — request a pro or receive job alerts by texting <strong style="color: var(--accent-text);">024 421 1595</strong>. A dedicated USSD shortcode is awaiting network approval and will be announced here the day it goes live.</p>
+    <div class="badges">
+        <span class="badge"><i class="fa-solid fa-comment-sms"></i> SMS: 024 421 1595 — works today</span>
+        <span class="badge" id="ussdBadge"><i class="fa-solid fa-phone-volume"></i> USSD shortcode: coming soon</span>
+        <span class="badge"><i class="fa-solid fa-wifi" style="opacity: 0;"></i> No Internet Needed</span>
+    </div>
+</section>
+
+<div class="page-wrap">
+    <div class="ussd-wrap">
+
+        <!-- Live simulator -->
+        <div class="left-col">
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-mobile-screen-button"></i> Try The USSD Flow (Live Simulator)</div>
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 16px;">
+                    This simulates the exact menus a feature-phone user will see once the SkillConnect shortcode is provisioned. Requests made here create real bookings in the platform sandbox.
+                </p>
+                <div class="phone">
+                    <div class="phone-screen" id="screen">Loading simulator…</div>
+                    <div class="phone-input-row">
+                        <input type="text" id="phoneInput" placeholder="Reply…" onkeydown="if(event.key==='Enter')ussdReply()">
+                        <button type="button" class="phone-btn" onclick="ussdReply()">SEND</button>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap;">
+                    <button type="button" class="btn-clear" onclick="ussdStart()"><i class="fa-solid fa-rotate-left"></i> Restart Session</button>
+                </div>
+                <div id="ussdResult" class="assistant-response" style="margin-top: 16px;"></div>
+            </div>
+        </div>
+
+        <!-- Guides -->
+        <div class="right-col">
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-comment-sms"></i> SMS Keywords</div>
+                <table class="kw-table">
+                    <tbody>
+                        <tr><td>HELP</td><td>Get the full keyword list by SMS.</td></tr>
+                        <tr><td>FIND MC ACCRA</td><td>Request a pro: FIND + category + city. Category codes: MC, ARTIST, PHOTO, VIDEO, DJ, CATER, DECOR, HANDY.</td></tr>
+                        <tr><td>JOB MC</td><td>Pros: receive available jobs for your category.</td></tr>
+                        <tr><td>QUOTE SC-BK-284001 1500</td><td>Pros: quote GH₵ 1,500 on a booking reference.</td></tr>
+                        <tr><td>BUSY 2026-12-25</td><td>Pros: block a date on your calendar.</td></tr>
+                        <tr><td>PAY 500</td><td>Pros: request a MoMo payout of GH₵ 500.</td></tr>
+                        <tr><td>STATUS SC-BK-284001</td><td>Customers: get your booking status by SMS.</td></tr>
+                        <tr><td>STOP</td><td>Unsubscribe from all SMS alerts.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-envelope-open-text"></i> Example SMS Conversation</div>
+                <div class="sms-example">
+                    <strong style="color: var(--accent-text);">Customer (SMS to 024 421 1595):</strong>
+                    <div class="sms-bubble out">FIND HANDY TEMA</div>
+                    <div class="sms-clear"></div>
+                </div>
+                <div class="sms-example">
+                    <strong style="color: var(--accent-text);">SkillConnect replies:</strong>
+                    <div class="sms-bubble">SkillConnect: 3 verified handymen near Tema found. Ref SC-BK-284102. Quotes arrive by SMS within 30 mins. Track: skillconnectgh.com/track</div>
+                </div>
+                <div class="sms-example">
+                    <strong style="color: var(--accent-text);">Pro (SMS):</strong>
+                    <div class="sms-bubble out">QUOTE SC-BK-284102 250</div>
+                    <div class="sms-clear"></div>
+                    <strong style="color: var(--accent-text);">SkillConnect replies:</strong>
+                    <div class="sms-bubble">SkillConnect: Quote GH₵ 250 sent for SC-BK-284102. Customer will confirm on 0244211595. Good luck!</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-users"></i> Why This Matters</div>
+                <div class="why-grid">
+                    <div class="why-item">
+                        <i class="fa-solid fa-people-carry-box"></i>
+                        <strong>Feature-Phone Artisans</strong>
+                        <p>Millions of skilled workers earn with basic phones — USSD puts them on the platform without an app or data.</p>
+                    </div>
+                    <div class="why-item">
+                        <i class="fa-solid fa-bolt"></i>
+                        <strong>Zero-Data Emergencies</strong>
+                        <p>Stranded with no data bundle? SMS to 024 421 1595 works on any network, any balance above GH₵ 0.</p>
+                    </div>
+                    <div class="why-item">
+                        <i class="fa-solid fa-language"></i>
+                        <strong>Local Language Ready</strong>
+                        <p>The USSD flow supports English, Twi and Ga menus (dial *713*444*2# for Twi).</p>
+                    </div>
+                    <div class="why-item">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <strong>Same Escrow Rules</strong>
+                        <p>Jobs created via USSD enjoy identical escrow protection and dispute rights as the website.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="floating-contact-bar">
+    <a href="https://wa.me/233244211595" class="float-btn whatsapp" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+    <a href="tel:+233244211595" class="float-btn phone"><i class="fa-solid fa-phone"></i></a>
+</div>
+
+<footer></footer>
+
+<script src="data-store.js?v=29"></script>
+    <script>window.SC_PARTIALS = {logoIcon: "fa-mobile-retro", logoTag: "SMS & USSD — Works On Any Phone", actions: [{kind: "tel"}]};</script>
+    <script src="header.js?v=3"></script>
+    <script src="site-partials.js?v=10"></script>
+    <script src="nav.js?v=3"></script>
+    <script src="ui.js?v=4"></script>
+<script>
+    // ---- USSD session simulator (mirrors a real gateway like Africa's Talking/Hubtel) ----
+    // The advertised dial code is business config: settings.ussd_code (admin CMS).
+    // Empty ⇒ the page honestly says “coming soon” and the simulator still runs
+    // with a neutral placeholder so the flow can be demoed pre-provisioning.
+    const $ = id => document.getElementById(id);
+    let session = null;
+    let USSD_CODE = '';                          // resolved from settings below
+    const DIAL = () => USSD_CODE || '*000*000#'; // neutral placeholder, never a live tier
+
+    function applyUssdCode(code) {
+        USSD_CODE = String(code || '').trim();
+        const badge = $('ussdBadge');
+        if (USSD_CODE) {
+            if (badge) badge.innerHTML = '<i class="fa-solid fa-phone-volume"></i> Dial ' + USSD_CODE + ' — no internet needed';
+            $('ussdHeroLine').innerHTML = 'Prefer no internet? Dial <strong style="color: var(--accent-text);">' + USSD_CODE +
+                '</strong> on any phone — even a torch-light kiosk phone — to request a pro or receive job alerts. SMS to <strong style="color: var(--accent-text);">024 421 1595</strong> works too.';
+        }
+        ussdStart();   // repaint the simulator dial line with the resolved code
+    }
+
+    (function loadUssdCode() {
+        /* API mode: the code is business config in the settings table. Sandbox
+           pages have no server — keep the honest “coming soon” copy. */
+        if (typeof SC !== 'undefined' && SC.apiMode) {
+            fetch('/api/settings').then(r => r.json()).then(j => {
+                applyUssdCode(j && j.settings && j.settings.ussd_code || '');
+            }).catch(() => applyUssdCode(''));
+        } else {
+            applyUssdCode('');
+        }
+    })();
+
+    function ussdStart() {
+        session = { step: 'main', data: {}, log: ['Dialing ' + DIAL() + '…', ''] };
+        paint('Dialing ' + DIAL() + '…\nConnecting to SkillConnect…');
+        setTimeout(() => { if (session && session.step === 'main') paint('CON SkillConnect GH\n1. Request a Professional\n2. Pro: Get Job Alerts\n3. Track Booking Status\n4. Payout Request (Pros)\n0. Exit'); }, 700);
+        $('ussdResult').style.display = 'none';
+    }
+
+    function paint(text) {
+        $('screen').textContent = text;
+    }
+
+    function ussdReply() {
+        const input = $('phoneInput').value.trim();
+        $('phoneInput').value = '';
+        if (!session) ussdStart();
+        if (input === '0') { paint('END Thank you for using SkillConnect GH.\nSMS 024 421 1595 anytime.'); session = null; return; }
+        handle(input);
+    }
+
+    function handle(inp) {
+        const s = session;
+        switch (s.step) {
+            case 'main':
+                if (inp === '1') { s.step = 'cat'; paint('CON Choose service:\n1. MC  2. Artist  3. Photo\n4. Video  5. DJ  6. Cater\n7. Decor  8. Handy'); }
+                else if (inp === '2') { s.step = 'pro_id'; paint('CON Enter your Pro ID\n(e.g. P1001):'); }
+                else if (inp === '3') { s.step = 'track'; paint('CON Enter booking ref\n(e.g. SC-BK-284001):'); }
+                else if (inp === '4') { s.step = 'pay_pro'; paint('CON Enter your Pro ID:'); }
+                else paint('CON Invalid choice.\n1. Request  2. Job Alerts\n3. Track  4. Payout\n0. Exit');
+                break;
+
+            case 'cat': {
+                const map = { '1': 'mc', '2': 'artist', '3': 'photographer', '4': 'videographer', '5': 'dj', '6': 'caterer', '7': 'decorator', '8': 'handy' };
+                if (!map[inp]) { paint('CON Invalid. Choose 1-8.'); break; }
+                s.data.cat = map[inp];
+                s.step = 'loc';
+                paint('CON Enter your location\n(e.g. Tema, Kumasi):');
+                break;
+            }
+            case 'loc':
+                s.data.location = inp || 'Accra';
+                s.step = 'urgency';
+                paint('CON When do you need it?\n1. Today (emergency)\n2. Within 48 hours\n3. Planned date');
+                break;
+            case 'urgency': {
+                const umap = { '1': 'urgent', '2': 'soon', '3': 'planned' };
+                s.data.urgency = umap[inp] || 'planned';
+                s.step = 'name';
+                paint('CON Your name:');
+                break;
+            }
+            case 'name':
+                s.data.name = inp || 'USSD Customer';
+                s.step = 'phone';
+                paint('CON Your phone number\n(for quotes by SMS):');
+                break;
+            case 'phone': {
+                const phone = (inp || '').replace(/\s/g, '');
+                if (!/^(\+233|233|0)\d{9}$/.test(phone)) { paint('CON Invalid number.\nExample: 0241234567'); break; }
+                s.data.phone = phone;
+                // Create a REAL booking in the sandbox store
+                const b = SC.createBooking({
+                    name: s.data.name + ' (USSD)',
+                    phone: s.data.phone,
+                    job: s.data.cat,
+                    location: s.data.location,
+                    urgency: s.data.urgency,
+                    details: 'Created via the USSD simulator',
+                    budget: ''
+                });
+                s.step = 'done';
+                const qCount = SC.getQuotesFor(b.id).length;
+                paint('END Request received!\n\nRef: ' + b.id + '\n' + qCount + ' verified pro(s) invited.\nQuotes arrive by SMS within ' +
+                    (s.data.urgency === 'urgent' ? '30 mins' : '24 hrs') + '.\n\nKeep this ref to track.');
+                SC.notify('admin', b.id, 'booking', 'USSD booking ' + b.id + ' from ' + s.data.phone + ' (' + s.data.location + ')');
+                showResult(b);
+                session = null;
+                break;
+            }
+            case 'pro_id': {
+                const p = SC.getPro((inp || '').toUpperCase());
+                if (!p) { paint('CON Pro ID not found.\nExample: P1001'); break; }
+                const jobs = SC.proBookings(p.id).filter(j => j.quote && j.quote.status === 'sent');
+                s.data.pro = p.id;
+                s.step = 'done';
+                paint(jobs.length
+                    ? 'END ' + p.name + ':\n' + jobs.length + ' open quote(s).\n' + jobs.map(j => j.booking.id + ' ' + SC.cedi(j.quote.price)).join('\n') + '\nReply via SMS QUOTE <ref> <amt>'
+                    : 'END ' + p.name + ':\nNo open quotes right now.\nWe SMS you when customers request ' + (SC.CAT_LABELS[p.cat] || p.cat) + '.');
+                session = null;
+                break;
+            }
+            case 'track': {
+                const b = SC.getBooking((inp || '').toUpperCase());
+                s.step = 'done';
+                if (!b) { paint('END Booking not found.\nCheck the ref and retry.'); }
+                else {
+                    paint('END ' + b.id + '\nStatus: ' + b.status.toUpperCase() +
+                        (b.chosenProId ? '\nPro: ' + SC.getPro(b.chosenProId).name : '') +
+                        (b.amount ? '\nAmount: ' + SC.cedi(b.amount) : '') +
+                        (b.escrow && !b.escrow.released ? '\nEscrow: HOLDING' : '') +
+                        '\nSupport: 024 421 1595');
+                }
+                session = null;
+                break;
+            }
+            case 'pay_pro': {
+                const p = SC.getPro((inp || '').toUpperCase());
+                if (!p) { paint('CON Pro ID not found.\nExample: P1001'); break; }
+                s.data.pro = p.id;
+                s.data.proPhone = p.phone;
+                s.step = 'pay_pw';
+                paint('CON Enter your password:');
+                break;
+            }
+            case 'pay_pw': {
+                /* Go-live: payouts authenticate the pro first — proLogin
+                   establishes the session the ownership check requires. */
+                const lg = SC.proLogin(s.data.proPhone, inp || '');
+                if (!lg || !lg.ok) { paint('END Wrong password.\nManage payouts from your dashboard instead.'); session = null; break; }
+                s.step = 'pay_amt';
+                const p = SC.getPro(s.data.pro);
+                paint('CON Amount to withdraw (GH₵, min 20):\nBalance: ' + SC.cedi(p.balance));
+                break;
+            }
+            case 'pay_amt': {
+                /* Withdrawals are REQUESTS now: the amount is reserved, the
+                   team approves, and the batch payment debits the wallet. */
+                const r = SC.requestPayout(s.data.pro, Number(inp));
+                s.step = 'done';
+                paint(r.ok ? 'END Withdrawal ' + (r.requestId || '') + ' REQUESTED.\n' + SC.cedi(r.amount) + ' reserved — paid after approval.\nAvailable balance: ' + SC.cedi(r.availableBalance) : 'END Failed: ' + r.error);
+                session = null;
+                break;
+            }
+            default:
+                ussdStart();
+        }
+    }
+
+    function showResult(b) {
+        const box = $('ussdResult');
+        box.style.display = 'block';
+        box.innerHTML = '<h4><i class="fa-solid fa-circle-check"></i> Real booking created in the sandbox!</h4>' +
+            '<p style="font-size: 0.88rem;">Reference <strong style="color: var(--accent-text);">' + b.id + '</strong> — ' +
+            'open it on the <a href="track.html?ref=' + b.id + '" style="color: var(--accent-text);">Track Booking page</a> ' +
+            'or the <a href="admin.html" style="color: var(--accent-text);">Admin console</a>. It went through the same matching engine as website bookings.</p>';
+    }
+
+    ussdStart();
+</script>
+</body>
+</html>

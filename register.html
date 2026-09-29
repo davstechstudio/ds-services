@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>try{if(localStorage.getItem('sc_theme')!=="dark")document.documentElement.setAttribute("data-theme","light")}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKILLCONNECT GH | Professional Registration — Get Verified & Get Booked</title>
+    <meta name="description" content="Join SkillConnect GH as a verified professional. Register your skills, portfolio, ID and rates to start receiving paid bookings from customers across Ghana.">
+    <!-- SEO & Social -->
+    <link rel="canonical" href="https://skillconnectgh.com/register.html">
+    <meta name="keywords" content="register as MC Ghana, join event platform Ghana, photographer jobs Accra, artisan platform Ghana">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#FFCC00">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta property="og:site_name" content="SKILLCONNECT GH">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://skillconnectgh.com/register.html">
+    <meta property="og:title" content="Get Booked — Register as a SkillConnect Pro">
+    <meta property="og:description" content="Turn your skill into paid bookings. One-time GH₵ 50 verification, escrow-protected payouts, free listing.">
+    <meta property="og:image" content="https://skillconnectgh.com/og-register.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="en_GH">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Get Booked — Register as a SkillConnect Pro">
+    <meta name="twitter:description" content="Turn your skill into paid bookings. One-time GH₵ 50 verification, escrow-protected payouts, free listing.">
+    <meta name="twitter:image" content="https://skillconnectgh.com/og-register.png">
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Shared SkillConnect Stylesheet -->
+    <link rel="stylesheet" href="styles.css?v=17">
+    <style>
+        /* Searchable city combobox (register page only) — the hidden
+           <select id="regCity"> remains the source of truth; this shells
+           a type-to-filter picker over it. Theme vars flip in dark mode. */
+        .city-combo { position: relative; }
+        .city-combo input[type="text"] { padding-right: 36px; }
+        .city-combo-clear {
+            position: absolute; right: 8px; top: 9px; width: 22px; height: 22px;
+            border: none; border-radius: 50%; background: transparent; cursor: pointer;
+            color: var(--text-faint); font-size: 0.9rem; line-height: 1;
+        }
+        .city-combo-clear:hover { color: var(--danger-red); background: var(--warn-amber-bg); }
+        .city-combo-panel {
+            position: absolute; z-index: 40; left: 0; right: 0; max-height: 242px; overflow-y: auto;
+            background: var(--bg-strong); border: 1px solid var(--card-black); border-radius: 8px;
+            box-shadow: 0 10px 24px rgba(0,0,0,.16); display: none;
+        }
+        .city-combo-panel.open { display: block; }
+        .city-combo-region {
+            font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em;
+            color: var(--text-faint); padding: 7px 10px 2px; border-top: 1px dashed var(--card-black);
+        }
+        .city-combo-panel > .city-combo-region:first-child { border-top: none; }
+        .city-combo-opt {
+            display: flex; justify-content: space-between; gap: 10px; align-items: baseline;
+            padding: 7px 10px; cursor: pointer; font-size: 0.8rem;
+        }
+        .city-combo-opt:hover, .city-combo-opt.active { background: var(--warn-amber-bg); }
+        .city-combo-opt small { color: var(--text-muted); font-size: 0.66rem; white-space: nowrap; }
+        .city-combo-empty { padding: 10px; font-size: 0.75rem; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="site-header" data-partial></header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h2>TURN YOUR SKILL INTO PAID BOOKINGS!</h2>
+        <p>Join Ghana's #1 skilled service network. Get verified, list your rates, and receive booking requests from customers near you. Registration takes about 5 minutes, then a one-time GH₵ 50 registration &amp; verification fee activates your listing.</p>
+        <div class="badges">
+            <span class="badge"><i class="fa-solid fa-id-card"></i> One-Time Verification Fee</span>
+            <span class="badge"><i class="fa-solid fa-shield-halved"></i> Verified Badge</span>
+            <span class="badge"><i class="fa-solid fa-money-bill-wave"></i> Secure MoMo Payouts</span>
+        </div>
+    </section>
+
+    <!-- Perks Strip -->
+    <div class="page-wrap">
+        <div class="perks-strip">
+            <div class="perk">
+                <i class="fa-solid fa-bullhorn"></i>
+                <strong>Get Discovered</strong>
+                <p>Thousands of customers search SkillConnect daily for your skill.</p>
+            </div>
+            <div class="perk">
+                <i class="fa-solid fa-bell"></i>
+                <strong>Instant Job Alerts</strong>
+                <p>Matching requests reach you first by SMS & WhatsApp.</p>
+            </div>
+            <div class="perk">
+                <i class="fa-solid fa-lock"></i>
+                <strong>Guaranteed Payment</strong>
+                <p>Customer money is held in escrow and released to you after the job.</p>
+            </div>
+            <div class="perk">
+                <i class="fa-solid fa-chart-line"></i>
+                <strong>Grow Your Brand</strong>
+                <p>Ratings, reviews and a profile page that sells for you.</p>
+            </div>
+        </div>
+
+        <!-- Registration Wizard Card -->
+        <div class="card">
+            <div id="draftBanner" style="display: none; margin-bottom: 16px; padding: 12px 14px; background: var(--warn-amber-bg); border: 1px solid var(--primary-yellow); border-radius: 8px; font-size: 0.8rem;">
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-text); font-size: 1.1rem;"></i>
+                    <span style="flex: 1; min-width: 200px;">Welcome back! You have a <strong style="color: var(--accent-text);">half-finished application</strong> saved <span id="draftAge"></span>.</span>
+                    <button type="button" class="mini-btn" id="draftResume" style="padding: 8px 14px;"><i class="fa-solid fa-play"></i> Resume</button>
+                    <button type="button" class="mini-btn ghost-btn" id="draftDiscard" style="padding: 8px 14px;"><i class="fa-solid fa-trash"></i> Start Fresh</button>
+                </div>
+            </div>
+            <div class="card-title">
+                <i class="fa-solid fa-id-badge"></i> Professional Registration
+            </div>
+
+            <!-- Stepper -->
+            <div class="stepper" id="stepper">
+                <div class="progress-line" id="progressLine"></div>
+                <button type="button" class="step-dot" data-step="1"><span class="dot">1</span><span class="lbl">Account</span></button>
+                <button type="button" class="step-dot" data-step="2"><span class="dot">2</span><span class="lbl">Skills</span></button>
+                <button type="button" class="step-dot" data-step="3"><span class="dot">3</span><span class="lbl">Portfolio</span></button>
+                <button type="button" class="step-dot" data-step="4"><span class="dot">4</span><span class="lbl">Verify ID</span></button>
+                <button type="button" class="step-dot" data-step="5"><span class="dot">5</span><span class="lbl">Rates</span></button>
+                <button type="button" class="step-dot" data-step="6"><span class="dot">6</span><span class="lbl">Review</span></button>
+            </div>
+            <div class="progress-note">Step <strong id="stepNow">1</strong> of 6 — <span id="stepName">Account Details</span></div>
+
+            <div id="errorBox" class="error-box"></div>
+
+            <form id="regForm" novalidate>
+
+                <!-- STEP 1: ACCOUNT -->
+                <div class="form-step active" data-step="1">
+                    <div class="step-heading">Tell us about you</div>
+                    <div class="step-sub">This is how customers will know and reach you.</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="regName">Full Name / Business Name</label>
+                            <input type="text" id="regName" placeholder="e.g. Kwesi Amankwah / ShotsByNana Studios">
+                        </div>
+                        <div class="form-group">
+                            <label for="regPhone">Phone Number</label>
+                            <input type="tel" id="regPhone" placeholder="e.g. 024 421 1595">
+                            <div class="hint">Customers may call this number for job questions.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="regWhatsapp">WhatsApp Number <span class="opt">(optional — defaults to phone)</span></label>
+                            <input type="tel" id="regWhatsapp" placeholder="e.g. 024 421 1595">
+                        </div>
+                        <div class="form-group">
+                            <label for="regEmail">Email Address <span class="opt">(optional)</span></label>
+                            <input type="email" id="regEmail" placeholder="e.g. you@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="regCityInput">Your Base City</label>
+                            <div class="city-combo">
+                                <input type="text" id="regCityInput" placeholder="Type to search — e.g. Tema" autocomplete="off"
+                                       role="combobox" aria-expanded="false" aria-controls="regCityPanel" aria-autocomplete="list">
+                                <button type="button" class="city-combo-clear" id="regCityClear" title="Clear city" style="display:none;">&times;</button>
+                                <div class="city-combo-panel" id="regCityPanel" role="listbox" aria-label="Choose your base city"></div>
+                            </div>
+                            <div class="hint" id="regCityHint">Start typing to filter — grouped by region, 88 Ghanaian hubs.</div>
+                            <!-- source of truth: collect()/validate()/drafts read this -->
+                            <select id="regCity" hidden>
+                                <option value="">-- Select City --</option>
+                                <!-- populated from the shared Ghana list (sc-cities.js) -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="regCat">Main Service Category</label>
+                            <select id="regCat">
+                                <option value="">-- Choose Category --</option>
+                                <option value="mc">Event MC / Host</option>
+                                <option value="artist">Music Artist / Live Band</option>
+                                <option value="photographer">Photographer</option>
+                                <option value="videographer">Videographer / Editor</option>
+                                <option value="dj">DJ / Sound & Lighting</option>
+                                <option value="caterer">Caterer / Baker</option>
+                                <option value="decorator">Decorator / Event Planner</option>
+                                <option value="handy">Handy Skill Worker</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 2: SKILLS -->
+                <div class="form-step" data-step="2">
+                    <div class="step-heading">Your skills & experience</div>
+                    <div class="step-sub">Help customers trust you before they even meet you.</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="regYears">Years Of Experience</label>
+                            <select id="regYears">
+                                <option value="">-- Select --</option>
+                                <option value="0-2">0 – 2 years</option>
+                                <option value="3-5">3 – 5 years</option>
+                                <option value="6-10">6 – 10 years</option>
+                                <option value="10+">Over 10 years</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="regSpec">Specialties <span class="opt">(comma separated)</span></label>
+                            <input type="text" id="regSpec" placeholder="e.g. Weddings, corporate events, drone shots">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Languages You Work In <span class="opt">(select all that apply)</span></label>
+                        <div class="chip-row" id="langChips">
+                            <span class="chip" data-val="English">English</span>
+                            <span class="chip" data-val="Twi">Twi</span>
+                            <span class="chip" data-val="Ga">Ga</span>
+                            <span class="chip" data-val="Ewe">Ewe</span>
+                            <span class="chip" data-val="Fante">Fante</span>
+                            <span class="chip" data-val="Dagbani">Dagbani</span>
+                            <span class="chip" data-val="Hausa">Hausa</span>
+                            <span class="chip" data-val="French">French</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regDesc">Describe Your Service</label>
+                        <textarea id="regDesc" rows="4" placeholder="e.g. I am a professional wedding MC with over 8 years of experience hosting over 200 events across Greater Accra and Ashanti..."></textarea>
+                        <div class="hint">Minimum 20 characters. This text appears on your public profile.</div>
+                    </div>
+                </div>
+
+                <!-- STEP 3: PORTFOLIO -->
+                <div class="form-step" data-step="3">
+                    <div class="step-heading">Show your best work</div>
+                    <div class="step-sub">Verified profiles with portfolio samples get up to 3x more bookings. You can also skip this and send samples to our WhatsApp later.</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="regPortfolioUrl">Portfolio Website / Drive Link <span class="opt">(optional)</span></label>
+                            <input type="url" id="regPortfolioUrl" placeholder="https://...">
+                        </div>
+                        <div class="form-group">
+                            <label for="regSocial">Instagram / TikTok / YouTube <span class="opt">(optional)</span></label>
+                            <input type="text" id="regSocial" placeholder="e.g. @shotsbynana">
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Upload Sample Photos / Videos <span class="opt">(optional)</span></label>
+                            <div class="upload-box">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                Select up to 5 samples (JPG, PNG, MP4 — max 10MB each)
+                                <input type="file" id="regFiles" class="file-input" multiple accept="image/*,video/*">
+                                <div class="file-names" id="fileNames"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Upload Past Event Flyers / Catalogues <span class="opt">(optional)</span></label>
+                            <div class="upload-box">
+                                <i class="fa-solid fa-file-image"></i>
+                                Rate cards, menus, brochures (PDF, JPG)
+                                <input type="file" id="regFiles2" class="file-input" multiple accept=".pdf,image/*">
+                                <div class="file-names" id="fileNames2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 4: ID VERIFICATION -->
+                <div class="form-step" data-step="4">
+                    <div class="step-heading">Verify your identity — Ghana Card</div>
+                    <div class="step-sub">Our team checks your documents before you are listed. Upload the <strong style="color: var(--accent-text);">front and back of your Ghana Card</strong>, enter the card number, and optionally add your TIN. Documents are never shown to customers — only the Verified badge is.</div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="regIdNumber">Ghana Card Number</label>
+                            <input type="text" id="regIdNumber" placeholder="e.g. GHA-123456789-0" autocomplete="off">
+                            <div class="hint">Format: GHA-XXXXXXXXX-X (printed on the front of your card).</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="regTin">TIN Number <span class="opt">(optional)</span></label>
+                            <input type="text" id="regTin" placeholder="e.g. C0012345678" autocomplete="off">
+                            <div class="hint">Tax Identification Number — needed later for payouts above GH₵ 2,000/month.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Ghana Card — FRONT <span style="color:var(--danger-red);">*</span></label>
+                            <div class="upload-box id-upload">
+                                <i class="fa-solid fa-id-card"></i>
+                                <span>Photo of the front (photo side)</span>
+                                <input type="file" id="regIdFront" class="file-input" accept="image/*" capture="environment">
+                                <div class="id-thumb" id="idFrontThumb"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Ghana Card — BACK <span style="color:var(--danger-red);">*</span></label>
+                            <div class="upload-box id-upload">
+                                <i class="fa-solid fa-id-card-clip"></i>
+                                <span>Photo of the back (signature side)</span>
+                                <input type="file" id="regIdBack" class="file-input" accept="image/*" capture="environment">
+                                <div class="id-thumb" id="idBackThumb"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label class="consent">
+                        <input type="checkbox" id="regTruth">
+                        <span>I confirm the documents uploaded are <strong>true and belong to me</strong>. I understand that fake documents lead to permanent removal from SkillConnect.</span>
+                    </label>
+                </div>
+
+                <!-- STEP 5: RATES & AVAILABILITY -->
+                <div class="form-step" data-step="5">
+                    <div class="step-heading">Set your rates & availability</div>
+                    <div class="step-sub">Transparent pricing wins more jobs. You can update these anytime from your dashboard later.</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="regRate">Starting Rate (GH₵)</label>
+                            <input type="number" id="regRate" min="1" placeholder="e.g. 800">
+                        </div>
+                        <div class="form-group">
+                            <label for="regUnit">Rate Unit</label>
+                            <select id="regUnit">
+                                <option value="">-- Select Unit --</option>
+                                <option value="hour">Per Hour</option>
+                                <option value="visit">Per Visit</option>
+                                <option value="day">Per Day</option>
+                                <option value="event">Per Event</option>
+                                <option value="show">Per Show</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="regEmergency">Emergency / Same-Day Jobs?</label>
+                            <select id="regEmergency">
+                                <option value="">-- Select --</option>
+                                <option value="yes">Yes — list me for emergency dispatch</option>
+                                <option value="no">No — planned bookings only</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="regResponse">Your Typical Response Time</label>
+                            <select id="regResponse">
+                                <option value="">-- Select --</option>
+                                <option value="1hr">Within 1 hour</option>
+                                <option value="3hr">Within 3 hours</option>
+                                <option value="sameday">Same day</option>
+                                <option value="24hr">Within 24 hours</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Days You Are Available <span class="opt">(select all that apply)</span></label>
+                        <div class="chip-row" id="dayChips">
+                            <span class="chip" data-val="Mon">Mon</span>
+                            <span class="chip" data-val="Tue">Tue</span>
+                            <span class="chip" data-val="Wed">Wed</span>
+                            <span class="chip" data-val="Thu">Thu</span>
+                            <span class="chip" data-val="Fri">Fri</span>
+                            <span class="chip" data-val="Sat">Sat</span>
+                            <span class="chip" data-val="Sun">Sun</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regMomo">Mobile Money Number For Payouts <span class="opt">(optional)</span></label>
+                        <input type="tel" id="regMomo" placeholder="e.g. 024 421 1595 (MTN / Telecel / AirtelTigo)">
+                    </div>
+                </div>
+
+                <!-- STEP 6: REVIEW -->
+                <div class="form-step" data-step="6">
+                    <div class="step-heading">Review & submit</div>
+                    <div class="step-sub">Check that everything is correct. Our verification team reviews new applications within 24 hours.</div>
+                    <div id="reviewSummary"></div>
+
+                    <label class="consent" style="margin-top: 20px;">
+                        <input type="checkbox" id="regTerms">
+                        <span>I agree to the <strong>SkillConnect Terms of Service</strong> and <strong>Commission Policy</strong> (small commission only when you complete a paid booking), and I consent to identity verification.</span>
+                    </label>
+                </div>
+
+                <!-- Step Navigation -->
+                <div class="step-nav">
+                    <button type="button" class="btn-nav btn-back" id="btnBack" style="visibility: hidden;">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <button type="button" class="btn-nav btn-next" id="btnNext">
+                        Next Step <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Live preview card — visible on every step, updates as the applicant types -->
+            <div id="livePreviewWrap" class="preview-wrap live-preview">
+                <div class="preview-label"><i class="fa-solid fa-eye"></i> — <strong>Live Preview:</strong> How Customers Will See You (updates as you type) —</div>
+                <div class="talent-grid" id="previewCard"></div>
+            </div>
+
+            <!-- Success Panel (hidden until submit) -->
+            <div id="successPanel" class="success-panel">
+                <i class="fa-solid fa-circle-check big-tick"></i>
+                <h3>Application Submitted!</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Keep this reference number for tracking:</p>
+                <div class="ref-box" id="refNumber">SC-2026-0000</div>
+                <ol class="success-steps">
+                    <li><strong>Verification (within 24 hrs):</strong> Our team reviews your details and ID.</li>
+                    <li><strong>Quick call:</strong> We may call or WhatsApp you to confirm your skills and rates.</li>
+                    <li><strong>You're live:</strong> Your Verified profile goes public and job alerts start flowing.</li>
+                </ol>
+                <a id="trackAppLink" href="application.html" class="btn-nav btn-next" style="display: inline-flex; text-decoration: none; background: transparent; color: var(--accent-text); border: 2px solid var(--primary-yellow); text-transform: none;">
+                    <i class="fa-solid fa-location-crosshairs" style="font-size: 1.1rem;"></i> Track Application Status
+                </a>
+                <a id="waApplyBtn" href="#" target="_blank" class="btn-nav btn-next" style="display: inline-flex; text-decoration: none; background-color: var(--success-green); color: white; text-transform: none;">
+                    <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> Send Application To WhatsApp For Faster Approval
+                </a>
+
+                <!-- Registration fee (one-time, prioritises verification) -->
+                <div id="regFeeBox" style="margin-top: 22px; padding: 16px; background: var(--bg-strong); border: 2px solid var(--primary-yellow); border-radius: 10px; text-align: left;">
+                    <h4 style="color: var(--accent-text); font-size: 0.9rem; margin-bottom: 6px;"><i class="fa-solid fa-id-card"></i> Registration Fee — GH₵ <span id="regFeeAmt">50</span> (one-time)</h4>
+                    <p style="font-size: 0.78rem; color: var(--text-muted);">Covers your ID verification, background check and listing. Paying now prioritises your application — unverified profiles wait 24+ hours.</p>
+                    <div class="form-grid" style="margin-top: 10px;">
+                        <div class="form-group">
+                            <label for="regFeeMethod">Pay Via</label>
+                            <select id="regFeeMethod">
+                                <option value="momo">MTN MoMo</option>
+                                <option value="telecel">Telecel Cash</option>
+                                <option value="paystack">Card (Paystack)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="regFeeRef">Payment Reference (after paying)</label>
+                            <input type="text" id="regFeeRef" placeholder="e.g. MP-XXXX or leave blank">
+                        </div>
+                    </div>
+                    <button type="button" class="btn-submit" id="regFeeBtn" style="width: 100%;"><i class="fa-solid fa-money-bill-transfer"></i> I Have Paid GH₵ 50 — Confirm</button>
+                    <div id="regFeeDone" style="display: none; margin-top: 10px; padding: 10px; background: var(--success-surface); border: 1px solid var(--success-green); border-radius: 8px; color: var(--success-green); font-size: 0.8rem; font-weight: 700;">
+                        <i class="fa-solid fa-circle-check"></i> Registration fee confirmed. Your verification is now prioritised!
+                    </div>
+                </div>
+                <p style="margin-top: 20px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                    <a href="#" id="dirPreviewLink" style="color: var(--accent-text); font-weight: 700; text-decoration: none;">
+                        <i class="fa-solid fa-users-viewfinder"></i> See The Directory (your category)
+                    </a>
+                    <a href="dashboard.html" style="color: var(--text-muted); font-weight: 700; text-decoration: none;">
+                        <i class="fa-solid fa-gauge-high"></i> Pro Dashboard
+                    </a>
+                    <a href="index.html" style="color: var(--text-muted); font-weight: 700; text-decoration: none;">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Marketplace
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating WhatsApp & Phone Call Quick Buttons -->
+    <div class="floating-contact-bar">
+        <a href="https://wa.me/233244211595" class="float-btn whatsapp" target="_blank" title="Chat on WhatsApp">
+            <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <a href="tel:+233244211595" class="float-btn phone" title="Call Us Now">
+            <i class="fa-solid fa-phone"></i>
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <footer></footer>
+
+    <!-- Shared Data Layer -->
+    <script src="data-store.js?v=29"></script>
+    <script src="sc-cities.js?v=2"></script>
+<script src="sc-pay.js?v=1"></script>
+    <script>window.SC_PARTIALS = {logoIcon: "fa-user-plus", logoTag: "Professional Registration Portal", actions: [{kind: "whatsapp", label: "Support"}]};</script>
+    <script src="header.js?v=3"></script>
+    <script src="site-partials.js?v=10"></script>
+    <script src="nav.js?v=3"></script>
+    <script src="ui.js?v=4"></script>
+
+    <!-- Wizard Scripting Logic -->
+    <script>
+        const TOTAL_STEPS = 6;
+        const STEP_NAMES = ['', 'Account Details', 'Skills & Experience', 'Portfolio', 'ID Verification', 'Rates & Availability', 'Review & Submit'];
+        const CAT_LABELS = {
+            mc: 'Event MC / Host', artist: 'Music Artist / Live Band', photographer: 'Photographer',
+            videographer: 'Videographer / Editor', dj: 'DJ / Sound & Lighting', caterer: 'Caterer / Baker',
+            decorator: 'Decorator / Event Planner', handy: 'Handy Skill Worker'
+        };
+        const CAT_ICONS = {
+            mc: 'fa-microphone-lines', artist: 'fa-guitar', photographer: 'fa-camera-retro',
+            videographer: 'fa-video', dj: 'fa-compact-disc', caterer: 'fa-utensils',
+            decorator: 'fa-wand-magic-sparkles', handy: 'fa-screwdriver-wrench'
+        };
+
+        let currentStep = 1;
+        let maxStepReached = 1;
+        const state = { languages: [], days: [] };
+
+        const $ = id => document.getElementById(id);
+
+        // ---- Base-city searchable combobox (register page only) ----
+        // sc-cities.js drives the search filters, the near-first matching
+        // hub table AND this form, so a pro's base city is always a real
+        // matching hub (a free-text "Other" here used to rank as unknown
+        // distance). A type-to-filter shell (regCityInput + panel) sits on
+        // top of the hidden <select id="regCity">, which stays the single
+        // source of truth — collect()/validate()/draft/preview keep reading
+        // the select, so nothing else in the wizard changes. Suggestions
+        // show "City — Region" rows grouped by region (list order).
+        const CITY_LIST = (window.SC_CITIES || []).map(c => ({ name: c[0], region: c[2] || 'Other' }));
+
+        function cityByName(name) {
+            return CITY_LIST.find(c => c.name.toLowerCase() === String(name || '').toLowerCase()) || null;
+        }
+
+        (function initCityCombo() {
+            const sel = $('regCity');
+            const input = $('regCityInput');
+            const panel = $('regCityPanel');
+            const clearBtn = $('regCityClear');
+            if (!sel || !input || !panel || !window.SC_CITIES) return;
+
+            /* Keep the hidden select populated (region optgroups, south→north,
+               cities alphabetical inside each) for parity + fallback readers. */
+            const byRegion = new Map();
+            CITY_LIST.forEach(c => {
+                if (!byRegion.has(c.region)) byRegion.set(c.region, []);
+                byRegion.get(c.region).push(c.name);
+            });
+            byRegion.forEach((cities, region) => {
+                const og = document.createElement('optgroup');
+                og.label = region;
+                cities.slice().sort((a, b) => a.localeCompare(b)).forEach(name => {
+                    const o = document.createElement('option');
+                    o.value = name; o.textContent = name;
+                    og.appendChild(o);
+                });
+                sel.appendChild(og);
+            });
+
+            let activeIdx = -1;
+            let currentItems = [];
+
+            function addCityOption(name) {
+                if (!name) return;
+                const exists = Array.from(sel.options).some(o => o.value === name);
+                if (exists) return;
+                const o = document.createElement('option');
+                o.value = name; o.textContent = name;
+                sel.appendChild(o);
+            }
+
+            function syncFromSelect() {
+                const v = sel.value;
+                input.value = v;
+                clearBtn.style.display = v ? 'block' : 'none';
+            }
+
+            function setValue(name, opts) {
+                const known = cityByName(name);
+                const value = known ? known.name : String(name || '').trim();
+                /* Unknown free text still lands in the select so validation
+                   and the draft keep working (addCityOption re-adds it). */
+                addCityOption(value);
+                sel.value = value;
+                input.value = value;
+                closePanel();
+                clearBtn.style.display = value ? 'block' : 'none';
+                /* Draft + preview hooks directly — a synthetic input event
+                   here would re-trigger openPanel() and pop the list back up.
+                   opts.skipDraft: programmatic suggestions (auto-select) must
+                   not fabricate a "half-finished application" draft. */
+                try {
+                    if (!(opts && opts.skipDraft)) saveDraft();
+                    updateLivePreview();
+                } catch (e) {}
+            }
+
+            function openPanel() {
+                renderPanel(input.value.trim());
+                panel.classList.add('open');
+                input.setAttribute('aria-expanded', 'true');
+            }
+            function closePanel() {
+                panel.classList.remove('open');
+                input.setAttribute('aria-expanded', 'false');
+                activeIdx = -1;
+            }
+            function panelOpen() { return panel.classList.contains('open'); }
+
+            function renderPanel(query) {
+                const q = String(query || '').toLowerCase();
+                /* Region names match from 4+ chars so short fragments ("te")
+                   don't flood the list with every Greater Accra town — but
+                   "volta", "east", "bono" still jump straight to a region. */
+                const regionHit = q.length >= 4;
+                const matches = CITY_LIST.filter(c => !q || c.name.toLowerCase().includes(q) || (regionHit && c.region.toLowerCase().includes(q)));
+                currentItems = matches.slice();
+                activeIdx = -1;
+                if (!matches.length) {
+                    panel.innerHTML = '<div class="city-combo-empty">No city matches \u201C' + esc(query) + '\u201D — keep typing, or pick the nearest hub below.</div>';
+                    return;
+                }
+                const cap = 60;
+                const shown = matches.slice(0, cap);
+                let html = '';
+                let lastRegion = null;
+                shown.forEach(c => {
+                    if (c.region !== lastRegion) {
+                        lastRegion = c.region;
+                        html += '<div class="city-combo-region">' + esc(c.region) + '</div>';
+                    }
+                    html += '<div class="city-combo-opt" role="option" data-name="' + esc(c.name) + '"><span>' + esc(c.name) + '</span><small>\u2014 ' + esc(c.region) + '</small></div>';
+                });
+                if (matches.length > cap) html += '<div class="city-combo-empty">' + (matches.length - cap) + ' more — keep typing to narrow.</div>';
+                panel.innerHTML = html;
+            }
+
+            function highlight() {
+                const opts = panel.querySelectorAll('.city-combo-opt');
+                opts.forEach(o => o.classList.remove('active'));
+                if (activeIdx >= 0 && opts[activeIdx]) {
+                    opts[activeIdx].classList.add('active');
+                    opts[activeIdx].scrollIntoView({ block: 'nearest' });
+                }
+            }
+
+            input.addEventListener('focus', openPanel);
+            input.addEventListener('input', () => {
+                clearBtn.style.display = input.value ? 'block' : 'none';
+                openPanel();
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (!panelOpen()) openPanel();
+                    const n = currentItems.length;
+                    if (!n) return;
+                    activeIdx = e.key === 'ArrowDown' ? (activeIdx + 1) % n : (activeIdx - 1 + n) % n;
+                    highlight();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();   /* never advance the wizard on Enter */
+                    if (activeIdx >= 0 && currentItems[activeIdx]) setValue(currentItems[activeIdx].name);
+                    else if (panelOpen()) closePanel();
+                } else if (e.key === 'Escape') {
+                    closePanel();
+                } else if (e.key === 'Tab') {
+                    closePanel();
+                }
+            });
+            panel.addEventListener('mousedown', (e) => {
+                const opt = e.target.closest('.city-combo-opt');
+                if (!opt) return;
+                e.preventDefault();   /* beat the input's blur */
+                setValue(opt.dataset.name);
+            });
+            input.addEventListener('blur', () => { setTimeout(closePanel, 120); });
+            clearBtn.addEventListener('click', () => {
+                sel.value = '';
+                input.value = '';
+                clearBtn.style.display = 'none';
+                input.focus();
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.city-combo')) closePanel();
+            });
+
+            /* Legacy drafts may hold a retired value (e.g. "Other") — re-add it
+               to the select AND mirror it into the input, exactly as before. */
+            const _applyDraft = applyDraftToForm;
+            applyDraftToForm = function (d) {
+                const step = _applyDraft(d);
+                const v = (d && d.state && d.state.city) || '';
+                if (v) {
+                    addCityOption(v);
+                    if (sel.value === v) syncFromSelect();
+                }
+                return step;
+            };
+
+            /* Programmatic access for the auto-suggest at the end of this
+               script (page-local). */
+            window.RegCityCombo = { setValue, addCityOption, syncFromSelect, sel, input, clearBtn };
+        })();
+
+        // ---- Draft autosave (localStorage) ----
+        // Saves the wizard's progress after every change so applicants can close the
+        // page and resume later. File PICKERS cannot be restored by browsers, so the
+        // draft remembers only the file names and asks the user to re-attach them.
+        const DRAFT_KEY = 'sc_reg_draft_v1';
+
+        function saveDraft() {
+            try {
+                // sync the current step's inputs into state first, so nothing typed
+                // since the last event is missed
+                try { collect(currentStep); } catch (e) {}
+                const draft = {
+                    savedAt: Date.now(),
+                    step: currentStep,
+                    state: JSON.parse(JSON.stringify(state))
+                };
+                // Ghana Card previews ride along in the draft as compressed base64
+                delete draft.state.idFront;   // File objects are not serializable
+                delete draft.state.idBack;
+                draft.idFrontData = state.idFrontData || '';
+                draft.idBackData = state.idBackData || '';
+                draft.idFrontName = state.idFront ? state.idFront.name : '';
+                draft.idBackName = state.idBack ? state.idBack.name : '';
+                localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+            } catch (e) { /* storage full/blocked — draft is best-effort */ }
+        }
+
+        function clearDraft() {
+            try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+        }
+
+        function loadDraft() {
+            try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { return null; }
+        }
+
+        function hasMeaningfulDraft(d) {
+            if (!d || !d.state) return false;
+            const s = d.state;
+            const vals = [s.name, s.phone, s.city, s.cat, s.years, s.spec, s.desc, s.idNumber, s.rate, s.momo];
+            return vals.some(v => v && String(v).trim()) || (s.languages || []).length || (s.days || []).length;
+        }
+
+        // Fill form inputs from a draft. Returns the step to resume at.
+        function applyDraftToForm(d) {
+            const s = d.state || {};
+            const setV = (id, v) => { const el = $(id); if (el && v !== undefined && v !== null && v !== '') el.value = v; };
+            // Drafts saved before the shared city list landed may hold a
+            // retired value (e.g. "Other") — re-add it so restore still works.
+            if (s.city) {
+                const sel = $('regCity');
+                if (sel && sel.value !== s.city && !Array.from(sel.options).some(o => o.value === s.city)) {
+                    const o = document.createElement('option');
+                    o.value = s.city; o.textContent = s.city;
+                    sel.appendChild(o);
+                }
+            }
+            setV('regName', s.name); setV('regPhone', s.phone); setV('regWhatsapp', s.whatsapp);
+            setV('regEmail', s.email); setV('regCity', s.city); setV('regCat', s.cat);
+            setV('regYears', s.years); setV('regSpec', s.spec); setV('regDesc', s.desc);
+            setV('regPortfolioUrl', s.portfolioUrl); setV('regSocial', s.social);
+            setV('regIdNumber', s.idNumber); setV('regTin', s.tin);
+            setV('regRate', s.rate); setV('regUnit', s.unit); setV('regEmergency', s.emergency);
+            setV('regResponse', s.response); setV('regMomo', s.momo);
+            (s.languages || []).forEach(v => { const c = document.querySelector('#langChips .chip[data-val="' + v + '"]'); if (c) c.classList.add('active'); });
+            (s.days || []).forEach(v => { const c = document.querySelector('#dayChips .chip[data-val="' + v + '"]'); if (c) c.classList.add('active'); });
+            state.languages = (s.languages || []).slice();
+            state.days = (s.days || []).slice();
+            // File pickers can't be re-populated — show what was attached before
+            if (d.idFrontName || d.idBackName) {
+                const names = [d.idFrontName, d.idBackName].filter(Boolean).join(', ');
+                const box = $('regIdNumber').closest('.form-step')
+                    ? $('regIdNumber').closest('.form-step').querySelector('.file-names') : null;
+                const note = 'Previous upload: ' + names + ' — please re-attach your card photos.';
+                // Show the saved compressed photos when we have them
+                ['idFrontData', 'idBackData'].forEach((k, i) => {
+                    const el = $(i === 0 ? 'idFrontThumb' : 'idBackThumb');
+                    if (el && d[k] && !el.innerHTML.trim()) el.innerHTML = '<img src="' + d[k] + '" alt="Saved card photo"><small><i class="fa-solid fa-clock-rotate-left"></i> saved draft photo — re-attach to replace</small>';
+                });
+                ['idFrontThumb', 'idBackThumb'].forEach(tid => {
+                    const el = $(tid);
+                    if (el && !el.innerHTML.trim()) el.innerHTML = '<small style="color: var(--accent-text);"><i class="fa-solid fa-clock-rotate-left"></i> ' + esc(names) + '</small>';
+                });
+            }
+            Object.assign(state, s, { languages: (s.languages || []).slice(), days: (s.days || []).slice() });
+            return Math.min(Math.max(d.step || 1, 1), TOTAL_STEPS - 1);   // never resume ON the submit step
+        }
+
+        function esc(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function showError(msg) {
+            const box = $('errorBox');
+            box.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + esc(msg);
+            box.style.display = 'block';
+            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function hideError() { $('errorBox').style.display = 'none'; }
+
+        function validPhone(v) {
+            return /^(\+233|233|0)\d{9}$/.test(v.replace(/[\s-]/g, ''));
+        }
+
+        // ---- Collect current step values into state ----
+        function collect(step) {
+            if (step === 1) {
+                state.name = $('regName').value.trim();
+                state.phone = $('regPhone').value.trim();
+                state.whatsapp = $('regWhatsapp').value.trim() || state.phone;
+                state.email = $('regEmail').value.trim();
+                state.city = $('regCity').value;
+                state.cat = $('regCat').value;
+            } else if (step === 2) {
+                state.years = $('regYears').value;
+                state.spec = $('regSpec').value.trim();
+                state.desc = $('regDesc').value.trim();
+            } else if (step === 3) {
+                state.portfolioUrl = $('regPortfolioUrl').value.trim();
+                state.social = $('regSocial').value.trim();
+                const f1 = $('regFiles').files, f2 = $('regFiles2').files;
+                state.samples = (f1.length + f2.length) ? (f1.length + f2.length) + ' file(s) attached' : 'Will send via WhatsApp';
+            } else if (step === 4) {
+                state.idType = 'ghana_card';
+                state.idNumber = $('regIdNumber').value.trim().toUpperCase();
+                state.tin = $('regTin').value.trim().toUpperCase();
+                state.idFront = $('regIdFront').files[0] || null;
+                state.idBack = $('regIdBack').files[0] || null;
+                state.truth = $('regTruth').checked;
+            } else if (step === 5) {
+                state.rate = $('regRate').value;
+                state.unit = $('regUnit').value;
+                state.emergency = $('regEmergency').value;
+                state.response = $('regResponse').value;
+                state.momo = $('regMomo').value.trim();
+            } else if (step === 6) {
+                state.terms = $('regTerms').checked;
+            }
+        }
+
+        // ---- Validate current step; return error message or null ----
+        function validate(step) {
+            collect(step);
+            if (step === 1) {
+                if (!state.name || state.name.length < 3) return 'Please enter your full name or business name (at least 3 characters).';
+                if (!validPhone(state.phone)) return 'Please enter a valid Ghanaian phone number, e.g. 024 421 1595 or +233 24 421 1595.';
+                if (state.whatsapp && !validPhone(state.whatsapp)) return 'The WhatsApp number looks invalid. Example: 024 421 1595.';
+                if (!state.city) return 'Please select your base city.';
+                if (!state.cat) return 'Please choose your main service category.';
+            } else if (step === 2) {
+                if (!state.years) return 'Please select your years of experience.';
+                if (!state.spec) return 'Please list at least one specialty, e.g. "Weddings, corporate events".';
+                if (!state.desc || state.desc.length < 20) return 'Please describe your service in at least 20 characters — this is what sells you to customers.';
+            } else if (step === 3) {
+                // Optional step — always passes
+                return null;
+            } else if (step === 4) {
+                // Ghana Card format: GHA-XXXXXXXXX-X (also accept GHA XXXXXXXXX X)
+                const gc = /^GHA[- ]?\d{9}[- ]?\d$/.test(state.idNumber);
+                if (!state.idNumber) return 'Please enter your Ghana Card number.';
+                if (!gc) return 'The Ghana Card number looks wrong. It looks like GHA-123456789-0 (3 letters GHA, 9 digits, 1 digit).';
+                if (state.tin && !/^[A-Z0-9]{8,12}$/.test(state.tin)) return 'The TIN looks invalid — it is usually 8-12 letters/digits (e.g. C0012345678). Leave it blank if you do not have one yet.';
+                if (!state.idFront) return 'Please upload a clear photo of the FRONT of your Ghana Card.';
+                if (!state.idBack) return 'Please upload a clear photo of the BACK of your Ghana Card.';
+                if (state.idFront.size > 8 * 1024 * 1024) return 'The front photo is too large (max 8MB).';
+                if (state.idBack.size > 8 * 1024 * 1024) return 'The back photo is too large (max 8MB).';
+                if (!state.truth) return 'Please confirm that your documents are true and yours.';
+            } else if (step === 5) {
+                if (!state.rate || Number(state.rate) <= 0) return 'Please enter your starting rate in Ghana Cedis.';
+                if (!state.unit) return 'Please select the rate unit (per hour, per day, per event...).';
+                if (!state.days || state.days.length === 0) return 'Please select at least one day you are available.';
+                if (!state.emergency) return 'Please tell us if you accept emergency / same-day jobs.';
+                if (!state.response) return 'Please select your typical response time.';
+            } else if (step === 6) {
+                if (!state.terms) return 'Please accept the Terms of Service and Commission Policy to submit.';
+            }
+            return null;
+        }
+
+        // ---- Stepper rendering ----
+        function renderStepper() {
+            document.querySelectorAll('.step-dot').forEach(dot => {
+                const s = Number(dot.dataset.step);
+                dot.classList.toggle('active', s === currentStep);
+                dot.classList.toggle('done', s < currentStep);
+                const d = dot.querySelector('.dot');
+                d.innerHTML = (s < currentStep) ? '<i class="fa-solid fa-check"></i>' : s;
+            });
+            const pct = ((currentStep - 1) / (TOTAL_STEPS - 1)) * 84;
+            $('progressLine').style.width = pct + '%';
+            $('stepNow').textContent = currentStep;
+            $('stepName').textContent = STEP_NAMES[currentStep];
+        }
+
+        function showStep(n) {
+            currentStep = n;
+            maxStepReached = Math.max(maxStepReached, n);
+            saveDraft();   // progress checkpoint on every step move
+            document.querySelectorAll('.form-step').forEach(fs => {
+                fs.classList.toggle('active', Number(fs.dataset.step) === n);
+            });
+            $('btnBack').style.visibility = n === 1 ? 'hidden' : 'visible';
+            $('btnNext').innerHTML = n === TOTAL_STEPS
+                ? '<i class="fa-solid fa-paper-plane"></i> Submit Application'
+                : 'Next Step <i class="fa-solid fa-arrow-right"></i>';
+            if (n === TOTAL_STEPS) buildReview();
+            renderStepper();
+            hideError();
+            document.querySelector('.card-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ---- Review builder + live preview card ----
+        function row(k, v) {
+            return `<div class="review-row"><span class="k">${k}</span><span class="v">${esc(v || '—')}</span></div>`;
+        }
+
+        function buildReview() {
+            // Defensive defaults in case of out-of-order access
+            const d = {
+                name: state.name || '', phone: state.phone || '', whatsapp: state.whatsapp || '',
+                email: state.email || '', city: state.city || '', cat: state.cat || '',
+                years: state.years || '', spec: state.spec || '', desc: state.desc || '',
+                portfolioUrl: state.portfolioUrl || '', social: state.social || '',
+                samples: state.samples || 'Will send via WhatsApp',
+                idType: state.idType || '', idNumber: state.idNumber || '', tin: state.tin || '',
+                idDocs: !!(state.idFront && state.idBack),
+                rate: state.rate || '', unit: state.unit || '',
+                emergency: state.emergency || '', response: state.response || '', momo: state.momo || ''
+            };
+            const langStr = (state.languages || []).join(', ');
+            const dayStr = (state.days || []).join(', ');
+            const rateStr = d.rate ? 'GH₵ ' + Number(d.rate).toLocaleString() + ' / ' + d.unit : '—';
+
+            $('reviewSummary').innerHTML =
+                `<div class="review-section"><h4><i class="fa-solid fa-user"></i> Account</h4>
+                    ${row('Name / Business', d.name)}${row('Phone', d.phone)}
+                    ${row('WhatsApp', d.whatsapp)}${row('Email', d.email)}
+                    ${row('City', d.city)}${row('Category', CAT_LABELS[d.cat] || d.cat)}
+                </div>
+                <div class="review-section"><h4><i class="fa-solid fa-screwdriver-wrench"></i> Skills</h4>
+                    ${row('Experience', d.years)}${row('Specialties', d.spec)}
+                    ${row('Languages', langStr)}
+                    ${row('Service Description', d.desc.length > 90 ? d.desc.slice(0, 90) + '…' : d.desc)}
+                </div>
+                <div class="review-section"><h4><i class="fa-solid fa-briefcase"></i> Portfolio</h4>
+                    ${row('Portfolio Link', d.portfolioUrl)}${row('Social Media', d.social)}
+                    ${row('Samples', d.samples)}
+                </div>
+                <div class="review-section"><h4><i class="fa-solid fa-shield-halved"></i> Verification</h4>
+                    ${row('Ghana Card No.', d.idNumber ? d.idNumber : '')}
+                    ${row('TIN', d.tin || '— (optional)')}
+                    ${row('Card Images', d.idDocs ? 'Front ✔ + Back ✔ uploaded' : 'Not uploaded')}
+                </div>
+                <div class="review-section"><h4><i class="fa-solid fa-money-bill-wave"></i> Rates & Availability</h4>
+                    ${row('Starting Rate', rateStr)}
+                    ${row('Available Days', dayStr)}
+                    ${row('Emergency Jobs', d.emergency === 'yes' ? 'Yes' : (d.emergency ? 'No' : ''))}
+                    ${row('Response Time', d.response)}${row('MoMo Payout', d.momo)}
+                </div>`;
+
+            $('previewCard').innerHTML = renderPreviewCardHtml();
+        }
+
+        // ---- Live preview card (rendered from the current form state) ----
+        function renderPreviewCardHtml() {
+            const d = {
+                name: state.name || '', city: state.city || '', cat: state.cat || '',
+                spec: state.spec || '', rate: state.rate || '', unit: state.unit || ''
+            };
+            const langStr = (state.languages || []).join(', ');
+            // read ID uploads straight from the DOM so the preview reacts instantly
+            const docsIn = document.getElementById('regIdFront').files.length > 0 && document.getElementById('regIdBack').files.length > 0;
+            const note = docsIn ? '🆕 New applicant · ID docs uploaded' : '🆕 New applicant';
+            return `<div class="talent-card">
+                    <div class="talent-photo"><i class="fa-solid ${CAT_ICONS[d.cat] || 'fa-user'}"></i></div>
+                    <div class="talent-body">
+                        <h4>${esc(d.name) || 'Your Name Here'}</h4>
+                        <span class="role">${esc(CAT_LABELS[d.cat] || d.cat || 'Service Category')}${d.city ? ' — ' + esc(d.city) : ''}</span>
+                        <div class="meta">${note}${d.spec ? ' · ' + esc(d.spec) : ''}${langStr ? ' · ' + esc(langStr) : ''}</div>
+                        <div class="price-tag">${d.rate ? 'From GH₵ ' + Number(d.rate).toLocaleString() + ' / ' + esc(d.unit || 'job') : 'Rate on request'}</div>
+                        <button class="book-mini pending" type="button">Pending Verification</button>
+                    </div>
+                </div>`;
+        }
+
+        // Live update: sync state from the current step's inputs, then re-render
+        let previewTimer = null;
+        function updateLivePreview() {
+            if (previewTimer) clearTimeout(previewTimer);
+            previewTimer = setTimeout(() => {
+                try { collect(currentStep); } catch (e) { /* step inputs may be mid-edit */ }
+                $('previewCard').innerHTML = renderPreviewCardHtml();
+            }, 120);
+        }
+        document.getElementById('regForm').addEventListener('input', () => { updateLivePreview(); saveDraft(); });
+        document.getElementById('regForm').addEventListener('change', () => { updateLivePreview(); saveDraft(); });
+
+        // ---- Submit ----
+        function submitApplication() {
+            // Persist to the shared store -> appears in the Admin console queue
+            const rec = SC.addApplication({
+                name: state.name, phone: state.phone, whatsapp: state.whatsapp, email: state.email,
+                city: state.city, cat: state.cat, years: state.years, spec: state.spec,
+                desc: state.desc, languages: state.languages.slice(), portfolioUrl: state.portfolioUrl || '',
+                social: state.social || '', samples: state.samples,
+                idType: state.idType, idNumber: state.idNumber, tin: state.tin || '',
+                idFrontName: state.idFront ? state.idFront.name : '',
+                idBackName: state.idBack ? state.idBack.name : '',
+                idFrontData: state.idFrontData || '',   // compressed base64 — admins see the actual photos
+                idBackData: state.idBackData || '',
+                rate: state.rate, unit: state.unit, emergency: state.emergency,
+                response: state.response, momo: state.momo || '', days: state.days.slice()
+            });
+            const ref = rec.id;
+            $('refNumber').textContent = ref;
+            const tl = document.getElementById('trackAppLink');
+            if (tl) tl.href = 'application.html?ref=' + encodeURIComponent(ref);
+            $('regForm').style.display = 'none';
+            document.getElementById('stepper').style.display = 'none';
+            document.querySelector('.progress-note').style.display = 'none';
+            document.getElementById('livePreviewWrap').style.display = 'none';
+            clearDraft();   // application submitted — no half-finished draft to resume
+            document.getElementById('errorBox').style.display = 'none';
+            $('successPanel').style.display = 'block';
+
+            const lines = [
+                'Hello SkillConnect! New professional application:',
+                ref,
+                '',
+                '*Name:* ' + state.name,
+                '*Phone:* ' + state.phone,
+                '*WhatsApp:* ' + state.whatsapp,
+                '*Email:* ' + (state.email || '-'),
+                '*City:* ' + state.city,
+                '*Category:* ' + CAT_LABELS[state.cat],
+                '*Experience:* ' + state.years,
+                '*Specialties:* ' + state.spec,
+                '*Languages:* ' + (state.languages.join(', ') || '-'),
+                '*About:* ' + state.desc,
+                '*Portfolio:* ' + (state.portfolioUrl || '-'),
+                '*Social:* ' + (state.social || '-'),
+                '*Samples:* ' + state.samples,
+                '*Ghana Card:* ' + state.idNumber + ' (front & back uploaded)',
+                '*TIN:* ' + (state.tin || 'not provided'),
+                '*Rate:* GH₵ ' + state.rate + ' / ' + state.unit,
+                '*Days:* ' + state.days.join(', '),
+                '*Emergency:* ' + (state.emergency === 'yes' ? 'Yes' : 'No'),
+                '*Response:* ' + state.response,
+                '*MoMo:* ' + (state.momo || '-')
+            ];
+            // Deep-link "See The Directory" to the applicant's category so they can
+            // watch for their own card after admin verification
+            const dirLink = document.getElementById('dirPreviewLink');
+            if (dirLink) dirLink.href = 'index.html?cat=' + encodeURIComponent(state.cat || '');
+
+            // Registration fee flow
+            $('regFeeAmt').textContent = SC.getRegFee();
+            $('regFeeBtn').innerHTML = '<i class="fa-solid fa-money-bill-transfer"></i> I Have Paid GH₵ ' + SC.getRegFee() + ' — Confirm';
+            $('regFeeBtn').onclick = async () => {
+                const method = $('regFeeMethod').value;
+                const payRef = $('regFeeRef').value.trim();
+                $('regFeeBtn').disabled = true;
+                const r = await SCPay.pay({
+                    purpose: 'reg_fee', refId: ref, method: method === 'paystack' ? 'paystack' : 'momo',
+                    simulate: () => SC.payRegFee(ref, method, payRef),
+                    onTick: (i, max) => {
+                        $('regFeeDone').style.display = 'block';
+                        $('regFeeDone').innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Approve the GH₵ ' + SC.getRegFee() + ' prompt on your phone… (' + (max - i) + ')';
+                    }
+                });
+                if (r.redirected) return;   /* off to Paystack checkout; resume() completes it */
+                if (!r.ok) {
+                    $('regFeeDone').style.display = 'block';
+                    $('regFeeDone').innerHTML = '<i class="fa-solid fa-hourglass-half"></i> ' + SC.esc(r.error || 'Payment not completed.') + ' You can retry below — nothing was double-charged.';
+                    $('regFeeDone').style.borderColor = 'var(--primary-yellow)';
+                    $('regFeeDone').style.color = 'var(--primary-yellow)';
+                    $('regFeeBtn').disabled = false;
+                    return;
+                }
+                /* Sandbox paid only when a pro account exists (server decided); a real
+                   gateway confirms against the application either way. */
+                $('regFeeDone').style.display = 'block';
+                if (r.intentRef) $('regFeeDone').innerHTML = '<i class="fa-solid fa-circle-check"></i> Registration fee paid — ref <strong>' + r.intentRef + '</strong>. Your verification is now prioritised.';
+            };
+
+            /* Returning from a hosted checkout: confirm the pending reg-fee intent. */
+            SCPay.resume(async (res) => {
+                if (res.ok) {
+                    $('regFeeDone').style.display = 'block';
+                    $('regFeeDone').innerHTML = '<i class="fa-solid fa-circle-check"></i> Registration fee paid — thank you! Your verification is now prioritised.';
+                } else {
+                    $('regFeeDone').style.display = 'block';
+                    $('regFeeDone').innerHTML = '<i class="fa-solid fa-hourglass-half"></i> Payment not confirmed yet — if you paid, refresh in a moment; confirmation is automatic.';
+                }
+            });
+
+            const waNumber = '233244211595';
+            $('waApplyBtn').href = 'https://wa.me/' + waNumber + '?text=' + encodeURIComponent(lines.join('\n'));
+
+            $('successPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ---- Nav buttons ----
+        $('btnNext').addEventListener('click', () => {
+            const err = validate(currentStep);
+            if (err) { showError(err); return; }
+            hideError();
+            if (currentStep === TOTAL_STEPS) { submitApplication(); return; }
+            showStep(currentStep + 1);
+        });
+
+        $('btnBack').addEventListener('click', () => { if (currentStep > 1) showStep(currentStep - 1); });
+
+        // Stepper dots: allow jumping to any reached step
+        document.querySelectorAll('.step-dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                const target = Number(dot.dataset.step);
+                if (target <= maxStepReached) showStep(target);
+            });
+        });
+
+        // ---- Chips (multi-select) ----
+        function wireChips(containerId, key) {
+            document.querySelectorAll('#' + containerId + ' .chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    chip.classList.toggle('active');
+                    const val = chip.dataset.val;
+                    const arr = state[key];
+                    const i = arr.indexOf(val);
+                    if (i === -1) arr.push(val); else arr.splice(i, 1);
+                    updateLivePreview();
+                    saveDraft();
+                });
+            });
+        }
+        wireChips('langChips', 'languages');
+        wireChips('dayChips', 'days');
+
+        // ---- File input names ----
+        const fileInputs = [
+            { input: 'regFiles', out: 'fileNames' },
+            { input: 'regFiles2', out: 'fileNames2' }
+        ];
+        fileInputs.forEach(({ input, out }) => {
+            $(input).addEventListener('change', () => {
+                const files = Array.from($(input).files).map(f => f.name);
+                $(out).textContent = files.length ? '✔ ' + files.join(', ') : '';
+            });
+        });
+
+        // ---- Image compression: downscale + JPEG-recompress via canvas ----
+        // Fits a photo into maxSide px and iterates quality until the dataURL
+        // is small enough for localStorage (~45KB target per card image).
+        function compressImage(file, maxSide) {
+            return new Promise(resolve => {
+                if (!file || !file.type.startsWith('image/')) return resolve({ error: 'not-image' });
+                const img = new Image();
+                const url = URL.createObjectURL(file);
+                img.onload = () => {
+                    URL.revokeObjectURL(url);
+                    try {
+                        let w = img.width, h = img.height;
+                        const scale = Math.min(1, maxSide / Math.max(w, h));
+                        w = Math.round(w * scale); h = Math.round(h * scale);
+                        const cv = document.createElement('canvas');
+                        cv.width = w; cv.height = h;
+                        cv.getContext('2d').drawImage(img, 0, 0, w, h);
+                        let q = 0.72, out;
+                        do { out = cv.toDataURL('image/jpeg', q); q -= 0.08; }
+                        while (out.length > 60000 && q > 0.3);
+                        resolve({ dataUrl: out, w, h, kb: Math.round(out.length * 0.75 / 1024) });
+                    } catch (err) { resolve({ error: 'compress-failed' }); }
+                };
+                img.onerror = () => { URL.revokeObjectURL(url); resolve({ error: 'bad-image' }); };
+                img.src = url;
+            });
+        }
+
+        // ---- Ghana Card thumbnails: compressed preview kept in draft + application ----
+        function wireIdThumb(inputId, thumbId, dataKey) {
+            $(inputId).addEventListener('change', async () => {
+                const f = $(inputId).files[0];
+                const box = $(thumbId);
+                if (!f) { box.innerHTML = ''; state[dataKey] = ''; saveDraft(); return; }
+                if (!f.type.startsWith('image/')) { box.innerHTML = '<em>' + esc(f.name) + '</em>'; return; }
+                box.innerHTML = '<small><i class="fa-solid fa-spinner fa-spin"></i> compressing…</small>';
+                const r = await compressImage(f, 1000);
+                if (r.error) { box.innerHTML = '<em>' + esc(f.name) + '</em>'; return; }
+                state[dataKey] = r.dataUrl;
+                box.innerHTML = '<img src="' + r.dataUrl + '" alt="ID preview"><small>' + esc(f.name) + ' · ' + r.kb + ' KB after compression</small>';
+                saveDraft();   // capture the compressed image in the draft too
+            });
+        }
+        wireIdThumb('regIdFront', 'idFrontThumb', 'idFrontData');
+        wireIdThumb('regIdBack', 'idBackThumb', 'idBackData');
+
+        // ---- Draft resume: offer to restore a half-finished application ----
+        (function initDraft() {
+            const d = loadDraft();
+            if (!hasMeaningfulDraft(d)) return;
+            const mins = Math.round((Date.now() - d.savedAt) / 60000);
+            const age = mins < 1 ? 'moments ago'
+                : mins < 60 ? mins + ' minute' + (mins === 1 ? '' : 's') + ' ago'
+                : (() => { const h = Math.round(mins / 60); return h < 24 ? h + ' hour' + (h === 1 ? '' : 's') + ' ago' : Math.round(h / 24) + ' day' + (Math.round(h / 24) === 1 ? '' : 's') + ' ago'; })();
+            $('draftAge').textContent = age;
+            $('draftBanner').style.display = 'block';
+
+            $('draftResume').addEventListener('click', () => {
+                const step = applyDraftToForm(d);
+                maxStepReached = Math.max(maxStepReached, step);
+                showStep(step);
+                $('draftBanner').style.display = 'none';
+                updateLivePreview();
+                UI.toast('Draft restored — continue where you left off', 'success');
+            });
+
+            $('draftDiscard').addEventListener('click', async () => {
+                const ok = await UI.confirm('Delete the saved draft and start a fresh application?', { title: 'Start Fresh', danger: true, okLabel: 'Delete Draft' });
+                if (!ok) return;
+                clearDraft();
+                $('draftBanner').style.display = 'none';
+                UI.toast('Draft deleted — starting fresh');
+            });
+        })();
+
+        /* ---- Auto-suggested base city (timezone/locale hint → Accra) ----
+         Runs once at load, AFTER the draft machinery above (DRAFT_KEY is a
+         const later in this script — running this any earlier would hit its
+         temporal dead zone inside loadDraft's try/catch and silently see no
+         draft, clobbering restoreable applications). A saved application
+         therefore always wins. Today every derivable hint — IANA zone
+         Africa/Accra, an en-GH locale, neighbouring West-African zones — can
+         only say "Ghana", never a specific city, so the suggestion is the
+         primary marketplace hub, Accra (the explicit fallback). When a finer
+         signal exists later (IP geo at go-live), branch HERE to
+         Kumasi/Tamale/… before falling back. The suggestion is deliberately
+         loud about being changeable and never lands in the draft on its own. */
+        (function autoSuggestBaseCity() {
+            const combo = window.RegCityCombo;
+            if (!combo) return;
+            if (hasMeaningfulDraft(loadDraft())) return;   /* a saved application owns the field */
+            if (combo.sel.value) return;                    /* already chosen / resumed */
+            let tz = '';
+            try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+            const lang = String(navigator.language || '').toLowerCase();
+            const inGhana = tz === 'Africa/Accra' || /[-_]gh\b/.test(lang)
+                || /^Africa\/(Abidjan|Lagos|Lome|Ouagadougou)/.test(tz);
+            combo.setValue('Accra', { skipDraft: true });
+            const hintEl = document.getElementById('regCityHint');
+            if (hintEl) hintEl.textContent = inGhana
+                ? 'Suggested Accra from your device\'s region — type to change it.'
+                : 'Defaulted to Accra, our main hub — type to change it.';
+        })();
+
+        renderStepper();
+        $('previewCard').innerHTML = renderPreviewCardHtml();   // show the empty-state card immediately
+    </script>
+</body>
+</html>

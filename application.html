@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>try{if(localStorage.getItem('sc_theme')!=="dark")document.documentElement.setAttribute("data-theme","light")}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Status | SKILLCONNECT GH</title>
+    <meta name="description" content="Track your SkillConnect professional application — enter your SC-APP reference to see live verification progress, registration fee status and next steps.">
+    <meta name="robots" content="noindex, follow">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css?v=17">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta name="theme-color" content="#FFCC00">
+    <style>
+/* application-status specific */
+        .app-wrap { max-width: 640px; margin: 0 auto; }
+        .search-card { display: flex; gap: 10px; }
+        .search-card input { flex: 1; }
+        .app-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+        .app-meta { font-size: 0.8rem; color: var(--text-muted); line-height: 1.7; margin-top: 8px; }
+        .app-steps { border-left: 2px solid var(--card-black); margin: 14px 0 4px 8px; padding-left: 20px; }
+        .app-step { position: relative; padding-bottom: 18px; }
+        .app-step::before {
+            content: ''; position: absolute; left: -27px; top: 3px;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: var(--border); border: 2px solid var(--card-black);
+        }
+        .app-step.done::before { background: var(--success-green); border-color: var(--success-green); }
+        .app-step.now::before { background: var(--primary-yellow); border-color: var(--accent-text); box-shadow: 0 0 0 4px rgba(255, 204, 0, .18); }
+        .app-step.bad::before { background: var(--danger-red); border-color: var(--danger-red); }
+        .app-step .st-label { font-weight: 800; font-size: 0.86rem; color: var(--text-light); }
+        .app-step.todo .st-label { color: var(--text-muted); font-weight: 600; }
+        .app-step .st-desc { font-size: 0.76rem; color: var(--text-muted); margin-top: 2px; }
+        .app-step .st-when { font-size: 0.68rem; color: var(--text-faint); margin-top: 2px; }
+        .app-step.now .st-label { color: var(--accent-text); }
+        .app-step.bad .st-label { color: var(--danger-red); }
+        .fee-line { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; padding: 10px 12px; background: var(--bg-strong); border: 1px solid var(--card-black); border-radius: 8px; margin-top: 12px; }
+        .fee-line i { color: var(--accent-text); }
+        .fee-line.ok { border-color: var(--success-green); }
+        .fee-line.ok i { color: var(--success-green); }
+        .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .ref-chip { background: var(--bg-raised); border: 1px solid var(--border); color: var(--text-light); border-radius: 999px; padding: 6px 14px; font-size: 0.72rem; font-weight: 700; cursor: pointer; font-family: inherit; }
+        .ref-chip:hover { border-color: var(--accent-text); color: var(--accent-text); }
+        /* Review progress panel */
+        .prog-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+        .live-dot { display: none; align-items: center; gap: 5px; font-size: 0.62rem; letter-spacing: 0.5px; text-transform: uppercase; color: var(--success-green); font-weight: 800; }
+        .live-dot.show { display: inline-flex; }
+        .live-dot i { font-size: 0.5rem; }
+        .prog-title { font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); }
+        .prog-pct { font-size: 0.72rem; color: var(--accent-text); font-weight: 800; }
+        .prog-track { height: 8px; background: var(--bg-strong); border: 1px solid var(--card-black); border-radius: 99px; overflow: hidden; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg, #b89600, var(--primary-yellow)); border-radius: 99px; transition: width .6s ease; }
+        .prog-fill.rejected { background: linear-gradient(90deg, #a83232, var(--danger-red)); }
+        .prog-meta { display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--text-muted); margin-top: 6px; flex-wrap: wrap; gap: 4px; }
+        .prog-meta b { color: var(--accent-text); }
+        .prog-elapsed { font-size: 0.7rem; color: var(--text-muted); margin-top: 8px; display: flex; align-items: center; gap: 6px; }
+        .prog-elapsed.over { color: var(--danger-red); }
+        .activity { margin-top: 14px; border-top: 1px solid var(--card-black); padding-top: 10px; }
+        .activity-title { font-size: 0.62rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .act-row { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px dashed var(--border-strong); font-size: 0.76rem; align-items: flex-start; }
+        .act-row:last-child { border-bottom: none; }
+        .act-row i { color: var(--accent-text); margin-top: 2px; width: 14px; text-align: center; flex: 0 0 14px; }
+        .act-row .at { margin-left: auto; color: var(--text-faint); font-size: 0.66rem; white-space: nowrap; padding-left: 8px; }
+        .act-empty { font-size: 0.72rem; color: var(--text-faint); font-style: italic; padding: 4px 0; }
+        .cta-row { display: flex; gap: 10px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+
+<header class="site-header" data-partial></header>
+
+<section class="hero">
+    <h2>APPLICATION STATUS</h2>
+    <p>Applied to join SkillConnect? Enter the SC-APP reference from your confirmation to see exactly where your verification stands — no waiting for a call.</p>
+    <div class="badges">
+        <span class="badge"><i class="fa-solid fa-passport"></i> Track by Reference</span>
+        <span class="badge"><i class="fa-solid fa-clock"></i> Verified Within 24 Hrs</span>
+        <span class="badge"><i class="fa-solid fa-id-card"></i> Ghana Card Checked</span>
+    </div>
+</section>
+
+<div class="page-wrap app-wrap">
+
+    <!-- Reference search -->
+    <div class="card">
+        <div class="card-title"><i class="fa-solid fa-magnifying-glass"></i> Find Your Application</div>
+        <div class="search-card">
+            <input type="text" id="appRef" placeholder="e.g. SC-APP-302 or just 302" onkeydown="if(event.key==='Enter')lookup()" aria-label="Application reference">
+            <button type="button" class="btn-submit" style="width: auto; padding: 12px 22px; margin: 0;" onclick="lookup()"><i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+        <div id="lookupErr" class="error-box" style="margin-top: 12px; display: none;"></div>
+        <div id="recentChips" class="chip-row" style="display: none;"></div>
+    </div>
+
+    <!-- Result -->
+    <div id="resultArea"></div>
+
+</div>
+
+<div class="floating-contact-bar">
+    <a href="https://wa.me/233244211595" class="float-btn whatsapp" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+    <a href="tel:+233244211595" class="float-btn phone"><i class="fa-solid fa-phone"></i></a>
+</div>
+
+<footer></footer>
+
+<script src="data-store.js?v=29"></script>
+<script src="sc-pay.js?v=1"></script>
+<script>window.SC_PARTIALS = {logoIcon: "fa-user-check", logoTag: "Application Status · Verification", actions: [{kind: "whatsapp", label: "Support"}]};</script>
+<script src="header.js?v=3"></script>
+<script src="site-partials.js?v=10"></script>
+<script src="nav.js?v=3"></script>
+<script src="ui.js?v=4"></script>
+<script>
+    const $ = id => document.getElementById(id);
+
+    // ---- Auto-refresh (30s) while the tab is open ----
+    // A hidden tab stays quiet (visibilitychange restarts the loop on return),
+    // and re-renders only fire when something actually changed: status,
+    // activity feed, queue position, fee state. A silent "just updated" dot
+    // confirms to the waiting applicant that the panel is live.
+    let currentAppRef = null;
+    let pollTimer = null;
+    const POLL_MS = 30000;
+
+    /* Scoped tracking: the page fetches ONLY the requested application via
+       SC.applicationTrack(ref) — status, queue position, feed, live pro id.
+       (Pre-go-live this page pulled the entire applications table, which
+       leaked every applicant's name and phone to the browser.) */
+    let track = null;
+
+    function fetchTrack(appRef) {
+        const t = SC.applicationTrack(appRef);
+        if (t && t.app) { track = t; return track; }
+        return null;
+    }
+
+    function latestFeedCount() {
+        return track ? track.feed.length : 0;
+    }
+
+    function snapshotFor(app) {
+        return JSON.stringify([
+            app.status, app.reviewedAt, app.reviewNote, app.regFeePaid, app.feeOpen,
+            track ? track.queueAhead : 0,
+            latestFeedCount(),
+            app.status === 'verified' ? !!(track && track.livePro) : true
+        ]);
+    }
+
+    function startPolling() {
+        stopPolling();
+        pollTimer = setInterval(pollTick, POLL_MS);
+    }
+
+    function stopPolling() {
+        if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    }
+
+    async function pollTick() {
+        if (document.hidden || !currentAppRef) return;
+        const fresh = fetchTrack(currentAppRef);
+        if (!fresh) return;
+        if (snapshotFor(fresh) !== pollTick.lastSnap) {
+            pollTick.lastSnap = snapshotFor(fresh);
+            const changed = pollTick.prevStatus && pollTick.prevStatus !== fresh.status;
+            pollTick.prevStatus = fresh.status;
+            renderApp(fresh);
+            rememberRecent(fresh.id);
+            renderRecentChips();
+            const el = $('liveDot');   // fresh node: renderApp replaced the DOM
+            if (el) {
+                el.classList.add('show');
+                clearTimeout(pollTick.dotTimer);
+                pollTick.dotTimer = setTimeout(() => { const d = $('liveDot'); if (d) d.classList.remove('show'); }, 4000);
+            }
+            if (changed) {
+                const verdict = fresh.status === 'verified' ? 'Your application was approved — profile is live!' : fresh.status === 'rejected' ? 'Your application was reviewed: not approved this time.' : null;
+                if (verdict) UI.toast(verdict, fresh.status === 'verified' ? 'success' : 'error', 6000);
+            }
+        }
+    }
+
+    const digits = s => String(s || '').replace(/\D/g, '');
+    const when = ts => ts ? new Date(ts).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+    const pillCls = { pending: 'pending', verified: 'success', rejected: 'rejected' };
+    const waLink = txt => 'https://wa.me/233244211595?text=' + encodeURIComponent(txt);
+
+    function lookup() {
+        const raw = $('appRef').value.trim();
+        const err = $('lookupErr');
+        if (!raw || digits(raw).length < 2) { err.style.display = 'none'; $('resultArea').innerHTML = ''; stopPolling(); currentAppRef = null; return; }
+        const t = fetchTrack(raw);
+        if (!t) {
+            stopPolling();
+            currentAppRef = null;
+            track = null;
+            err.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> No application found for <strong>' + SC.esc(raw) + '</strong>. Check the reference in your confirmation (it looks like SC-APP-302), or <a href="' + waLink('Hello SkillConnect! I applied but lost my reference. My name is: ') + '" target="_blank" rel="noopener" style="color: var(--accent-text);">WhatsApp us</a> and we will find it.';
+            err.style.display = 'block';
+            $('resultArea').innerHTML = '';
+            return;
+        }
+        const app = t.app;
+        err.style.display = 'none';
+        renderApp(app);
+        currentAppRef = digits(app.id);
+        pollTick.lastSnap = snapshotFor(app);
+        pollTick.prevStatus = app.status;
+        startPolling();
+        rememberRecent(app.id);
+        renderRecentChips();
+        $('resultArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function rememberRecent(id) {
+        try {
+            let list = JSON.parse(localStorage.getItem('sc_recent_apps') || '[]');
+            list = list.filter(x => x.id !== id);
+            list.unshift({ id, at: Date.now() });
+            localStorage.setItem('sc_recent_apps', JSON.stringify(list.slice(0, 4)));
+        } catch (e) { /* best-effort */ }
+    }
+
+    function renderRecentChips() {
+        let list = [];
+        try { list = JSON.parse(localStorage.getItem('sc_recent_apps') || '[]'); } catch (e) {}
+        const box = $('recentChips');
+        if (!list.length) { box.style.display = 'none'; return; }
+        box.style.display = 'flex';
+        box.innerHTML = '<span style="font-size: 0.68rem; color: var(--text-faint); text-transform: uppercase; align-self: center;">Recent:</span>' +
+            list.map(x => '<button type="button" class="ref-chip" onclick="$(\'appRef\').value=\'' + x.id + '\'; lookup()">' + x.id + '</button>').join('');
+    }
+
+    function renderApp(app) {
+        const pro = (track && app.status === 'verified') ? track.livePro : null;
+        const cat = SC.CAT_LABELS[app.cat] || app.cat;
+        let steps = '', feeLine = '', cta = '';
+
+        if (app.status === 'pending') {
+            steps =
+                step('done', 'fa-paper-plane', 'Application received', 'We have your details and ID documents.', app.submittedAt) +
+                step('now', 'fa-magnifying-glass', 'Document &amp; ID verification', 'Our team is reviewing your Ghana Card and details — usually done within 24 hours.', null) +
+                step('todo', 'fa-phone', 'Confirmation call (if needed)', 'We may reach you on ' + SC.esc(app.whatsapp || app.phone || 'WhatsApp') + ' to confirm skills and rates.', null) +
+                step('todo', 'fa-rocket', 'Profile goes live', 'Your verified profile appears in the directory and job alerts start flowing.', null);
+        } else if (app.status === 'verified') {
+            steps =
+                step('done', 'fa-paper-plane', 'Application received', 'We have your details and ID documents.', app.submittedAt) +
+                step('done', 'fa-circle-check', 'Verification complete', 'Ghana Card and details checked by our team.', app.reviewedAt) +
+                step('done', 'fa-rocket', 'Profile live in the directory', 'You are listed as <strong style="color: var(--accent-text);">' + (pro ? SC.esc(pro.id) : 'a verified pro') + '</strong> — job alerts are active.', app.reviewedAt);
+        } else {
+            steps =
+                step('done', 'fa-paper-plane', 'Application received', 'We have your details and ID documents.', app.submittedAt) +
+                step('done', 'fa-magnifying-glass', 'Review completed', 'Our team finished reviewing this application.', app.reviewedAt) +
+                step('bad', 'fa-circle-xmark', 'Not approved', (app.reviewNote ? SC.esc(app.reviewNote) : 'Your application was not approved this time.'), app.reviewedAt);
+        }
+
+        const FEE = SC.getRegFee();
+        if (app.regFeePaid) {
+            feeLine = '<div class="fee-line ok"><i class="fa-solid fa-circle-check"></i><span>Registration fee paid — GH₵ ' + FEE + ' (verification prioritised). Thank you!</span></div>';
+        } else if (app.status === 'pending') {
+            feeLine = '<div class="fee-line"><i class="fa-solid fa-id-card"></i><span>Registration fee pending — pay GH₵ ' + FEE + ' to prioritise your verification.</span> ' +
+                '<button type="button" class="mini-btn" onclick="toggleFeeBox()">' + (app.feeOpen ? 'Hide' : 'Pay Now') + '</button></div>';
+            if (app.feeOpen) {
+                feeLine += '<div class="card" style="margin-top: 10px; padding: 14px;">' +
+                    '<div class="form-grid">' +
+                    '<div class="form-group"><label for="feeMethod">Paid Via</label><select id="feeMethod"><option value="momo">MTN MoMo</option><option value="telecel">Telecel Cash</option><option value="paystack">Card (Paystack)</option></select></div>' +
+                    '<div class="form-group"><label for="feePayRef">MoMo Number / Payment Ref</label><input type="text" id="feePayRef" placeholder="e.g. 024 000 0000"></div>' +
+                    '</div>' +
+                    '<button type="button" class="btn-submit" style="background-color: var(--success-green); color: var(--on-accent);" onclick="doFeePay()"><i class="fa-solid fa-lock"></i> Confirm GH₵ ' + FEE + ' Payment</button></div>';
+            }
+        }
+
+        if (app.status === 'verified') {
+            cta = '<a class="btn-submit" href="index.html" style="width: auto; padding: 12px 24px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;"><i class="fa-solid fa-briefcase"></i> Go To My Directory</a>' +
+                '<a class="btn-edit" href="' + waLink('Hello SkillConnect! I am verified (' + app.id + '). How do I start receiving job alerts?') + '" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Ask About Job Alerts</a>';
+        } else if (app.status === 'pending') {
+            cta = '<a class="btn-edit" href="' + waLink('Hello SkillConnect! Checking my application ' + app.id + ' (' + (app.name || '') + ').') + '" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Speed Up On WhatsApp</a>' +
+                '<a class="btn-edit" href="pricing.html"><i class="fa-solid fa-tag"></i> See What Pros Earn</a>';
+        } else {
+            cta = '<a class="btn-submit" href="register.html" style="width: auto; padding: 12px 24px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;"><i class="fa-solid fa-rotate-right"></i> Apply Again With Fixes</a>' +
+                '<a class="btn-edit" href="' + waLink('Hello SkillConnect! My application ' + app.id + ' was declined. Can you tell me what to fix?') + '" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Appeal On WhatsApp</a>';
+        }
+
+        $('resultArea').innerHTML =
+            '<div class="card">' +
+                '<div class="app-head"><div><span class="row-title">' + SC.esc(app.id) + '</span>' +
+                ' <span class="pill ' + (pillCls[app.status] || 'pending') + '">' + app.status + '</span></div></div>' +
+                '<div class="app-meta"><strong style="color: var(--text-light);">' + SC.esc(app.name || 'Applicant') + '</strong> · ' + SC.esc(cat) + ' · ' + SC.esc(app.city || '') +
+                '<br>Submitted: ' + when(app.submittedAt) +
+                (app.reviewedAt ? '<br>Reviewed: ' + when(app.reviewedAt) : '') + '</div>' +
+                progressPanel(app) +
+                '<div class="app-steps">' + steps + '</div>' +
+                (app.status === 'rejected' && app.reviewNote ? '<div class="error-box" style="margin-top: 6px;"><i class="fa-solid fa-comment-dots"></i> Reviewer note: ' + SC.esc(app.reviewNote) + '</div>' : '') +
+                feeLine +
+                '<div class="cta-row">' + cta + '</div>' +
+            '</div>';
+    }
+
+    function step(state, icon, label, desc, ts) {
+        return '<div class="app-step ' + state + '">' +
+            '<div class="st-label"><i class="fa-solid ' + icon + '" style="margin-right: 6px;"></i>' + label + '</div>' +
+            '<div class="st-desc">' + desc + '</div>' +
+            (ts ? '<div class="st-when">' + when(ts) + '</div>' : '') +
+            '</div>';
+    }
+
+    // ---- Live review-progress panel: meter, queue position, SLA clock, activity feed ----
+    function progressPanel(app) {
+        let frac, fillCls = '', nowLabel, rightLabel;
+        if (app.status === 'verified') {
+            frac = 1; nowLabel = 'All steps complete — profile live'; rightLabel = 'Outcome: approved';
+        } else if (app.status === 'rejected') {
+            frac = 1; fillCls = ' rejected'; nowLabel = 'Review finished — not approved'; rightLabel = 'Outcome: not approved';
+        } else {
+            frac = 0.5; nowLabel = 'Under review by the verification team'; rightLabel = 'Target: within 24h';
+        }
+        let queueTxt = '';
+        if (app.status === 'pending') {
+            queueTxt = ' · <b>#' + (track ? track.queueAhead : 1) + ' in queue</b>';
+        }
+        const ms = Date.now() - app.submittedAt;
+        const hrs = Math.floor(ms / 3600000), mins = Math.floor(ms % 3600000 / 60000);
+        const over = app.status === 'pending' && hrs >= 24;
+        const elapsed = app.status === 'pending'
+            ? '<div class="prog-elapsed' + (over ? ' over' : '') + '"><i class="fa-solid ' + (over ? 'fa-hourglass-end' : 'fa-hourglass-half') + '"></i> In review for ' + (hrs ? hrs + 'h ' : '') + mins + 'm' + (over ? ' — past our 24h target. Nudge us on WhatsApp below.' : '') + '</div>'
+            : '';
+        const feed = (track ? track.feed : []).slice(0, 8);
+        const TYPE_ICON = { booking: 'fa-calendar-check', escrow: 'fa-lock', payment: 'fa-money-bill', application: 'fa-file-lines', job: 'fa-briefcase', review: 'fa-star', dispute: 'fa-triangle-exclamation' };
+        const feedHtml = feed.length
+            ? feed.map(n => '<div class="act-row"><i class="fa-solid ' + (TYPE_ICON[n.type] || 'fa-bell') + '"></i><span>' + SC.esc(n.text) + '</span><span class="at">' + when(n.at) + '</span></div>').join('')
+            : '<div class="act-empty">No updates logged yet — this panel checks for updates every 30 seconds while the page is open.</div>';
+        return '<div class="prog-head"><span class="prog-title">Review Progress</span><span id="liveDot" class="live-dot"><i class="fa-solid fa-circle"></i> updated</span><span class="prog-pct">' + Math.round(frac * 100) + '%</span></div>' +
+            '<div class="prog-track"><div class="prog-fill' + fillCls + '" style="width:' + Math.round(frac * 100) + '%;"></div></div>' +
+            '<div class="prog-meta"><span>' + nowLabel + (queueTxt || '') + '</span><span>' + rightLabel + '</span></div>' +
+            elapsed +
+            '<div class="activity"><div class="activity-title"><i class="fa-solid fa-timeline"></i> Activity Timeline</div>' + feedHtml + '</div>';
+    }
+
+    function toggleFeeBox() {
+        if (!track) return;
+        track.app.feeOpen = !track.app.feeOpen;
+        renderApp(track.app);
+    }
+
+    async function doFeePay() {
+        if (!track) return;
+        const app = track.app;
+        const method = $('feeMethod').value;
+        const payRef = $('feePayRef').value.trim();
+        const mode = await SCPay.gatewayMode();
+        if (mode === 'simulated' && method !== 'paystack' && !/^(\+233|233|0)\d{9}$/.test(payRef.replace(/[\s-]/g, ''))) {
+            UI.alert('Enter the Mobile Money number you paid from (e.g. 024 000 0000).', { title: 'Number Required', type: 'error', icon: 'mobile-screen' });
+            return;
+        }
+        const r = await SCPay.pay({
+            purpose: 'reg_fee', refId: app.id, method: method === 'paystack' ? 'paystack' : 'momo',
+            simulate: () => SC.payRegFee(app.id, method, payRef),
+            onTick: (i, max) => {
+                UI.toast('Approve the payment prompt on your phone… (' + (max - i) + ')', 'info', 3000);
+            }
+        });
+        if (r.redirected) return;   /* hosted checkout; resume() completes it */
+        if (!r.ok) { UI.alert(r.error + (r.intentRef ? '<br><small>Payment ref: ' + r.intentRef + ' — retry in a moment; nothing was double-charged.</small>' : ''), { title: r.timeout ? 'Waiting For Approval' : 'Payment Not Completed', type: 'error', icon: r.timeout ? 'hourglass-half' : 'circle-xmark' }); return; }
+        UI.toast('Registration fee paid' + (r.intentRef ? ' — ref ' + r.intentRef : ' — your verification is prioritised'), 'success', 3600);
+        if (SC.rehydrate) SC.rehydrate();
+        fetchTrack(currentAppRef);
+        renderApp(track.app);
+        pollTick.lastSnap = snapshotFor(track.app);
+        pollTick.prevStatus = track.app.status;
+    }
+
+    /* Returning from a hosted checkout: confirm the pending reg-fee intent.
+       Re-render the application BEFORE the toast so the status card behind
+       it already shows the paid state. */
+    SCPay.resume(async (res) => {
+        if (res.ok) {
+            if (SC.rehydrate) SC.rehydrate();
+            if (currentAppRef && fetchTrack(currentAppRef)) renderApp(track.app);
+            UI.toast('Registration fee paid — your verification is prioritised', 'success', 5000);
+        }
+        else {
+            if (SC.rehydrate) SC.rehydrate();
+            if (currentAppRef && fetchTrack(currentAppRef)) renderApp(track.app);
+            UI.alert((res.result && res.result.error || 'Payment not confirmed yet.') + '<br><small>If you paid, refresh in a moment — confirmation is automatic.</small>', { title: 'Payment Pending', type: 'error', icon: 'hourglass-half' });
+        }
+    });
+
+    // URL prefill (?ref=SC-APP-302) + recent chips on load
+    (function init() {
+        const urlRef = new URLSearchParams(location.search).get('ref');
+        if (urlRef) { $('appRef').value = urlRef; lookup(); }
+        renderRecentChips();
+        // returning to the tab refreshes immediately instead of waiting out the timer
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) pollTick(); });
+    })();
+</script>
+</body>
+</html>

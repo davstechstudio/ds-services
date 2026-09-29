@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>try{if(localStorage.getItem('sc_theme')!=="dark")document.documentElement.setAttribute("data-theme","light")}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Booking & Escrow | SKILLCONNECT GH</title>
+    <meta name="description" content="Track your SkillConnect booking, compare quotes, pay into escrow with MoMo or Paystack, release payment, chat with your pro and open disputes.">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css?v=17">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta name="theme-color" content="#FFCC00">
+    <style>
+/* track-specific */
+        .quote-card {
+            background: var(--bg-raised); border: 1px solid var(--card-black); border-left: 4px solid var(--primary-yellow);
+            border-radius: 8px; padding: 16px; margin-bottom: 12px;
+        }
+        .quote-card.accepted { border-left-color: var(--success-green); }
+        .quote-card.declined { opacity: 0.5; }
+        .quote-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+        .view-profile-btn { background: transparent; color: var(--accent-text); border: 1.5px solid var(--border); border-radius: 6px; padding: 9px 18px; font-weight: 700; cursor: pointer; font-size: 0.8rem; font-family: inherit; transition: .2s; }
+        .view-profile-btn:hover { border-color: var(--accent-text); background: rgba(255, 204, 0, .08); }
+        .quote-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+        .quote-price { color: var(--accent-text); font-weight: 900; font-size: 1.25rem; }
+        .quote-meta { font-size: 0.78rem; color: var(--text-muted); margin: 6px 0 10px; }
+        .badge-flag { display: inline-block; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 3px 8px; border-radius: 10px; background: var(--primary-yellow); color: var(--dark-black); margin-left: 6px; }
+        .badge-flag.green { background: var(--success-green); color: var(--on-accent); }
+        .badge-flag.red { background: var(--danger-surface); color: var(--danger-surface-text); }
+        .rate-line { font-size: 0.75rem; margin-top: 5px; color: var(--text-muted); }
+        .rate-line .within { color: var(--success-green); font-weight: 700; }
+        .rate-line .above { color: var(--danger-red); font-weight: 700; }
+        .timeline { border-left: 2px solid var(--card-black); margin: 10px 0 0 8px; padding-left: 18px; }
+        .tl-item { position: relative; padding-bottom: 14px; font-size: 0.82rem; color: var(--text-muted); }
+        .tl-item::before { content: ''; position: absolute; left: -24px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--primary-yellow); }
+        .tl-item strong { color: var(--text-light); }
+        .chat-panel { background: var(--bg-strong); border: 1px solid var(--card-black); border-radius: 8px; padding: 12px; max-height: 260px; overflow-y: auto; margin-bottom: 10px; }
+        .chat-msg { max-width: 80%; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; margin-bottom: 8px; }
+        .chat-msg.customer { background: var(--primary-yellow); color: var(--dark-black); margin-left: auto; font-weight: 600; }
+        .chat-msg.pro { background: var(--bg-raised); border: 1px solid var(--card-black); }
+        .chat-msg.system { background: transparent; color: var(--text-muted); font-size: 0.72rem; text-align: center; max-width: 100%; }
+        .chat-input-row { display: flex; gap: 8px; }
+        .chat-input-row input { flex: 1; }
+        .pay-method-btn { display: flex; align-items: center; gap: 12px; width: 100%; background: var(--bg-strong); border: 1px solid var(--card-black); border-radius: 10px; padding: 13px 14px; cursor: pointer; transition: .18s; color: var(--text-light); font-family: inherit; text-align: left; margin: 12px 0; }
+        .pay-method-btn:hover { border-color: var(--accent-text); }
+        .pay-method-btn .pm-ic { width: 38px; height: 38px; flex: 0 0 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .95rem; background: var(--yellow-tint-012); color: var(--accent-text); }
+        .pay-method-btn .t { flex: 1; }
+        .pay-method-btn b { display: block; font-size: .86rem; font-weight: 800; }
+        .pay-method-btn small { display: block; font-size: .7rem; color: var(--text-muted); margin-top: 2px; }
+        .pay-method-btn .go { color: var(--text-muted); font-size: .8rem; }
+        .stars-input { display: flex; gap: 8px; font-size: 1.6rem; cursor: pointer; margin: 8px 0; }
+        .stars-input i { color: var(--border); transition: .2s; }
+        .stars-input i.on { color: var(--accent-text); }
+        .step-tag { display: inline-block; background: var(--primary-yellow); color: var(--dark-black); font-size: 0.62rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 3px 9px; border-radius: 99px; vertical-align: middle; }
+        .card.step-flash { animation: stepFlash 2.8s ease; }
+        @keyframes stepFlash { 0% { box-shadow: 0 0 0 0 rgba(255, 204, 0, .65); border-color: var(--accent-text); } 25% { box-shadow: 0 0 34px 3px rgba(255, 204, 0, .5); } 100% { box-shadow: none; } }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+        .empty-state i { font-size: 3rem; color: var(--accent-text); display: block; margin-bottom: 12px; }
+        /* Print-friendly booking summary */
+        .btn-print {
+            background: transparent; border: 1px solid var(--border); color: var(--text-muted);
+            padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer;
+            font-size: 0.72rem; text-transform: uppercase; font-family: inherit; margin-top: 12px;
+        }
+        .btn-print:hover { border-color: var(--accent-text); color: var(--accent-text); }
+        .receipt-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+        #printSheet { display: none; }
+        @media print {
+            body > *:not(#printSheet) { display: none !important; }
+            body { background: white !important; }
+            #printSheet {
+                display: block !important; color: black; font-family: Georgia, 'Times New Roman', serif;
+                padding: 0; margin: 0;
+            }
+            .ps-head { border-bottom: 3px solid black; padding-bottom: 8px; margin-bottom: 14px; }
+            .ps-brand { font-size: 1.35rem; font-weight: 700; letter-spacing: 2px; }
+            .ps-brand-sub { font-size: 0.68rem; color: dimgray; margin-top: 2px; }
+            .ps-title { font-size: 1.05rem; font-weight: 700; margin: 10px 0 12px; }
+            .ps-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+            .ps-table th {
+                text-align: left; vertical-align: top; width: 34%; font-size: 0.78rem;
+                padding: 6px 8px 6px 0; border-bottom: 1px solid lightgray; color: dimgray; font-weight: 700;
+            }
+            .ps-table td { font-size: 0.85rem; padding: 6px 0; border-bottom: 1px solid lightgray; }
+            .ps-sec { font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid black; padding-bottom: 3px; margin: 14px 0 8px; }
+            .ps-ev { font-size: 0.78rem; margin-bottom: 6px; }
+            .ps-ev-t { display: inline-block; width: 170px; color: dimgray; }
+            .ps-foot { margin-top: 18px; border-top: 1px solid black; padding-top: 8px; font-size: 0.65rem; color: dimgray; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="site-header" data-partial></header>
+
+<section class="hero">
+    <h2>TRACK YOUR BOOKING</h2>
+    <p>Compare quotes, pay safely into escrow, approve the job to release payment — or open a dispute and get a refund or rematch. All protected.</p>
+    <div class="badges">
+        <span class="badge"><i class="fa-solid fa-lock"></i> Escrow Protected</span>
+        <span class="badge"><i class="fa-solid fa-comments"></i> Chat Included</span>
+        <span class="badge"><i class="fa-solid fa-handshake-angle"></i> Refund Guarantee</span>
+    </div>
+</section>
+
+<div class="page-wrap">
+
+    <!-- Lookup -->
+    <div class="card">
+        <div class="card-title"><i class="fa-solid fa-magnifying-glass"></i> Find Your Booking</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="lkRef">Booking Reference (e.g. SC-BK-284001)</label>
+                <input type="text" id="lkRef" placeholder="SC-BK-XXXXXX">
+            </div>
+            <div class="form-group">
+                <label for="lkPhone">— or — Phone Number Used</label>
+                <input type="tel" id="lkPhone" placeholder="e.g. 024 000 0000">
+            </div>
+        </div>
+        <button type="button" class="btn-submit" onclick="lookup()"><i class="fa-solid fa-arrow-right"></i> Open Booking</button>
+        <div id="lkError" class="error-box" style="margin-top: 12px;"></div>
+        <div id="proStrip"></div>
+        <div id="myBookings" style="margin-top: 15px;"></div>
+    </div>
+
+    <!-- Booking detail -->
+    <div id="bookingDetail" style="display: none;"></div>
+
+</div>
+
+<!-- Floating contact -->
+<div class="floating-contact-bar">
+    <a href="https://wa.me/233244211595" class="float-btn whatsapp" target="_blank" title="Chat on WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+    <a href="tel:+233244211595" class="float-btn phone" title="Call Us Now"><i class="fa-solid fa-phone"></i></a>
+</div>
+
+<footer></footer>    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.2.1/jspdf.umd.min.js"></script>
+    <script src="data-store.js?v=29"></script>
+    <script src="sc-pay.js?v=1"></script>
+    <script>window.SC_PARTIALS = {logoIcon: "fa-location-crosshairs", logoTag: "Track Booking · Escrow · Support", actions: [{kind: "whatsapp", label: "WhatsApp"}]};</script>
+    <script src="header.js?v=3"></script>
+    <script src="site-partials.js?v=10"></script>
+    <script src="nav.js?v=3"></script>
+    <script src="ui.js?v=4"></script>
+    <script src="sc-session.js?v=3"></script>
+    <script src="sc-push.js?v=2"></script>
+    <script src="pro-profile.js?v=6"></script>
+<script>
+    let currentBooking = null;
+
+    const $ = id => document.getElementById(id);
+    const showErr = m => { const e = $('lkError'); e.textContent = m; e.style.display = 'block'; };
+    const hideErr = () => { $('lkError').style.display = 'none'; };
+
+    function lookup() {
+        hideErr();
+        const ref = $('lkRef').value.trim().toUpperCase();
+        const phone = $('lkPhone').value.trim();
+        if (ref) {
+            let b = SC.getBooking(ref);
+            /* API mode: one forced re-hydration before giving up — heals a
+               stale or failed first hydration (server truth wins). */
+            if (!b && SC.apiMode && SC.rehydrate && SC.rehydrate()) b = SC.getBooking(ref);
+            if (!b) { showErr('No booking found with reference ' + ref + '. Check the code and try again.'); return; }
+            openBooking(ref);
+        } else if (phone) {
+            let list = SC.getBookingsFor(phone);
+            if (!list.length && SC.apiMode && SC.rehydrate && SC.rehydrate()) list = SC.getBookingsFor(phone);
+            if (!list.length) { showErr('No bookings found for that phone number.'); return; }
+            renderMyBookings(list);
+        } else {
+            showErr('Enter a booking reference or the phone number you used.');
+        }
+    }
+
+    function renderMyBookings(list) {
+        $('myBookings').innerHTML =
+            '<h4 style="color: var(--accent-text); margin-bottom: 10px;">Bookings found: ' + list.length + '</h4>' +
+            list.map(b =>
+                '<div class="service-item" style="margin-bottom: 8px; cursor: pointer;" onclick="openBooking(\'' + b.id + '\')">' +
+                '<i class="fa-solid fa-file-invoice"></i><span>' + b.id + ' — ' + SC.CAT_LABELS[b.cat] +
+                ' <small>' + SC.cedi(b.amount || 0) + ' · ' + b.status + '</small></span></div>'
+            ).join('');
+    }
+
+    function openBooking(id) {
+        currentBooking = SC.getBooking(id);
+        if (!currentBooking) return;
+        hideErr();
+        $('myBookings').innerHTML = '';
+        $('bookingDetail').style.display = 'block';
+        renderDetail();
+        $('bookingDetail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function proBadge(id) {
+        const p = SC.getPro(id);
+        if (!p) return '—';
+        return SC.esc(p.name) + ' <i class="fa-solid fa-circle-check verified-tick" title="Verified"></i>';
+    }
+
+    function renderDetail() {
+        const b = SC.getBooking(currentBooking.id);
+        currentBooking = b;
+        const quotes = SC.getQuotesFor(b.id);
+        const pro = b.chosenProId ? SC.getPro(b.chosenProId) : null;
+        const escrowReady = b.status === 'booked' && !b.escrow;   // escrow object present = already funded
+        const canRelease = b.status === 'in_progress' && b.escrow && !b.escrow.released;
+        const canDispute = b.escrow && !b.escrow.released && !['disputed', 'cancelled', 'completed'].includes(b.status);
+        const canReview = b.status === 'completed' && !b.reviewed;
+
+        let html = '<div class="card">';
+
+        // Header
+        html += '<div class="card-title"><i class="fa-solid fa-file-invoice"></i> ' + b.id +
+            ' <span class="status-pill st-' + b.status + '">' + b.status.replace('_', ' ') + '</span></div>';
+        html += '<div class="bk-row"><span class="k">Service</span><span class="v">' + (SC.CAT_LABELS[b.cat] || b.cat) + '</span></div>';
+        html += '<div class="bk-row"><span class="k">Date</span><span class="v">' + (b.date ? SC.fmtDate(b.date) : 'Flexible') + '</span></div>';
+        html += '<div class="bk-row"><span class="k">Location</span><span class="v">' + SC.esc(b.location) + '</span></div>';
+        html += '<div class="bk-row"><span class="k">Budget</span><span class="v">' + (b.budget ? SC.cedi(b.budget) : 'Not stated') + '</span></div>';
+        html += '<div class="bk-row"><span class="k">Urgency</span><span class="v">' + (SC.URGENCY_INFO[b.urgency] || {}).label + '</span></div>';
+        if (b.details) html += '<div class="bk-row"><span class="k">Details</span><span class="v">' + SC.esc(b.details) + '</span></div>';
+        if (pro) html += '<div class="bk-row"><span class="k">Professional</span><span class="v">' + proBadge(pro.id) + ' · ' + SC.cedi(b.amount) + '</span></div>';
+        if (b.escrow) html += '<div class="bk-row"><span class="k">Escrow</span><span class="v">' + (b.escrow.released ? 'Released ✔' : 'HOLDING ' + SC.cedi(b.escrow.amount)) + ' <small>(' + b.escrow.txnRef + ')</small></span></div>';
+        // Receipt downloads for the escrow money trail: one when funded, a
+        // second (release statement) once the customer releases payment.
+        if (b.escrow) {
+            html += '<div class="receipt-actions">' +
+                '<button type="button" class="btn-print" style="margin-top: 0;" onclick="downloadReceipt(\'payment\')"><i class="fa-solid fa-file-arrow-down"></i> Download Payment Receipt (PDF)</button>' +
+                (b.escrow.released ? '<button type="button" class="btn-print" style="margin-top: 0;" onclick="downloadReceipt(\'release\')"><i class="fa-solid fa-receipt"></i> Download Release Receipt (PDF)</button>' : '') +
+                '</div>';
+        }
+
+        // Timeline
+        html += '<h4 style="color: var(--accent-text); margin: 18px 0 10px;"><i class="fa-solid fa-timeline"></i> Progress</h4>';
+        html += '<div class="timeline">' + b.events.slice().reverse().map(ev =>
+            '<div class="tl-item"><strong>' + new Date(ev.at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + '</strong> — ' + SC.esc(ev.text) + '</div>'
+        ).join('') + '</div>';
+        html += '</div>';
+
+        html += '<button type="button" class="btn-print" onclick="printBooking()"><i class="fa-solid fa-print"></i> Print / Save As PDF</button>';
+        html += '</div>';
+
+        // Quotes comparison
+        if (quotes.length && !b.chosenProId) {
+            html += '<div class="card"><div class="card-title"><i class="fa-solid fa-scale-balanced"></i> Compare Quotes (' + quotes.length + ')</div>';
+            html += quotes.map(q => {
+                const p = SC.getPro(q.proId);
+                return '<div class="quote-card ' + (q.status !== 'sent' ? q.status : '') + '">' +
+                    '<div class="quote-head"><div><strong>' + SC.esc(p.name) + '</strong>' +
+                    '<i class="fa-solid fa-circle-check verified-tick"></i>' +
+                    '<span class="badge-flag">⭐ ' + p.rating.toFixed(1) + '</span>' +
+                    (p.city.toLowerCase() === b.location.toLowerCase().split(',')[0].trim() ? '<span class="badge-flag green">Local</span>' : '') +
+                    '</div><div class="quote-price">' + SC.cedi(q.price) + '</div></div>' +
+                    '<div class="quote-meta">' + SC.esc(p.role) + ' · ' + p.city + ' · responds ' + p.response +
+                    ' · ' + p.bookings + ' bookings<br>' + SC.esc(q.message) + '</div>' +
+                    '<div class="rate-line"><i class="fa-solid fa-tag"></i> Listed rate: <strong>' + SC.cedi(p.price) + '</strong> per booking' +
+                    (b.budget
+                        ? (q.price <= Number(b.budget)
+                            ? ' — <span class="within">within your ' + SC.cedi(Number(b.budget)) + ' budget' + (q.price < Number(b.budget) ? ' (' + SC.cedi(Number(b.budget) - q.price) + ' under)' : '') + '</span>'
+                            : ' — <span class="above">above your ' + SC.cedi(Number(b.budget)) + ' budget by ' + SC.cedi(q.price - Number(b.budget)) + '</span>')
+                        : '') +
+                    '</div>' +
+                    '<div class="quote-actions">' +
+                    '<button type="button" class="view-profile-btn" onclick="openProfileModal(\'' + p.id + '\')"><i class="fa-solid fa-id-badge"></i> View Profile</button>' +
+                    (q.status === 'sent' ? '<button type="button" class="book-mini" style="width:auto; padding: 9px 22px;" onclick="acceptQuote(\'' + q.id + '\')"><i class="fa-solid fa-check"></i> Accept This Quote</button>' : '<em style="font-size: 0.78rem; color: var(--text-muted);">' + q.status + '</em>') +
+                    '</div>' +
+                    '</div>';
+            }).join('');
+            html += '<p style="font-size: 0.75rem; color: var(--text-muted);">Each card shows the pro\'s listed rate alongside their quote, so you can see who fits your budget and why. Accepting a quote tells the pro to prepare. Payment happens next, into escrow — the pro is paid only after you approve the job.</p></div>';
+        }
+
+        // Rematch: dispute resolved, customer picks the replacement pro.
+        // Escrow stays held — no re-payment is needed.
+        if (b.rematchPick && (b.status === 'matching' || b.status === 'quoted')) {
+            const opts = SC.customerRematchOptions(b.id);
+            html += '<div class="card" style="border-color: var(--success-green);"><div class="card-title"><i class="fa-solid fa-rotate"></i> Pick Your Replacement Pro</div>' +
+                '<p style="font-size: 0.85rem; color: var(--text-muted);">The dispute was resolved with a rematch. Your escrow payment stays safely held — choose a replacement below and it transfers to them. <strong style="color: var(--success-green);">No re-payment needed.</strong></p>' +
+                (opts.length
+                    ? '<button type="button" class="pay-method-btn" id="rematchBtn" onclick="openRematchSheet()"><span class="pm-ic"><i class="fa-solid fa-user-plus"></i></span><span class="t"><b>' + opts.length + ' verified pro' + (opts.length === 1 ? '' : 's') + ' available</b><small>Tap to compare and pick your replacement</small></span><span class="go"><i class="fa-solid fa-chevron-right"></i></span></button>'
+                    : '<p class="row-sub"><i class="fa-solid fa-hourglass-half"></i> We are inviting more verified pros for your date — check back shortly, or contact support on WhatsApp.</p>') +
+                '</div>';
+        }
+
+        // No pro matched the budget: offer the raise-budget rematch and
+        // reassure the customer that a manual search is already underway.
+        if (!b.chosenProId && !quotes.length && !b.rematchPick && ['matching', 'quoted'].includes(b.status)) {
+            const budTxt = b.budget ? ' within a <strong style="color: var(--text-light);">' + SC.cedi(b.budget) + '</strong> budget' : '';
+            html += '<div class="card" style="border-color: var(--warn-amber-text);"><div class="card-title"><i class="fa-solid fa-user-clock"></i> Searching For Your Pro</div>' +
+                '<p style="font-size: 0.85rem; color: var(--text-muted);">No verified pro is available' + budTxt + ' right now. <strong style="color: var(--text-light);">Your request is saved</strong> and our team is already running a manual search — we will reach out to you directly. Nothing is charged until you accept a quote.</p>' +
+                '<p style="font-size: 0.85rem; color: var(--text-muted);">Want to widen the match instantly? Raise your budget to include more verified pros:</p>' +
+                '<button type="button" class="btn-submit" style="background-color: var(--accent-text); color: #1c2b22;" onclick="doRaiseBudget()"><i class="fa-solid fa-arrow-up-long"></i> Raise Budget &amp; Re-match</button>' +
+                '</div>';
+        }
+
+        // Escrow payment
+        if (escrowReady) {
+            html += '<div class="card" style="border-color: var(--accent-text);"><div class="card-title"><i class="fa-solid fa-lock"></i> Step: Pay Into Escrow</div>' +
+                '<p style="font-size: 0.85rem; color: var(--text-muted);">You are booking <strong style="color: var(--text-light);">' + SC.esc(pro.name) + '</strong> for <strong style="color: var(--accent-text);">' + SC.cedi(b.amount) + '</strong>. ' +
+                'Funds are held by SkillConnect and released to the pro only after you approve the job.</p>' +
+                '<button type="button" class="pay-method-btn" id="payMethodBtn" onclick="pickPaySheet()">' + payMethodHtml() + '</button>' +
+                '<div class="form-group" id="payFromGroup"' + (payMethod === 'paystack' ? ' style="display:none"' : '') + '><label for="payFrom">Paying Mobile Money Number</label><input type="tel" id="payFrom" placeholder="e.g. 024 000 0000"></div>' +
+                '<button type="button" class="btn-submit" style="background-color: var(--success-green); color: var(--on-accent);" onclick="doPay()"><i class="fa-solid fa-lock"></i> Pay ' + SC.cedi(b.amount) + ' Into Escrow</button></div>';
+        }
+
+        // Release + review
+        if (canRelease) {
+            html += '<div class="card" style="border-color: var(--success-green);"><div class="card-title"><i class="fa-solid fa-circle-check"></i> Approve & Release ' + SC.cedi(b.amount) + '</div>' +
+                '<p style="font-size: 0.85rem; color: var(--text-muted);">Job done to your satisfaction? Release the escrow. Commission (' + Math.round(SC.COMMISSION_RATE * 100) + '%) goes to SkillConnect; the rest goes to <strong style="color: var(--text-light);">' + SC.esc(pro.name) + '</strong> instantly.</p>' +
+                '<button type="button" class="btn-submit" style="background-color: var(--success-green); color: var(--on-accent);" onclick="doRelease()"><i class="fa-solid fa-hand-holding-dollar"></i> Release Payment To Pro</button>' +
+                '<div style="text-align: center; margin-top: 10px;"><button type="button" class="btn-clear" onclick="doDisputePrompt()">Something went wrong? Open a dispute instead</button></div></div>';
+        }
+
+        if (canDispute && !canRelease) {
+            html += '<div class="card"><div class="card-title"><i class="fa-solid fa-handshake-angle"></i> Dispute Protection</div>' +
+                '<p style="font-size: 0.85rem; color: var(--text-muted);">Escrow is holding your money. If the pro does not show up or the service is poor, open a dispute — our team refunds you or rematches another verified pro.</p>' +
+                '<button type="button" class="btn-edit" onclick="doDisputePrompt()"><i class="fa-solid fa-triangle-exclamation"></i> Open A Dispute</button></div>';
+        }
+
+        // Review — final step after escrow release
+        if (canReview) {
+            html += '<div class="card" id="reviewStep" style="border-color: var(--accent-text);"><div class="card-title"><i class="fa-solid fa-star"></i> <span class="step-tag">Final Step</span> Rate ' + SC.esc(pro.name) + '</div>' +
+                '<p style="font-size: 0.85rem; color: var(--text-muted);">Payment is released and the job is complete. Help other customers — rate ' + SC.esc(pro.name) + ' on how the service went. Your review appears on their public profile.</p>' +
+                '<div class="stars-input" id="starInput">' + [1, 2, 3, 4, 5].map(n => '<i class="fa-solid fa-star" data-n="' + n + '" onclick="setStars(' + n + ')"></i>').join('') + '</div>' +
+                '<div class="form-group"><textarea id="reviewText" rows="2" placeholder="How was the service? (optional)"></textarea></div>' +
+                '<button type="button" class="btn-submit" onclick="doReview()"><i class="fa-solid fa-paper-plane"></i> Submit Review</button></div>';
+        }
+
+        // Chat
+        if (b.chosenProId || quotes.length) {
+            html += '<div class="card"><div class="card-title"><i class="fa-solid fa-comments"></i> Chat' + (pro ? ' with ' + SC.esc(pro.name) : '') + '</div>' +
+                '<div class="chat-panel" id="chatPanel"></div>' +
+                '<div class="chat-input-row"><input type="text" id="chatText" placeholder="Type a message…" onkeydown="if(event.key===\'Enter\')sendMsg()">' +
+                '<button type="button" class="book-mini" style="width:auto; padding: 10px 18px;" onclick="sendMsg()"><i class="fa-solid fa-paper-plane"></i></button></div></div>';
+        }
+
+        // Off-website notifications (Web Push): quote/payment/chat alerts even with SkillConnect closed.
+        if (window.SCPush && SCPush.isSupported()) {
+            const perm = SCPush.permission();
+            const pref = SCPush.readPref();
+            const on = pref && pref.enabled;
+            html += '<div class="card"><div class="card-title"><i class="fa-solid fa-bell"></i> Booking Alerts On This Device</div>';
+            if (on && perm === 'granted') {
+                html += '<p class="row-sub"><i class="fa-solid fa-circle-check" style="color: var(--success-green);"></i> Alerts are ON — you will be notified here (even with SkillConnect closed) when quotes arrive, payments clear or ' + (pro ? SC.esc(pro.short) : 'your pro') + ' messages you.</p>' +
+                    '<button type="button" class="btn-edit" onclick="togglePushOff()"><i class="fa-solid fa-bell-slash"></i> Turn Off On This Device</button>';
+            } else if (perm === 'denied') {
+                html += '<p class="row-sub">Notifications are blocked for this site in your browser settings — unblock them to get booking alerts on this device.</p>';
+            } else {
+                html += '<p class="row-sub">Get quote, payment and chat alerts on this phone or computer — even when SkillConnect is closed.</p>' +
+                    '<button type="button" class="btn-wa-send" style="width:auto; padding: 12px 22px;" onclick="togglePushOn()"><i class="fa-solid fa-bell"></i> Notify Me About This Booking</button>';
+            }
+            html += '</div>';
+        }
+
+        $('bookingDetail').innerHTML = html;
+        renderChat();
+        if (b.status === 'quoted' || b.status === 'matching') { /* quotes shown above */ }
+        if (b.reviewed && b.status === 'completed' && pro) {
+            $('bookingDetail').innerHTML += '<div class="card" style="text-align: center;"><p><i class="fa-solid fa-circle-check" style="color: var(--success-green);"></i> Completed & reviewed. Thank you for using SkillConnect!</p></div>';
+        }
+    }
+
+    // ---------- actions ----------
+    let payMethod = 'momo';
+    const PAY_METHODS = {
+        momo: { label: 'MTN MoMo', desc: 'Pay from your MTN Mobile Money wallet', icon: 'mobile-screen' },
+        paystack: { label: 'Card (Paystack)', desc: 'Visa / Mastercard — secure checkout', icon: 'credit-card' },
+        telecel: { label: 'Telecel Cash', desc: 'Pay from your Telecel Cash wallet', icon: 'sim-card' }
+    };
+
+    // ---------- Raise budget & re-match (no-match bookings) ----------
+    async function doRaiseBudget() {
+        const b = currentBooking;
+        if (!b) return;
+        const suggested = b.budget ? Math.ceil((Number(b.budget) * 1.5) / 50) * 50 : 500;
+        const v = await UI.prompt(
+            'Raise your budget to invite more verified pros. Your current budget is <b>' + (b.budget ? SC.cedi(b.budget) : 'not stated') + '</b> — enter a higher amount:',
+            String(suggested),
+            { title: 'Raise Budget & Re-match', icon: 'arrow-up-long', okLabel: 'Re-match Now' }
+        );
+        if (v === null || v === undefined) return;
+        const nb = Number(v);
+        if (!nb || nb <= 0) { UI.alert('Please enter a valid budget amount.', { title: 'Invalid Amount', type: 'error', okLabel: 'Fix It' }); return; }
+        if (b.budget && nb <= Number(b.budget)) {
+            UI.alert('Enter an amount <b>higher</b> than your current budget (' + SC.cedi(b.budget) + ') — raising it widens the search; lowering it would narrow the match.', { title: 'Keep It Higher', type: 'error', okLabel: 'Got It' });
+            return;
+        }
+        const r = SC.updateBookingBudget(b.id, nb);
+        if (!r || r.ok === false) {
+            UI.alert((r && r.error) || 'Could not re-match right now — try again in a moment.', { title: 'Not This Time', type: 'error', okLabel: 'Got It' });
+            return;
+        }
+        SC.rehydrate();
+        if (r.addedCount > 0) {
+            UI.alert('Budget raised to <b>' + SC.cedi(nb) + '</b> — ' + r.addedCount + ' new verified pro' + (r.addedCount > 1 ? 's' : '') + ' invited to quote. Compare their quotes below.', { title: 'Match Widened', type: 'success', okLabel: 'Great' });
+        } else {
+            UI.alert('Budget raised to <b>' + SC.cedi(nb) + '</b>. Still no pro within budget yet — our manual search team has been notified and will reach out.', { title: 'Saved — Search Continues', type: 'success', okLabel: 'Got It' });
+        }
+        renderDetail();
+    }
+
+    function payMethodHtml() {
+        const m = PAY_METHODS[payMethod];
+        return '<span class="pm-ic"><i class="fa-solid ' + m.icon + '"></i></span>' +
+            '<span class="t"><b>' + m.label + '</b><small>Tap to change payment method</small></span>' +
+            '<span class="go"><i class="fa-solid fa-chevron-right"></i></span>';
+    }
+
+    // ---------- Rematch: customer picks a replacement pro ----------
+    function rematchRowHtml(p) {
+        return { value: p.id, label: p.name + (p.quoted ? ' — ' + SC.cedi(p.price) : ''), desc: (SC.CAT_LABELS ? '' : '') + p.city + ' · ' + (p.rating || 0).toFixed(1) + '★ (' + (p.ratingCount || 0) + ' reviews)' + (p.quoted ? ' · already quoted' : ' · listed price'), icon: 'user-check' };
+    }
+
+    async function openRematchSheet() {
+        const b = SC.getBooking(currentBooking.id);
+        const opts = SC.customerRematchOptions(b.id);
+        if (!opts.length) { UI.alert('No replacement pros are free for your date yet. Our team is inviting more — check back shortly.', { title: 'No Matches Yet', icon: 'hourglass-half' }); return; }
+        const pick = await UI.actionSheet(
+            'Your escrow payment stays held — it transfers to the pro you pick. No re-payment needed.',
+            opts.map(rematchRowHtml),
+            { title: 'Pick A Replacement Pro', icon: 'rotate', cancelLabel: 'Decide Later' }
+        );
+        if (!pick) return;
+        const chosen = opts.find(p => p.id === pick);
+        const ok = await UI.confirm(
+            'Reassign ' + b.id + ' to ' + chosen.name + ' for ' + SC.cedi(chosen.price) + '? Your held escrow covers it — nothing more to pay.',
+            { title: 'Confirm Rematch', okLabel: 'Assign ' + chosen.name.split(' ')[0], okGreen: true, icon: 'rotate' }
+        );
+        if (!ok) return;
+        const r = SC.customerRematchPick(b.id, pick);
+        if (!r.ok) { await UI.alert(r.error, { title: 'Rematch Failed', type: 'error' }); return; }
+        await UI.alert(r.pro.name + ' is now on your booking at ' + SC.cedi(r.booking.amount) + '. Your escrow transferred — they have been notified to start.', { title: 'Replacement Assigned', type: 'success', icon: 'circle-check', okLabel: 'Great' });
+        renderDetail();
+    }
+
+    async function pickPaySheet() {
+        const actions = Object.keys(PAY_METHODS).map(k =>
+            ({ value: k, label: PAY_METHODS[k].label, desc: PAY_METHODS[k].desc, icon: PAY_METHODS[k].icon }));
+        const v = await UI.actionSheet(
+            'Funds are held in escrow and released to the professional only after you approve the job.',
+            actions,
+            { title: 'Choose Payment Method', icon: 'wallet', cancelLabel: 'Keep Current' }
+        );
+        if (!v || !PAY_METHODS[v] || v === payMethod) return;
+        payMethod = v;
+        // update in place — a half-typed MoMo number must survive the change
+        const btn = document.getElementById('payMethodBtn');
+        if (btn) btn.innerHTML = payMethodHtml();
+        const grp = document.getElementById('payFromGroup');
+        if (grp) grp.style.display = v === 'paystack' ? 'none' : '';
+        UI.toast('Payment method: ' + PAY_METHODS[v].label, 'success', 2200);
+    }
+
+    function acceptQuote(qid) {
+        SC.acceptQuote(qid);
+        SC.systemChat(currentBooking.id, 'Customer accepted a quote.');
+        renderDetail();
+    }
+
+    async function doPay() {
+        const num = $('payFrom').value.trim();
+        const mode = await SCPay.gatewayMode();
+        /* MoMo number only needed for the sandbox path — real gateways take
+           payer identity from the booking row (paystack) or push to the
+           customer's own registered number (mtn_momo). */
+        if (mode === 'simulated' && payMethod !== 'paystack' && !/^(\+233|233|0)\d{9}$/.test(num.replace(/[\s-]/g, ''))) {
+            await UI.alert('Enter the Mobile Money number you are paying from (e.g. 024 000 0000).', { title: 'Number Required', type: 'error', icon: 'mobile-screen' });
+            return;
+        }
+        const btn = document.querySelector('.btn-submit[onclick="doPay()"]');
+        if (btn) { btn.disabled = true; }
+        const r = await SCPay.pay({
+            purpose: 'escrow', refId: currentBooking.id, method: payMethod === 'telecel' ? 'momo' : payMethod,
+            simulate: () => SC.payIntoEscrow(currentBooking.id, payMethod, num),
+            onTick: (i, max) => {
+                const b = document.querySelector('.btn-submit[onclick="doPay()"]');
+                if (b) b.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Approve on your phone… (' + (max - i) + ')';
+            }
+        });
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-lock"></i> Pay ' + SC.cedi(currentBooking.amount) + ' Into Escrow'; }
+        if (r.redirected) return;   /* off to Paystack's hosted checkout */
+        if (!r.ok) {
+            await UI.alert(r.error + (r.intentRef ? '<br><small>Payment ref: ' + r.intentRef + ' — retry in a moment; nothing was double-charged.</small>' : ''),
+                { title: r.timeout ? 'Waiting For Approval' : 'Payment Failed', type: 'error', icon: r.timeout ? 'hourglass-half' : 'circle-xmark' });
+            return;
+        }
+        /* Re-render BEFORE the dialog so the page behind the popup shows
+           the funded state (escrow row, release button), not the pay card. */
+        if (SC.rehydrate) SC.rehydrate();
+        renderDetail();
+        await UI.alert('Escrow txn: ' + r.txnRef + '\n' + SC.cedi(r.booking.amount) + ' is now held safely. ' + SC.getPro(r.booking.chosenProId).name + ' has been notified to start.', { title: 'Payment Successful', type: 'success', icon: 'lock', okLabel: 'Great' });
+        renderDetail();
+    }
+
+    /* Returning from Paystack's hosted checkout: confirm the pending
+       intent now (webhook normally beats us to it — verify is idempotent). */
+    SCPay.resume(async (res) => {
+        if (res.ok) {
+            const rb = res.result && res.result.booking;
+            /* Refresh the store AND re-render BEFORE the dialog: the page
+               behind the success popup must already show the funded state
+               (escrow row, release button), never the stale pay card. */
+            if (SC.rehydrate) SC.rehydrate();
+            if (currentBooking && currentBooking.id) {
+                currentBooking = SC.getBooking(currentBooking.id) || currentBooking;
+                renderDetail();
+            }
+            await UI.alert('Escrow txn: ' + (res.result && res.result.intentRef || '') + '\n' + SC.cedi(rb ? rb.amount : currentBooking.amount) + ' is now held safely. The professional has been notified to start.', { title: 'Payment Successful', type: 'success', icon: 'lock', okLabel: 'Great' });
+            renderDetail();
+        } else {
+            /* Still pending: keep the detail fresh anyway (the webhook may
+               land moments later and a second visit/re-render confirms it). */
+            if (SC.rehydrate) SC.rehydrate();
+            if (currentBooking && currentBooking.id) {
+                currentBooking = SC.getBooking(currentBooking.id) || currentBooking;
+                renderDetail();
+            }
+            await UI.alert((res.result && res.result.error || 'The payment has not confirmed yet.') + '<br><small>If you completed the payment, refresh in a moment — confirmation is automatic.</small>', { title: 'Payment Pending', type: 'error', icon: 'hourglass-half' });
+        }
+    });
+
+    async function doRelease() {
+        const ok = await UI.confirm('Release ' + SC.cedi(currentBooking.amount) + ' to the professional? This confirms the job is done.', { title: 'Approve Job', okLabel: 'Release Payment', okGreen: true, icon: 'hand-holding-dollar' });
+        if (!ok) return;
+        const r = SC.releaseEscrow(currentBooking.id);
+        if (!r.ok) { await UI.alert(r.error, { title: 'Cannot Release', type: 'error' }); return; }
+        UI.toast('Payment released to the professional', 'success');
+        renderDetail();
+        // Guide the customer to the final step: rate the pro
+        const step = document.getElementById('reviewStep');
+        if (step) {
+            step.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            step.classList.add('step-flash');
+            setTimeout(() => step.classList.remove('step-flash'), 3000);
+        }
+    }
+
+    let stars = 5;
+    function setStars(n) {
+        stars = n;
+        document.querySelectorAll('#starInput i').forEach(i => i.classList.toggle('on', Number(i.dataset.n) <= n));
+    }
+    async function doReview() {
+        const r = SC.addReview(currentBooking.id, stars, $('reviewText').value.trim());
+        if (!r.ok) { await UI.alert(r.error, { title: 'Review Not Sent', type: 'error' }); return; }
+        const pn = SC.getPro(currentBooking.chosenProId);
+        UI.toast('Review posted to ' + (pn ? pn.name + "'s" : "the pro's") + ' public profile — thank you!', 'success');
+        renderDetail();
+    }
+
+    async function doDisputePrompt() {
+        const reason = await UI.actionSheet(
+            'Tap what went wrong — our resolution team responds within 24 hours with a refund or a rematch.',
+            [
+                { value: 'no_show', label: 'Pro did not show up', desc: 'No one arrived at the agreed time and place', icon: 'user-slash' },
+                { value: 'quality', label: 'Poor quality service', desc: 'The work done was below what was agreed', icon: 'thumbs-down' },
+                { value: 'price_change', label: 'Price changed unfairly', desc: 'The pro demanded more than the agreed quote', icon: 'money-bill-trend-up' }
+            ],
+            { title: 'Open A Dispute', icon: 'gavel', iconCls: 'danger', cancelLabel: 'Never Mind' }
+        );
+        if (!reason) return;
+        const details = await UI.prompt('Describe briefly what happened (this goes to our resolution team):', '', { title: 'Dispute Details', okLabel: 'Submit' });
+        const r = SC.openDispute(currentBooking.id, reason, details || '');
+        if (!r.ok) { await UI.alert(r.error, { title: 'Cannot Open Dispute', type: 'error' }); return; }
+        await UI.alert('Dispute ' + r.dispute.id + ' opened. Escrow is frozen — our resolution team responds within 24 hours with a refund or a rematch.', { title: 'Dispute Opened', icon: 'gavel', okLabel: 'OK' });
+        renderDetail();
+    }
+
+    function buildPrint() {
+        const b = SC.getBooking(currentBooking.id);
+        if (!b) return;
+        const pro = b.chosenProId ? SC.getPro(b.chosenProId) : null;
+        const setStatus = { matching: 'Finding professionals', quoted: 'Quotes received', booked: 'Worker booked', in_progress: 'Job underway (paid into escrow)', completed: 'Completed — payment released', disputed: 'Under dispute review', cancelled: 'Cancelled' };
+        const row = (k, v) => '<tr><th>' + k + '</th><td>' + v + '</td></tr>';
+        let rows =
+            row('Reference', b.id) +
+            row('Status', setStatus[b.status] || b.status) +
+            row('Service', SC.CAT_LABELS[b.cat] || b.cat) +
+            row('Customer', SC.esc(b.name) + ' · ' + SC.esc(b.phone)) +
+            row('Event date', b.date ? SC.fmtDate(b.date) : 'Flexible') +
+            row('Location', SC.esc(b.location)) +
+            row('Budget', b.budget ? SC.cedi(b.budget) : 'Not stated');
+        if (pro) rows += row('Professional', SC.esc(pro.name) + ' (' + pro.id + ') · ' + SC.esc(pro.city));
+        if (b.amount) rows += row('Agreed amount', SC.cedi(b.amount));
+        if (b.escrow) {
+            rows += row('Payment method', ({ momo: 'Mobile Money', paystack: 'Card (Paystack)', telecel: 'Telecel Cash' })[b.escrow.method] || b.escrow.method);
+            rows += row('Escrow reference', b.escrow.txnRef);
+            rows += row('Escrow status', b.escrow.released ? 'Released to professional' + (b.commission ? ' · commission ' + SC.cedi(b.commission) : '') : 'Holding ' + SC.cedi(b.escrow.amount));
+        }
+        $('psTitle').textContent = 'Booking ' + b.id + ' — ' + (SC.CAT_LABELS[b.cat] || b.cat);
+        $('psTable').innerHTML = rows;
+        $('psTimeline').innerHTML = b.events.map(ev =>
+            '<div class="ps-ev"><span class="ps-ev-t">' + new Date(ev.at).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + '</span>' + SC.esc(ev.text) + '</div>'
+        ).join('');
+        $('psGen').textContent = new Date().toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function printBooking() {
+        buildPrint();
+        window.print();
+    }
+
+    /* ---------- Downloadable PDF receipts (escrow payment & release) ----------
+       Rendered client-side with jsPDF so the customer gets a real .pdf file,
+       not a browser print dialog. Money uses "GHS 1,200.00" because the PDF
+       core fonts have no cedi glyph. Failure degrades to the print dialog —
+       the booking summary there already carries the escrow details. */
+    const RC_METHOD = { momo: 'Mobile Money', paystack: 'Card (Paystack)', telecel: 'Telecel Cash', mtn_momo: 'MTN Mobile Money' };
+
+    function rcMoney(n) {
+        return 'GHS ' + Number(n || 0).toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function rcDate(ms) {
+        return ms ? new Date(Number(ms)).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+    }
+
+    function rcSafe(s) {
+        return String(s == null ? '' : s).replace(/[\u0080-\uFFFF]/g, '');
+    }
+
+    function rcFilename(kind, b) {
+        return 'SkillConnect-' + (kind === 'release' ? 'Release-Receipt-' : 'Payment-Receipt-') + b.id + '.pdf';
+    }
+
+    function savePdf(doc, filename) {
+        doc.save(filename);
+    }
+
+    function makePdf() {
+        if (!window.jspdf || !window.jspdf.jsPDF) return null;
+        return new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    }
+
+    /* Shared receipt page layout: header band, two-column key/value table,
+       total line and footer. Returns the y position after the table. */
+    function rcDraw(doc, title, refNo, rows, totals, footer) {
+        const M = 18, W = 210, RIGHT = W - M;
+        doc.setFillColor(255, 204, 0);
+        doc.rect(0, 0, W, 26, 'F');
+        doc.setTextColor(26, 26, 26);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(17);
+        doc.text('SKILLCONNECT GH', M, 12);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.text('Skills Marketplace · skillconnectgh.com · 024 421 1595', M, 19);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(13);
+        doc.setTextColor(20); 
+        doc.text(title, M, 37);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(90);
+        doc.text('Reference: ' + refNo, RIGHT, 37, { align: 'right' });
+
+        let y = 46;
+        const lineY = () => { doc.setDrawColor(225); doc.line(M, y + 1, RIGHT, y + 1); };
+        rows.forEach(r => {
+            doc.setFont('helvetica', r.h ? 'bold' : 'normal');
+            doc.setFontSize(r.h ? 8 : 9.5);
+            doc.setTextColor(110);
+            doc.text(rcSafe(r.k), M, y);
+            doc.setFont('helvetica', r.h ? 'bold' : 'normal');
+            doc.setFontSize(r.h ? 8.5 : 9.5);
+            doc.setTextColor(r.h ? 20 : 40);
+            doc.text(rcSafe(r.v), RIGHT, y, { align: 'right' });
+            y += 7;
+            lineY();
+        });
+        y += 4;
+        (totals || []).forEach(t => {
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(t.big ? 12 : 9.5);
+            doc.setTextColor(20);
+            doc.text(rcSafe(t.k), RIGHT - 48, y, { align: 'right' });
+            doc.text(rcSafe(t.v), RIGHT, y, { align: 'right' });
+            y += t.big ? 9 : 7;
+        });
+        y += 6;
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(8);
+        doc.setTextColor(120);
+        const words = rcSafe(footer).split(' ');
+        let ln = '';
+        words.forEach(w => {
+            if (doc.getTextWidth(ln + w) > W - 2 * M) { doc.text(ln.trim(), M, y); y += 4.5; ln = ''; }
+            ln += w + ' ';
+        });
+        if (ln.trim()) { doc.text(ln.trim(), M, y); y += 4.5; }
+        return y;
+    }
+
+    function buildPaymentReceipt(b) {
+        const doc = makePdf();
+        if (!doc) { printBooking(); return; }
+        const pro = b.chosenProId ? SC.getPro(b.chosenProId) : null;
+        const y0 = rcDraw(doc, 'ESCROW PAYMENT RECEIPT', b.id, [
+            { k: 'PAID', v: rcDate(b.escrow.paidAt || Date.now()), h: 1 },
+            { k: 'Amount paid into escrow', v: rcMoney(b.escrow.amount) },
+            { k: 'Payment method', v: RC_METHOD[b.escrow.method] || b.escrow.method },
+            { k: 'Transaction reference', v: b.escrow.txnRef },
+            { k: 'Booking reference', v: b.id },
+            { k: 'Service', v: SC.CAT_LABELS[b.cat] || b.cat },
+            { k: 'Service date', v: b.date ? SC.fmtDate(b.date) : 'Flexible' },
+            { k: 'Customer', v: rcSafe(b.name) + ' · ' + rcSafe(b.phone) },
+            { k: 'Professional', v: pro ? pro.name + ' (' + pro.id + ')' : '-' }
+        ], [
+            { k: 'TOTAL PAID', v: rcMoney(b.escrow.amount), big: 1 }
+        ], 'SkillConnect is holding ' + rcMoney(b.escrow.amount) + ' safely in escrow for booking ' + b.id + '. ' +
+            'The professional is paid only after the customer approves the completed job. This receipt is computer generated — no signature required.');
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(130);
+        doc.text('Status: FUNDS HELD IN ESCROW', 18, y0 + 4);
+        savePdf(doc, rcFilename('payment', b));
+        UI.toast('Payment receipt downloaded', 'success', 2400);
+    }
+
+    function buildReleaseReceipt(b) {
+        const doc = makePdf();
+        if (!doc) { printBooking(); return; }
+        const pro = b.chosenProId ? SC.getPro(b.chosenProId) : null;
+        const rate = Math.round((SC.COMMISSION_RATE || 0.10) * 100);
+        const commission = (b.commission != null) ? Number(b.commission) : Math.round(Number(b.escrow.amount) * (SC.COMMISSION_RATE || 0.10));
+        const net = Number(b.escrow.amount) - commission;
+        const y0 = rcDraw(doc, 'ESCROW RELEASE RECEIPT', b.id, [
+            { k: 'RELEASED', v: rcDate(b.escrow.releasedAt || Date.now()), h: 1 },
+            { k: 'Escrow amount', v: rcMoney(b.escrow.amount) },
+            { k: 'Payment method', v: RC_METHOD[b.escrow.method] || b.escrow.method },
+            { k: 'Transaction reference', v: b.escrow.txnRef },
+            { k: 'Booking reference', v: b.id },
+            { k: 'Service', v: SC.CAT_LABELS[b.cat] || b.cat },
+            { k: 'Customer', v: rcSafe(b.name) + ' · ' + rcSafe(b.phone) },
+            { k: 'Released to professional', v: pro ? pro.name + ' (' + pro.id + ')' : '-' }
+        ], [
+            { k: 'Platform commission (' + rate + '%)', v: '- ' + rcMoney(commission) },
+            { k: 'NET PAID TO PROFESSIONAL', v: rcMoney(net), big: 1 }
+        ], 'Booking ' + b.id + ' is complete — the customer approved the job and escrow funds were released. ' +
+            'The ' + rate + '% commission supports SkillConnect platform operations. This receipt is computer generated — no signature required.');
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(130);
+        doc.text('Status: PAYMENT RELEASED · JOB COMPLETE', 18, y0 + 4);
+        savePdf(doc, rcFilename('release', b));
+        UI.toast('Release receipt downloaded', 'success', 2400);
+    }
+
+    function downloadReceipt(kind) {
+        const b = SC.getBooking(currentBooking.id);
+        if (!b || !b.escrow) return;
+        if (kind === 'release') {
+            if (b.escrow.released) buildReleaseReceipt(b);
+            else printBooking();
+            return;
+        }
+        buildPaymentReceipt(b);
+    }
+
+    // ---------- off-website notifications (Web Push) ----------
+    async function togglePushOn() {
+        if (!window.SCPush) return;
+        const r = await SCPush.enable({ bookingRef: currentBooking.id });
+        if (r.ok) {
+            UI.toast('Alerts are ON for this device — you will be notified even with SkillConnect closed.', 'success', 4200);
+        } else if (r.state === 'denied') {
+            UI.alert('Notifications are blocked for this site. Allow them in your browser settings (padlock icon → Notifications) to get booking alerts.', { title: 'Blocked', type: 'error', okLabel: 'Got It' });
+        } else if (r.state === 'insecure' || r.state === 'unsupported') {
+            UI.alert('Push alerts need an updated browser over a secure (https) connection — on this device you will still see updates on the booking page itself.', { title: 'Not Available Here', type: 'error', okLabel: 'Okay' });
+        } else {
+            UI.alert('Could not turn on alerts right now (' + (r.error || r.state) + '). Please try again shortly.', { title: 'Not Enabled', type: 'error', okLabel: 'Okay' });
+        }
+        renderDetail();
+    }
+    async function togglePushOff() {
+        if (window.SCPush) await SCPush.disable();
+        UI.toast('Alerts turned off on this device.', 'default', 3000);
+        renderDetail();
+    }
+
+    // ---------- chat ----------
+    function renderChat() {
+        const panel = $('chatPanel');
+        if (!panel) return;
+        const msgs = SC.chatMessages(currentBooking.id);
+        panel.innerHTML = msgs.length ? msgs.map(m =>
+            '<div class="chat-msg ' + m.from + '">' + (m.from === 'system' ? '<i class="fa-solid fa-circle-info"></i> ' : '') + SC.esc(m.text) +
+            '<div style="font-size: 0.65rem; opacity: 0.7; margin-top: 3px;">' + new Date(m.at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + '</div></div>'
+        ).join('') : '<div class="chat-msg system">No messages yet — say hello! ' + (currentBooking.chosenProId && SC.getPro(currentBooking.chosenProId) ? SC.esc(SC.getPro(currentBooking.chosenProId).short) + ' is notified and replies here from their Pro Dashboard.' : 'Messages appear here once a professional is booked.') + '</div>';
+        panel.scrollTop = panel.scrollHeight;
+    }
+
+    function sendMsg() {
+        const input = $('chatText');
+        const text = input.value.trim();
+        if (!text) return;
+        SC.sendChat(currentBooking.id, 'customer', text);
+        input.value = '';
+        renderChat();
+        /* Real chat: the pro replies from their dashboard. Notify them (once
+           per minute per booking so a fast typist doesn't spam them), routed
+           through their contact-channel preference — the old simulated
+           auto-reply pretended to be the pro and is gone. */
+        const pro = currentBooking.chosenProId ? SC.getPro(currentBooking.chosenProId) : null;
+        if (pro) {
+            if (!sendMsg._last || sendMsg._last.ref !== currentBooking.id || Date.now() - sendMsg._last.at > 60000) {
+                sendMsg._last = { ref: currentBooking.id, at: Date.now() };
+                const msgText = 'New message from ' + currentBooking.name + ' on ' + currentBooking.id + ' — open your Pro Dashboard (Customer Chat) to reply.';
+                if (SC.notifyProByChannel) SC.notifyProByChannel(pro.id, 'job', msgText);
+                else SC.notify('pro', pro.id, 'job', msgText);
+            }
+        }
+    }
+
+    // ---- Persisted pro session (sc-session.js): a signed-in pro lands on their active job ----
+    // sc_session_v2 maps role -> session; pro roles look like 'pro:P1001'. SCSessionBox.active()
+    // validates the sliding TTL + credential version (password change evicts the session).
+    function signedInPro() {
+        try {
+            const map = JSON.parse(localStorage.getItem('sc_session_v2') || '{}');
+            const key = Object.keys(map).find(k => k.indexOf('pro:') === 0);
+            if (!key || !window.SCSessionBox.active(key)) return null;
+            return SC.getPro(key.slice(4)) || null;
+        } catch (e) { return null; }
+    }
+
+    function renderProStrip(msg) {
+        const el = $('proStrip');
+        const pro = signedInPro();
+        if (!pro) { el.innerHTML = ''; return; }
+        el.innerHTML = '<div style="margin-top: 14px; padding: 10px 14px; background: var(--bg-strong); border: 1px solid var(--card-black); border-left: 4px solid var(--primary-yellow); border-radius: 8px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">' +
+            '<i class="fa-solid fa-user-check" style="color: var(--success-green);"></i>' +
+            '<span style="font-size: 0.78rem;">Signed in as <strong>' + SC.esc(pro.name) + '</strong> (' + pro.id + ') — ' + (msg || 'your active job opens automatically below.') + '</span>' +
+            '<a href="dashboard.html" style="margin-left: auto; font-size: 0.7rem; font-weight: 800; color: var(--accent-text); text-decoration: none;">PRO DASHBOARD →</a></div>';
+    }
+
+    // Most relevant job for a pro: the furthest-along active one, else last non-cancelled, else newest.
+    function pickActiveJob(list) {
+        const rank = { in_progress: 0, booked: 1, quoted: 2, matching: 3 };
+        const active = list.filter(b => rank[b.status] !== undefined)
+            .sort((a, b) => rank[a.status] - rank[b.status] || b.createdAt - a.createdAt);
+        return active[0] || list.filter(b => b.status !== 'cancelled').sort((a, b) => b.createdAt - a.createdAt)[0] || list[0];
+    }
+
+    function autoOpenProJobs() {
+        const pro = signedInPro();
+        if (!pro) return;
+        const mine = SC.proBookings(pro.id).map(x => x.booking);
+        if (!mine.length) {
+            renderProStrip('No jobs matched to you yet — new quote requests will appear here automatically.');
+            return;
+        }
+        renderMyBookings(mine);
+        const target = pickActiveJob(mine);
+        if (target) openBooking(target.id);
+    }
+
+    // deep link support: track.html?ref=SC-BK-...
+    const urlRef = new URLSearchParams(location.search).get('ref');
+    renderProStrip();
+    if (urlRef) {
+        $('lkRef').value = urlRef; lookup();
+    } else {
+        autoOpenProJobs();      // signed-in pro: show their jobs automatically
+    }
+</script>
+
+<!-- Print-friendly booking summary (receipt-style record) -->
+<div id="printSheet">
+    <div class="ps-head">
+        <div class="ps-brand"><i class="fa-solid fa-handshake"></i> SKILLCONNECT GH</div>
+        <div class="ps-brand-sub">Booking Summary · skillconnectgh.com · 024 421 1595</div>
+    </div>
+    <div class="ps-title" id="psTitle"></div>
+    <table class="ps-table" id="psTable"></table>
+    <div class="ps-sec">Progress Record</div>
+    <div id="psTimeline"></div>
+    <div class="ps-foot">
+        Generated <span id="psGen"></span> · Payments are held in escrow and released to the professional on customer approval · Commission (10%) supports platform operations.
+    </div>
+</div>
+</body>
+</html>

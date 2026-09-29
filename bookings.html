@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>try{if(localStorage.getItem('sc_theme')!=="dark")document.documentElement.setAttribute("data-theme","light")}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings | SKILLCONNECT GH</title>
+    <meta name="description" content="Track all your SkillConnect service requests by reference number — see live status from matching to payment and completion.">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css?v=17">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta name="theme-color" content="#FFCC00">
+    <style>
+/* bookings-specific */
+        .bk-wrap { max-width: 640px; margin: 0 auto; }
+        .search-card { display: flex; gap: 10px; }
+        .search-card input { flex: 1; }
+        .bk-card {
+            background: var(--bg-raised); border: 1px solid var(--card-black); border-radius: 10px;
+            padding: 16px; margin-bottom: 14px; cursor: pointer; transition: 0.25s;
+        }
+        .bk-card:hover { border-color: var(--accent-text); transform: translateY(-2px); }
+        .bk-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+        .bk-ref { font-weight: 900; font-size: 0.95rem; letter-spacing: 0.3px; }
+        .bk-meta { font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; margin-top: 6px; }
+        .bk-amount { color: var(--accent-text); font-weight: 800; }
+        .bk-hint { font-size: 0.7rem; color: var(--text-faint); margin-top: 8px; }
+        .bk-cancel {
+            margin-top: 10px; width: 100%; background: transparent;
+            border: 1px solid var(--danger-red); color: var(--danger-red); padding: 9px;
+            border-radius: 8px; font-weight: 800; cursor: pointer;
+            font-size: 0.72rem; text-transform: uppercase; font-family: inherit;
+        }
+        .bk-cancel:hover { background: var(--danger-red); color: var(--on-accent); }
+        .bk-rebook {
+            margin-top: 8px; width: 100%; background: transparent;
+            border: 1px solid var(--success-green); color: var(--success-green); padding: 9px;
+            border-radius: 8px; font-weight: 800; cursor: pointer;
+            font-size: 0.72rem; text-transform: uppercase; font-family: inherit;
+        }
+        .bk-rebook:hover { background: var(--success-green); color: var(--on-accent); }
+        .cta-row { display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+        .bk-scope-toggle {
+            background: transparent; border: 1px solid var(--card-black); color: var(--text-muted);
+            padding: 5px 12px; border-radius: 20px; font-size: 0.68rem; font-weight: 800;
+            text-transform: uppercase; cursor: pointer; font-family: inherit; transition: .2s;
+        }
+        .bk-scope-toggle:hover { border-color: var(--accent-text); color: var(--accent-text); }
+    </style>
+</head>
+<body>
+
+<header class="site-header" data-partial></header>
+
+<section class="hero">
+    <h2>MY BOOKINGS</h2>
+    <p>Every request you have submitted, with its live status. Enter a reference to jump straight to one, or browse the list below.</p>
+    <div class="badges">
+        <span class="badge"><i class="fa-solid fa-magnifying-glass"></i> Track by Reference</span>
+        <span class="badge"><i class="fa-solid fa-bell"></i> Live Status</span>
+        <span class="badge"><i class="fa-solid fa-shield-halved"></i> Escrow Protected</span>
+    </div>
+</section>
+
+<div class="page-wrap bk-wrap">
+
+    <!-- Reference search -->
+    <div class="card">
+        <div class="card-title"><i class="fa-solid fa-magnifying-glass"></i> Find By Reference</div>
+        <div class="search-card">
+            <input type="text" id="refSearch" placeholder="e.g. SC-BK-284001" onkeydown="if(event.key==='Enter')findByRef()" aria-label="Booking reference">
+            <button type="button" class="btn-submit" style="width: auto; padding: 12px 22px; margin: 0;" onclick="findByRef()"><i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+        <div id="refError" class="error-box" style="margin-top: 12px; display: none;"></div>
+    </div>
+
+    <!-- All bookings (localStorage) -->
+    <div id="listArea"></div>
+
+</div>
+
+<div class="floating-contact-bar">
+    <a href="https://wa.me/233244211595" class="float-btn whatsapp" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+    <a href="tel:+233244211595" class="float-btn phone"><i class="fa-solid fa-phone"></i></a>
+</div>
+
+<footer></footer>
+
+<script src="data-store.js?v=29"></script>
+<script>window.SC_PARTIALS = {logoIcon: "fa-calendar-check", logoTag: "My Bookings · Track Requests", actions: [{kind: "whatsapp", label: "Support"}]};</script>
+    <script src="header.js?v=3"></script>
+    <script src="site-partials.js?v=10"></script>
+    <script src="nav.js?v=3"></script>
+<script src="ui.js?v=4"></script>
+<script src="sc-session.js?v=3"></script>
+<script>
+    const STATUS_NEXT = {
+        matching: 'Pros are being invited to quote',
+        quoted: 'Quotes received — compare and accept one',
+        booked: 'Worker booked — job scheduled',
+        in_progress: 'Payment received — job underway',
+        completed: 'Job done — payment released to worker',
+        disputed: 'Under review by our resolution team',
+        cancelled: 'Cancelled'
+    };
+
+    // ---- Persisted pro session (sc-session.js): a signed-in pro sees their jobs automatically ----
+    // sc_session_v2 maps role -> session; pro roles look like 'pro:P1001'. SCSessionBox.active()
+    // validates the sliding TTL + credential version (password change evicts the session).
+    function signedInPro() {
+        try {
+            const map = JSON.parse(localStorage.getItem('sc_session_v2') || '{}');
+            const key = Object.keys(map).find(k => k.indexOf('pro:') === 0);
+            if (!key || !window.SCSessionBox.active(key)) return null;
+            return SC.getPro(key.slice(4)) || null;
+        } catch (e) { return null; }
+    }
+
+    let showAllBookings = false;   // pro view toggle: scoped to my jobs (default) vs everything
+
+    function proStripHtml(pro, scoped) {
+        if (!pro) return '';
+        return '<div class="card" style="padding: 12px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border-left: 4px solid var(--primary-yellow); margin-bottom: 14px;">' +
+            '<i class="fa-solid fa-user-check" style="color: var(--success-green);"></i>' +
+            '<span style="font-size: 0.8rem;">Signed in as <strong>' + SC.esc(pro.name) + '</strong> (' + pro.id + ') — ' +
+            (scoped ? 'showing jobs matched to you.' : 'showing all requests.') + '</span>' +
+            '<a href="dashboard.html" style="margin-left: auto; font-size: 0.7rem; font-weight: 800; color: var(--accent-text); text-decoration: none;">PRO DASHBOARD →</a></div>';
+    }
+
+    function findByRef() {
+        const raw = document.getElementById('refSearch').value.trim().toUpperCase();
+        const err = document.getElementById('refError');
+        if (!raw) { err.style.display = 'none'; renderList(''); return; }
+        const b = SC.getBooking(raw);
+        if (!b) {
+            err.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> No booking found with reference <strong>' + SC.esc(raw) + '</strong>. Check the code (it looks like SC-BK-284001) and try again.';
+            err.style.display = 'block';
+            return;
+        }
+        err.style.display = 'none';
+        location.href = 'track.html?ref=' + encodeURIComponent(b.id);
+    }
+
+    function renderList(query) {
+        const q = (query || '').toLowerCase().replace(/\s/g, '');
+        const pro = signedInPro();
+        /* Go-live: the page no longer pulls the GLOBAL booking list (that
+           leaked every customer's name/phone to any browser). Pros see
+           their own jobs via the pro-owned read; customers see bookings
+           made on this device (refs stored locally at create time). */
+        const proScope = !!(pro && !showAllBookings);
+        let bookings = (proScope && pro)
+            ? SC.proBookings(pro.id).map(x => x.booking)
+            : SC.deviceRefs().map(ref => SC.getBooking(ref)).filter(Boolean);
+        if (q) {
+            bookings = bookings.filter(b =>
+                b.id.toLowerCase().replace(/\s/g, '').includes(q) ||
+                (b.name || '').toLowerCase().includes(q) ||
+                (b.location || '').toLowerCase().includes(q) ||
+                (SC.CAT_LABELS[b.cat] || b.cat).toLowerCase().includes(q));
+        }
+        const box = document.getElementById('listArea');
+
+        if (!bookings.length) {
+            box.innerHTML = proStripHtml(pro, proScope) + '<div class="card"><div class="empty-note"><i class="fa-solid fa-calendar-xmark"></i>' +
+                (q ? 'Nothing matches “' + SC.esc(query) + '”.' : (proScope ? 'No jobs matched to you yet — quote requests arrive here automatically.' : 'No bookings made on this device yet — your bookings appear here after you place them.')) + '</div>' +
+                '<div class="cta-row">' +
+                '<a href="index.html" class="btn-submit" style="width:auto; padding: 12px 24px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;"><i class="fa-solid fa-bolt"></i> Book a Professional</a>' +
+                '</div></div>';
+            return;
+        }
+
+        box.innerHTML = proStripHtml(pro, proScope) +
+            '<div class="card-title" style="margin: 4px 0 12px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">' +
+            '<span><i class="fa-solid fa-list"></i> ' + (proScope ? 'Jobs Matched to You' : 'Bookings on This Device') + ' (' + bookings.length + ')</span>' +
+            (pro ? '<button type="button" class="bk-scope-toggle" onclick="toggleProScope()"><i class="fa-solid fa-' + (showAllBookings ? 'user-check' : 'mobile-screen') + '"></i> ' + (showAllBookings ? 'Show My Jobs Only' : 'Show Bookings on This Device') + '</button>' : '') +
+            '</div>' +
+            bookings.map(b => {
+                const pro = b.chosenProId ? SC.getPro(b.chosenProId) : null;
+                const canCancel = ['matching', 'quoted'].includes(b.status);
+                return '<div class="bk-card" onclick="location.href=\'track.html?ref=' + b.id + '\'" role="button" tabindex="0" onkeydown="if(event.key===\'Enter\')location.href=\'track.html?ref=' + b.id + '\'">' +
+                    '<div class="bk-top"><span class="bk-ref">' + b.id + '</span>' +
+                    '<span class="status-pill st-' + b.status + '">' + b.status.replace('_', ' ') + '</span></div>' +
+                    '<div class="bk-meta">' + (SC.CAT_LABELS[b.cat] || b.cat) + ' · ' + SC.esc(b.location) +
+                    ' · ' + (b.date ? SC.fmtDate(b.date) : 'flexible date') +
+                    (pro ? '<br>Worker: <strong style="color: var(--text-light);">' + SC.esc(pro.name) + '</strong>' : '') +
+                    (b.amount ? ' · <span class="bk-amount">' + SC.cedi(b.amount) + '</span>' : (b.budget ? ' · budget ' + SC.cedi(b.budget) : '')) +
+                    '</div>' +
+                    '<div class="bk-hint"><i class="fa-solid fa-circle-info"></i> ' + (STATUS_NEXT[b.status] || '') + ' — tap to open full tracking & payment</div>' +
+                    (canCancel ? '<button type="button" class="bk-cancel" onclick="event.stopPropagation(); cancelBooking(\'' + b.id + '\')"><i class="fa-solid fa-xmark"></i> Cancel This Request</button>' : '') +
+                    (b.status === 'cancelled' ? '<button type="button" class="bk-rebook" onclick="event.stopPropagation(); rebookBooking(\'' + b.id + '\')"><i class="fa-solid fa-rotate-right"></i> Book Again (Same Details)</button>' : '') +
+                    '</div>';
+            }).join('');
+    }
+
+    function toggleProScope() {
+        showAllBookings = !showAllBookings;
+        renderList(document.getElementById('refSearch').value);
+    }
+
+    // live search
+    document.getElementById('refSearch').addEventListener('input', e => {
+        document.getElementById('refError').style.display = 'none';
+        renderList(e.target.value);
+    });
+
+    // ---- Customer cancellation (only while matching/quoted — no money moved yet) ----
+    async function cancelBooking(id) {
+        const b = SC.getBooking(id);
+        if (!b) return;
+        const ok = await UI.confirm(
+            'Cancel ' + b.id + '?\n\n' + (SC.CAT_LABELS[b.cat] || b.cat) + ' in ' + SC.esc(b.location) +
+            (b.status === 'quoted' ? '\n\nPros who quoted will be told you cancelled — nothing has been paid.' : '') +
+            '\n\nThis can\'t be undone, but you can post a new request any time.',
+            { title: 'Cancel Request', okLabel: 'Yes, Cancel It', danger: true, icon: 'calendar-xmark' });
+        if (!ok) return;
+        const note = await UI.prompt('Anything to tell us? (optional)', '', { title: 'Reason (Optional)', okLabel: 'Cancel Booking', placeholder: 'e.g. found another provider, event postponed…' });
+        if (note === null) return;
+        const r = SC.cancelBooking(b.id, note.trim());
+        if (!r.ok) { UI.alert(r.error, { title: 'Cannot Cancel', type: 'error', icon: 'triangle-exclamation' }); return; }
+        UI.toast('Request cancelled' + (r.declinedQuotes ? ' — ' + r.declinedQuotes + ' pro' + (r.declinedQuotes > 1 ? 's were' : ' was') + ' notified' : '') + '.', 'default', 3600);
+        renderList(document.getElementById('refSearch').value);
+        // One-tap rebook: clone the request details into a fresh booking
+        const again = await UI.confirm(
+            'Post this same request again?\n\n' + (SC.CAT_LABELS[b.cat] || b.cat) + ' in ' + SC.esc(b.location) +
+            (b.date ? ' on ' + SC.fmtDate(b.date) : ' — flexible date') +
+            (b.budget ? ' · budget ' + SC.cedi(b.budget) : '') +
+            '\n\nAll details carry over and a fresh matching run starts immediately — new pros will send quotes.',
+            { title: 'Book Again?', okLabel: 'Yes, Rebook It', okGreen: true, icon: 'rotate-right' });
+        if (!again) return;
+        const rb = SC.rebookFrom(b.id);
+        if (!rb.ok) { UI.alert(rb.error, { title: 'Cannot Rebook', type: 'error' }); return; }
+        UI.toast('Request ' + rb.booking.id + ' created — pros are being invited to quote.', 'success', 4200);
+        setTimeout(() => { location.href = 'track.html?ref=' + rb.booking.id; }, 900);
+    }
+
+    // ---- Book Again from a cancelled card in the list ----
+    async function rebookBooking(id) {
+        const b = SC.getBooking(id);
+        if (!b) return;
+        const ok = await UI.confirm(
+            'Post this same request again?\n\n' + (SC.CAT_LABELS[b.cat] || b.cat) + ' in ' + SC.esc(b.location) +
+            (b.date ? ' on ' + SC.fmtDate(b.date) : ' — flexible date') +
+            (b.budget ? ' · budget ' + SC.cedi(b.budget) : '') +
+            '\n\nAll details carry over and a fresh matching run starts immediately.',
+            { title: 'Book Again', okLabel: 'Yes, Rebook It', okGreen: true, icon: 'rotate-right' });
+        if (!ok) return;
+        const rb = SC.rebookFrom(b.id);
+        if (!rb.ok) { UI.alert(rb.error, { title: 'Cannot Rebook', type: 'error' }); return; }
+        UI.toast('Request ' + rb.booking.id + ' created — pros are being invited to quote.', 'success', 4200);
+        setTimeout(() => { location.href = 'track.html?ref=' + rb.booking.id; }, 900);
+    }
+
+    renderList('');
+</script>
+</body>
+</html>

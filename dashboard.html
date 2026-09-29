@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>try{if(localStorage.getItem('sc_theme')!=="dark")document.documentElement.setAttribute("data-theme","light")}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Dashboard | SKILLCONNECT GH</title>
+    <meta name="description" content="SkillConnect professional dashboard: job alerts, quote management, availability calendar, escrow earnings, MoMo payouts and customer chat.">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css?v=17">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta name="theme-color" content="#FFCC00">
+    <style>
+/* dashboard-specific */
+        .session-bar { display: flex; align-items: center; gap: 10px; padding: 8px 2px; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; }
+        .session-bar button { margin-left: auto; }
+        .file-input { display: block; width: 100%; font-size: 0.72rem; color: var(--text-muted); }
+        .id-status-banner { display: flex; gap: 12px; align-items: flex-start; border-radius: 10px; padding: 14px; margin-bottom: 14px; border: 1px solid; }
+        .id-status-banner.warn { background: rgba(255,204,0,.08); border-color: var(--accent-text); }
+        .id-status-banner.bad { background: rgba(231,76,60,.10); border-color: var(--danger-red); }
+        .id-status-banner i { font-size: 1.4rem; margin-top: 2px; }
+        .id-status-banner.warn i { color: var(--accent-text); }
+        .id-status-banner.bad i { color: var(--danger-red); }
+        .id-status-banner .rv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .id-status-banner .rv-hint { font-size: 0.66rem; color: var(--text-muted); margin-top: 8px; }
+        .id-status-banner button { margin-top: 10px; width: 100%; }
+        .pro-select-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+        .pro-select-row .form-group { flex: 1; min-width: 220px; margin-bottom: 0; }
+        .job-row { background: var(--bg-raised); border: 1px solid var(--card-black); border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+        .job-head { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .quote-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .cal-dow { text-align: center; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; padding: 4px 0; }
+        .cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: var(--bg-raised); border: 1px solid var(--card-black); border-radius: 6px; font-size: 0.8rem; cursor: pointer; transition: .2s; position: relative; }
+        .cal-day:hover { border-color: var(--accent-text); }
+        .cal-day.other { opacity: 0.25; cursor: default; }
+        .cal-day.today { border-color: var(--accent-text); }
+        .cal-day.blocked { background: var(--danger-surface); color: var(--danger-red); text-decoration: line-through; }
+        .cal-day.hasjob::after { content: ''; position: absolute; bottom: 4px; width: 6px; height: 6px; border-radius: 50%; background: var(--success-green); }
+        .notif-list { max-height: 260px; overflow-y: auto; }
+        .notif-item { display: flex; gap: 10px; padding: 10px; border-bottom: 1px dashed var(--card-black); font-size: 0.82rem; }
+        .notif-item.unread { background: var(--warn-amber-bg); }
+        .notif-item i { color: var(--accent-text); margin-top: 3px; }
+        .payout-box { background: var(--bg-strong); border: 2px dashed var(--primary-yellow); border-radius: 8px; padding: 16px; }
+        .chat-panel { background: var(--bg-strong); border: 1px solid var(--card-black); border-radius: 8px; padding: 12px; max-height: 260px; overflow-y: auto; margin-bottom: 10px; }
+        .chat-msg { margin-bottom: 8px; font-size: 0.8rem; line-height: 1.5; }
+        .chat-msg small { color: var(--text-faint); display: block; font-size: 0.62rem; }
+        .chat-msg.pro b { color: var(--accent-text); }
+        .chat-msg.system { color: var(--text-faint); font-style: italic; }
+
+/* ---------------- responsive layout (mobile-first) ---------------- */
+        /* Stat tiles: 2-up on phones, 3-up on tablets, 6-up on desktop.
+           (.stat-tiles was previously unstyled — tiles stacked full-width.) */
+        .stat-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 16px; }
+        .stat-tiles .stat-tile { background: var(--bg-strong); border: 1px solid var(--card-black); border-radius: 10px; padding: 12px 8px; text-align: center; min-width: 0; }
+        .stat-tiles .v { font-size: 1.05rem; font-weight: 900; color: var(--accent-text); }
+        .stat-tiles .k { font-size: 0.58rem; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); margin-top: 3px; line-height: 1.35; }
+
+        /* Two-column desktop dashboard: action cards left, reference right.
+           Collapses to the natural single column below 1000px. */
+        .dash-cols { display: grid; grid-template-columns: minmax(0, 1fr); }
+        .dash-col { min-width: 0; }
+
+        /* Job rows: price always stays on one line, readable on phones */
+        .job-head .quote-price { white-space: nowrap; }
+
+        @media (min-width: 640px) {
+            .stat-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+            .stat-tiles .v { font-size: 1.15rem; }
+        }
+
+        @media (max-width: 640px) {
+            .page-wrap { padding: 20px 4% 96px; }   /* bottom room for the floating contact bar */
+            .hero { padding: 36px 5%; }
+            #dashArea .card, #signinCard { padding: 16px 14px; margin-bottom: 16px; }
+            #dashArea .card-title { font-size: 1.08rem; margin-bottom: 14px; }
+            .job-row { padding: 12px; }
+            .quote-price { font-size: 1.05rem; }
+            /* thumb-sized action buttons in quote/job rows */
+            .quote-actions .book-mini, .quote-actions .btn-clear { min-height: 42px; padding: 10px 16px; font-size: 0.8rem; }
+            /* wallet: full-width field + full-width button */
+            .pro-select-row { gap: 8px; }
+            #dashArea .pro-select-row .form-group { min-width: 100%; }
+            #dashArea .pro-select-row .btn-submit { width: 100%; }
+            .cal-grid { gap: 5px; }
+            .cal-day { min-height: 42px; font-size: 0.85rem; }
+            .notif-list { max-height: 320px; }
+            .payout-box { padding: 14px 12px; }
+            .id-status-banner { padding: 12px; gap: 10px; }
+            .id-status-banner .rv-grid { grid-template-columns: 1fr; }
+            .session-bar { flex-wrap: wrap; }
+        }
+
+        /* touch devices get the comfortable target size everywhere */
+        @media (hover: none) and (pointer: coarse) {
+            .quote-actions .book-mini, .quote-actions .btn-clear { min-height: 44px; }
+            .cal-day { min-height: 44px; }
+        }
+
+        @media (min-width: 1000px) {
+            .stat-tiles { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+            .dash-cols { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+            #dashArea .card { margin-bottom: 22px; }
+            .dash-col > .card:last-child { margin-bottom: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="site-header" data-partial></header>
+
+<section class="hero">
+    <h2>PROFESSIONAL DASHBOARD</h2>
+    <p>Your jobs, quotes, availability and earnings — all in one place. Respond fast to win more bookings.</p>
+</section>
+
+<div class="page-wrap">
+
+    <!-- Sign in as pro -->
+    <div class="card" id="signinCard">
+        <div class="card-title"><i class="fa-solid fa-id-badge"></i> Professional Sign-In</div>
+        <div class="pro-select-row">
+            <div class="form-group">
+                <label for="proPhone">Your Phone Number</label>
+                <input type="tel" id="proPhone" placeholder="e.g. 024 000 0000" autocomplete="tel" onkeydown="if(event.key==='Enter')proSignIn()">
+            </div>
+            <div class="form-group" id="secretGroup">
+                <label for="proSecret"><span id="secretLabel">Password</span></label>
+                <input type="password" id="proSecret" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')proSignIn()">
+            </div>
+            <div class="form-group" id="otpGroup" style="display:none;">
+                <label for="proOtp">6-Digit Code <span style="color: var(--text-muted); font-weight: 400; font-size: 0.75rem;">(sent via WhatsApp)</span></label>
+                <input type="text" id="proOtp" inputmode="numeric" maxlength="6" placeholder="••••••" onkeydown="if(event.key==='Enter')proSignIn()">
+            </div>
+            <button type="button" class="btn-submit" style="width: auto; padding: 12px 26px;" onclick="proSignIn()"><i class="fa-solid fa-unlock"></i> <span id="signinBtnLabel">Sign In</span></button>
+        </div>
+        <div id="proLoginErr" class="error-box" style="display:none; margin-top: 10px;"></div>
+        <div class="pro-select-row" style="margin-top: 12px; align-items: center;">
+            <button type="button" class="btn-clear" id="modeToggle" onclick="toggleProMode()" style="width:auto; padding: 8px 14px;"><i class="fa-brands fa-whatsapp"></i> <span id="modeToggleLabel">Send me a login code instead</span></button>
+            <span class="row-sub" style="flex:1;">First time? Default password is <strong style="color: var(--accent-text);">skillconnect</strong> — set your own after signing in.</span>
+        </div>
+        <div id="otpSentNote" class="fee-line ok" style="display:none; margin-top: 10px;"></div>
+    </div>
+
+    <div id="dashArea" style="display: none;"></div>
+
+</div>
+
+<div class="floating-contact-bar">
+    <a href="https://wa.me/233244211595" class="float-btn whatsapp" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+    <a href="tel:+233244211595" class="float-btn phone"><i class="fa-solid fa-phone"></i></a>
+</div>
+
+<footer></footer>
+
+<script src="data-store.js?v=29"></script>
+    <script>window.SC_PARTIALS = {logoIcon: "fa-gauge-high", logoTag: "Pro Dashboard · Jobs & Earnings", actions: [{kind: "whatsapp", label: "Support"}]};</script>
+    <script src="header.js?v=3"></script>
+    <script src="site-partials.js?v=10"></script>
+    <script src="nav.js?v=3"></script>
+    <script src="ui.js?v=4"></script>
+    <script src="sc-session.js?v=3"></script>
+    <script src="sc-push.js?v=2"></script>
+<script>
+    let me = null;
+    let pfWorking = null;   // portfolio edit state (declared early: restorePro may render)
+    let chatCurrent = null; // selected chat job
+    let otpMode = false;    // sign-in via WhatsApp login code
+    const $ = id => document.getElementById(id);
+
+    // ---- Persistent pro session (sc-session.js, role 'pro:<id>') ----
+    const PRO_ROLE = () => me ? 'pro:' + me.id : null;
+
+    function toggleProMode() {
+        otpMode = !otpMode;
+        $('otpGroup').style.display = otpMode ? '' : 'none';
+        $('secretGroup').style.display = otpMode ? 'none' : '';
+        $('modeToggleLabel').textContent = otpMode ? 'Use my password instead' : 'Send me a login code instead';
+        $('signinBtnLabel').textContent = otpMode ? 'Verify & Sign In' : 'Sign In';
+        $('proLoginErr').style.display = 'none';
+        if (otpMode) {
+            $('proOtp').focus();
+            sendProOtp();   // switching to code mode fires the request immediately
+        } else {
+            $('proSecret').focus();
+        }
+    }
+
+    function proLoginErr(msg) {
+        const e = $('proLoginErr');
+        e.textContent = msg;
+        e.style.display = msg ? 'block' : 'none';
+    }
+
+    async function proSignIn() {
+        const phone = $('proPhone').value.trim();
+        proLoginErr('');
+        if (!phone) { proLoginErr('Enter the phone number your profile is registered with.'); return; }
+        if (otpMode) {
+            const code = $('proOtp').value.trim();
+            if (!/^\d{6}$/.test(code)) { proLoginErr('Enter the 6-digit code from our WhatsApp message.'); return; }
+            const r = await SC.proLogin(phone, code);
+            if (!r.ok) { proLoginErr(r.error); return; }
+            enterAs(r.pro.id);
+            return;
+        }
+        const secret = $('proSecret').value;
+        if (!secret) { proLoginErr('Enter your password, or switch to a login code below.'); return; }
+        const r = await SC.proLogin(phone, secret);
+        if (!r.ok) { proLoginErr(r.error); return; }
+        enterAs(r.pro.id);
+    }
+
+    async function sendProOtp() {
+        const phone = $('proPhone').value.trim();
+        proLoginErr('');
+        if (!phone) { proLoginErr('Enter your phone number first — we send the code to WhatsApp.'); return; }
+        const r = await SC.requestProOtp(phone);
+        if (!r.ok) { proLoginErr(r.error); return; }
+        // Sandbox handoff: pre-fill a WhatsApp chat containing the code.
+        const wa = 'https://wa.me/233244211595?text=' + encodeURIComponent('Login code for ' + r.name + ' (' + r.proId + '): ' + r.sandboxCode);
+        const note = $('otpSentNote');
+        note.innerHTML = '<i class="fa-brands fa-whatsapp"></i><span>Code sent for <strong>' + SC.esc(r.name) + '</strong> — valid ' + r.ttlMins + ' min. ' +
+            '<a href="' + wa + '" target="_blank" rel="noopener" style="text-decoration:underline;">Open WhatsApp with your code</a> (sandbox delivery), then enter it above.</span>';
+        note.style.display = 'flex';
+        window.open(wa, '_blank');
+    }
+
+    function enterAs(proId) {
+        me = SC.getPro(proId);
+        if (!me) { proLoginErr('Profile not found — please contact support.'); return; }
+        SCSessionBox.create(PRO_ROLE(), { proId: me.id });
+        $('proSecret').value = '';
+        $('proOtp').value = '';
+        const signin = document.getElementById('signinCard');
+        if (signin) signin.style.display = 'none';   // signed in: the form has no purpose on screen
+        afterEnter(true);
+    }
+
+    function afterEnter(scroll) {
+        SC.markNotificationsRead('pro', me.id);
+        renderDash();
+        if (scroll) $('dashArea').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function sessionBar() {
+        return '<div class="session-bar"><i class="fa-solid fa-shield-halved" style="color: var(--success-green);"></i> Signed in as <strong>' + SC.esc(me.name) + '</strong> · session expires in ~' + SCSessionBox.minutesLeft(PRO_ROLE()) + ' min' +
+            '<button type="button" class="mini-btn ghost-btn" onclick="proLogout()"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button></div>';
+    }
+
+    // ---------- off-website notifications (Web Push) ----------
+    async function toggleProPushOn() {
+        if (!window.SCPush) return;
+        const r = await SCPush.enable({});   // session-bound: the server pins it to this pro
+        if (r.ok) {
+            UI.toast('Job alerts are ON for this device — you will be notified even with SkillConnect closed.', 'success', 4200);
+        } else if (r.state === 'denied') {
+            UI.alert('Notifications are blocked for this site. Allow them in your browser settings (padlock icon → Notifications) to get job alerts.', { title: 'Blocked', type: 'error', okLabel: 'Got It' });
+        } else if (r.state === 'insecure' || r.state === 'unsupported') {
+            UI.alert('Push alerts need an updated browser over a secure (https) connection — on this device you will still see everything in the dashboard.', { title: 'Not Available Here', type: 'error', okLabel: 'Okay' });
+        } else {
+            UI.alert('Could not turn on alerts right now (' + (r.error || r.state) + '). Please try again shortly.', { title: 'Not Enabled', type: 'error', okLabel: 'Okay' });
+        }
+        renderDash();
+    }
+    async function toggleProPushOff() {
+        if (window.SCPush) await SCPush.disable();
+        UI.toast('Job alerts turned off on this device.', 'default', 3000);
+        renderDash();
+    }
+
+    function contactHintText(ch) {
+        if (ch === 'whatsapp') return 'Customers and dispatch will reach you on WhatsApp (your login number) only.';
+        if (ch === 'sms') return 'Customers and dispatch will reach you by SMS (your login number) only.';
+        return 'Customers and dispatch can reach you on both SMS and WhatsApp (your login number).';
+    }
+
+    async function saveNotifyPrefs() {
+        const muted = Array.from(document.querySelectorAll('#dashArea .npref')).filter(c => !c.checked).map(c => c.dataset.type);
+        const r = await SC.notificationPrefsSet(me.id, muted);
+        if (!r || r.ok === false) { UI.alert((r && r.error) || 'Could not save your alert preferences.', { title: 'Not Saved', type: 'error' }); return; }
+        me = SC.getPro(me.id);
+        UI.toast(r.muted.length
+            ? 'Alert preferences saved — ' + r.muted.length + ' low-priority type' + (r.muted.length === 1 ? '' : 's') + ' muted. Money alerts stay on.'
+            : 'Alert preferences saved — all low-priority alerts are back on.', 'success', 4200);
+        renderDash();
+    }
+
+    async function saveContactChannels() {
+        const ch = document.getElementById('contactChannels').value;
+        const r = await SC.updateProProfile(me.id, { contactChannels: ch });
+        if (r && r.ok === false) { UI.alert(r.error || 'Could not save your preference.', { title: 'Not Saved', type: 'error' }); return; }
+        me = SC.getPro(me.id);
+        const hint = document.getElementById('contactHint');
+        if (hint) hint.textContent = contactHintText(ch);
+        UI.toast('Contact preference saved — ' + contactHintText(ch).charAt(0).toLowerCase() + contactHintText(ch).slice(1), 'success', 3800);
+    }
+
+    function securityCardHtml() {
+        const usingDefault = SC.proUsesDefaultPassword(me.id);
+        return '<div class="card"><div class="card-title"><i class="fa-solid fa-shield-halved"></i> Security — My Password</div>' +
+            '<div id="proPwWarn" class="row-sub" style="margin-bottom: 10px; color: ' + (usingDefault ? 'var(--warn-amber-text);' : 'var(--success-green);') + '">' +
+            (usingDefault
+                ? '<i class="fa-solid fa-triangle-exclamation"></i> You are using the default password — set your own to protect your wallet and jobs.'
+                : '<i class="fa-solid fa-circle-check"></i> Custom password set. Stored as a salted scrypt hash — never in plain text.') +
+            '</div>' +
+            '<div class="pro-select-row">' +
+            '<div class="form-group"><label for="pwCur2">Current Password or Code</label><input type="password" id="pwCur2" autocomplete="current-password"></div>' +
+            '<div class="form-group"><label for="pwNew2">New Password (min 8)</label><input type="password" id="pwNew2" autocomplete="new-password"></div>' +
+            '<button type="button" class="btn-submit" style="width:auto; padding: 12px 20px;" onclick="changeProPw()"><i class="fa-solid fa-key"></i> Update</button>' +
+            '</div></div>';
+    }
+
+    async function changeProPw() {
+        const cur = $('pwCur2').value, nw = $('pwNew2').value;
+        const r = await SC.setProPassword(me.id, cur, nw);
+        if (!r.ok) { UI.alert(r.error, { title: 'Could Not Change Password', type: 'error' }); return; }
+        SCSessionBox.create(PRO_ROLE(), { proId: me.id });   // re-bind session to the new credential version
+        UI.toast('Password updated — your other sessions are signed out.', 'success', 4200);
+        renderDash();
+    }
+
+    function proLogout() {
+        SCSessionBox.clear(PRO_ROLE());
+        me = null;
+        const area = $('dashArea');
+        area.style.display = 'none';
+        area.innerHTML = '';
+        const signin = document.getElementById('signinCard');
+        if (signin) signin.style.display = '';       // signed out: bring the form back
+        signin.scrollIntoView({ behavior: 'smooth' });
+        UI.toast('Signed out of the dashboard.', 'default', 2600);
+    }
+
+    // Auto-restore a still-valid session on load (survives reloads; expires
+    // after 8h idle, or when the admin credential version changes)
+    (function restorePro() {
+        let map = {};
+        try { map = JSON.parse(localStorage.getItem('sc_session_v2') || '{}'); } catch (e) {}
+        const key = Object.keys(map).filter(k => k.startsWith('pro:'))[0];
+        if (!key || !SCSessionBox.active(key)) return;
+        const pro = SC.getPro(key.slice(4));
+        if (!pro) { SCSessionBox.clear(key); return; }
+        me = pro;
+        $('proPhone').value = pro.phone || '';
+        $('dashArea').style.display = 'block';
+        SC.markNotificationsRead('pro', me.id);
+        renderDash();
+    })();
+
+    function renderDash() {
+        $('dashArea').style.display = 'block';
+        me = SC.getPro(me.id); // refresh from store
+        const jobs = SC.proBookings(me.id);
+        const pendingQuotes = jobs.filter(j => j.quote && j.quote.status === 'sent' && !['cancelled'].includes(j.booking.status));
+        const won = jobs.filter(j => j.booking.chosenProId === me.id);
+        const activeJobs = won.filter(j => ['booked', 'in_progress'].includes(j.booking.status));
+        const notifs = SC.notificationsFor('pro', me.id).slice(0, 12);
+
+        let html = sessionBar();
+
+        // ---- Identity Check: expired / expiring / flagged / pending card ----
+        const idSt = SC.idStatus(me);
+        if (['expired', 'expiring', 'flagged', 'pending'].includes(idSt.state)) {
+            const bad = ['expired', 'flagged'].includes(idSt.state);
+            let headline, sub;
+            if (idSt.state === 'expired') {
+                headline = 'Your Ghana Card has expired';
+                /* Enforcement countdown (parity with the server gate):
+                   expired -> excluded from NEW matching at +grace. */
+                const g = SC.idGateSync ? SC.idGateSync(me) : { stage: 'expired' };
+                const softDays = (SC.SETTINGS && Number(SC.SETTINGS.id_grace_days)) || 14;
+                /* Card validity length comes from the admin setting (Platform
+                   Settings card), not a hardcoded "5-year" assumption. */
+                const validYears = (SC.SETTINGS && Number(SC.SETTINGS.id_valid_years)) || 5;
+                if (g.stage === 'delisted') {
+                    sub = 'Your card is ' + idSt.expiredDays + ' days past its ' + validYears + '-year validity. New customer requests now skip you (hidden for ' + (g.delistDays || 0) + ' day' + ((g.delistDays || 0) === 1 ? '' : 's') + ' now) — your existing jobs and wallet are NOT affected. Upload fresh photos to be relisted immediately.';
+                } else if (g.overrideDaysLeft) {
+                    sub = 'SkillConnect extended your re-verification deadline by ' + g.overrideDaysLeft + ' more day(s), so you remain fully listed. Please complete your renewal below before the extension runs out.';
+                } else {
+                    sub = 'Your card is about ' + idSt.expiredDays + ' days past its ' + validYears + '-year validity. You have about ' + Math.max(1, softDays - idSt.expiredDays) + ' day(s) left before new customer requests skip you — upload fresh photos below to stay fully listed.';
+                }
+            }
+            else if (idSt.state === 'expiring') { headline = 'Your Ghana Card expires in about ' + idSt.daysLeft + ' days'; sub = 'Renew now so verification is done before it lapses — it takes under a minute.'; }
+            else if (idSt.state === 'flagged') { headline = 'SkillConnect requested fresh documents'; sub = 'Our team asked for an updated FRONT & BACK photo of your Ghana Card. Upload below to keep your verified badge.'; }
+            else { headline = 'Your new documents are under review'; sub = 'We received your renewed card photos — usually verified within 24 hours.'; }
+            const waiting = idSt.state === 'pending';
+            html += '<div class="id-status-banner ' + (bad ? 'bad' : 'warn') + '"><i class="fa-solid ' + (bad ? 'fa-triangle-exclamation' : 'fa-id-card-clip') + '"></i>' +
+                '<div style="flex:1;"><strong style="font-size: 0.9rem;">' + headline + '</strong>' +
+                '<div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 3px;">' + sub + '</div>' +
+                (waiting ? '' :
+                    '<div class="rv-grid">' +
+                    '<div><label style="font-size: 0.62rem; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted);">Card FRONT *</label><input type="file" id="rvFront" class="file-input" accept="image/*" capture="environment"></div>' +
+                    '<div><label style="font-size: 0.62rem; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted);">Card BACK *</label><input type="file" id="rvBack" class="file-input" accept="image/*" capture="environment"></div>' +
+                    '</div>' +
+                    '<div class="rv-hint"><i class="fa-solid fa-shield-halved"></i> Photos are compressed and shown only to the verification team — never to customers.</div>' +
+                    '<button type="button" class="btn-submit" onclick="submitReverify()"><i class="fa-solid fa-paper-plane"></i> Submit Renewed Card</button>') +
+                '</div></div>';
+        }
+
+        // Stats
+        html += '<div class="stat-tiles">' +
+            '<div class="stat-tile"><div class="v">' + SC.cedi(me.balance || 0) + '</div><div class="k">Wallet Balance</div></div>' +
+            '<div class="stat-tile"><div class="v">' + SC.cedi(me.earnings || 0) + '</div><div class="k">Lifetime Earnings</div></div>' +
+            '<div class="stat-tile"><div class="v">' + (me.commissionPaid || 0).toLocaleString() + '</div><div class="k">Commission Paid (GH₵)</div></div>' +
+            '<div class="stat-tile"><div class="v">' + (me.rating || 0).toFixed(1) + '★</div><div class="k">' + (me.ratingCount || 0) + ' reviews</div></div>' +
+            '<div class="stat-tile"><div class="v">' + pendingQuotes.length + '</div><div class="k">Quotes To Answer</div></div>' +
+            '<div class="stat-tile"><div class="v">' + activeJobs.length + '</div><div class="k">Active Jobs</div></div>' +
+            '</div>';
+
+        // Two-column desktop layout: action cards left, reference right.
+        // Collapses to one natural column below 1000px (mobile keeps order).
+        html += '<div class="dash-cols"><div class="dash-col" id="dashColMain">';
+
+        // Quote requests (job alerts)
+        html += '<div class="card"><div class="card-title"><i class="fa-solid fa-bolt"></i> Quote Requests — Respond To Win Jobs</div>';
+        const reqs = jobs.filter(j => j.quote);
+        if (!reqs.length) {
+            html += '<p style="color: var(--text-muted); font-size: 0.85rem;">No quote requests right now. Keep your calendar open — matching customers appear here automatically.</p>';
+        } else {
+            reqs.forEach(j => {
+                const b = j.booking, q = j.quote;
+                html += '<div class="job-row"><div class="job-head"><div><strong>' + b.id + '</strong> — ' + (SC.CAT_LABELS[b.cat] || b.cat) +
+                    (b.urgency === 'urgent' ? ' <span class="badge-flag" style="background:var(--danger-red);color:var(--on-accent);">EMERGENCY</span>' : '') +
+                    '<br><small style="color: var(--text-muted);">' + (b.date ? SC.fmtDate(b.date) : 'Flexible date') + ' · ' + SC.esc(b.location) +
+                    ' · budget ' + (b.budget ? SC.cedi(b.budget) : 'open') + '</small></div>' +
+                    '<div class="quote-price">' + SC.cedi(q.price) + '</div></div>' +
+                    (b.details ? '<div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;">“' + SC.esc(b.details) + '”</div>' : '') +
+                    '<div class="quote-actions">' +
+                    (q.status === 'sent' && b.status !== 'cancelled'
+                        ? '<button class="book-mini" style="width:auto; padding: 8px 16px;" onclick="quoteRespond(\'' + q.id + '\',\'confirm\')"><i class="fa-solid fa-check"></i> Confirm Quote</button>' +
+                          '<button class="btn-clear" onclick="quoteRespond(\'' + q.id + '\',\'edit\')">Edit Price</button>' +
+                          '<button class="btn-clear" onclick="quoteRespond(\'' + q.id + '\',\'decline\')">Decline</button>'
+                        : '<em style="font-size: 0.78rem; color: var(--text-muted);">Quote ' + q.status + (b.chosenProId === me.id ? ' — YOU WON THIS JOB 🎉' : '') + '</em>') +
+                    '</div></div>';
+            });
+        }
+        html += '</div>';
+
+        // Active / won jobs (escrow state visible per booking)
+        html += '<div class="card"><div class="card-title"><i class="fa-solid fa-briefcase"></i> My Booked Jobs</div>';
+        if (!won.length) {
+            html += '<p style="color: var(--text-muted); font-size: 0.85rem;">No confirmed jobs yet. Win quotes above to fill your calendar.</p>';
+        } else {
+            won.forEach(({ booking: b, quote: q }) => {
+                const esc = b.escrow;
+                html += '<div class="job-row"><div class="job-head"><div><strong>' + b.id + '</strong> — ' + (SC.CAT_LABELS[b.cat] || b.cat) +
+                    ' <span class="status-pill st-' + b.status + '">' + b.status.replace('_', ' ') + '</span><br>' +
+                    '<small style="color: var(--text-muted);">' + (b.date ? SC.fmtDate(b.date) : 'Flexible') + ' · ' + SC.esc(b.location) + ' · ' + SC.esc(b.name) + ' (' + SC.esc(b.phone) + ')</small></div>' +
+                    '<div class="quote-price">' + SC.cedi(b.amount) + '</div></div>' +
+                    (esc ? '<div style="font-size: 0.78rem; margin-top: 8px;"><i class="fa-solid fa-lock" style="color: var(--success-green);"></i> Escrow ' +
+                        (esc.released ? '<strong style="color:var(--success-green);">released ✔</strong>' : '<strong style="color: var(--accent-text);">holding ' + SC.cedi(esc.amount) + '</strong> — do the job, customer releases payment') +
+                        ' <small>(' + esc.txnRef + ')</small></div>' : '') +
+                    '</div>';
+            });
+        }
+        html += '</div>';
+
+        // MoMo payout request box — controlled workflow:
+        // request → team approves → batch payment. Nothing leaves the
+        // wallet until the batch completes; pending requests RESERVE
+        // their amount so it can never be double-spent.
+        const myReqs = (function () { try { return SC.myPayouts(me.id) || []; } catch (e) { return []; } })();
+        const pendingReqs = myReqs.filter(r => r.status === 'pending' || r.status === 'approved');
+        const held = pendingReqs.reduce((s, r) => s + Number(r.amount), 0);
+        const avail = Math.round(((me.balance || 0) - held) * 100) / 100;
+        html += '<div class="card"><div class="card-title"><i class="fa-solid fa-money-bill-wave"></i> Wallet & MoMo Payouts</div>' +
+            '<div class="payout-box"><div style="font-size: 1.5rem; font-weight: 900; color: var(--accent-text);">' + SC.cedi(avail) + '</div>' +
+            '<div class="row-sub">Available to withdraw · paid to MoMo <strong>' + SC.esc(me.phone || 'n/a') + '</strong></div>' +
+            (held > 0 ? '<div class="row-sub" style="margin-top: 4px;"><i class="fa-solid fa-lock" style="color: var(--warn-amber-text);"></i> ' + SC.cedi(held) + ' held for ' + pendingReqs.length + ' pending withdrawal' + (pendingReqs.length === 1 ? '' : 's') + ' · wallet total ' + SC.cedi(me.balance || 0) + '</div>' : '') +
+            '</div>' +
+            '<div class="pro-select-row" style="margin-top: 12px;">' +
+            '<div class="form-group"><label for="payoutAmt">Withdraw Amount (GH₵, min 20)</label><input type="number" id="payoutAmt" min="20" step="1" placeholder="e.g. 200"></div>' +
+            '<button type="button" class="btn-submit" style="padding: 12px 22px;" onclick="requestPayout()"><i class="fa-solid fa-paper-plane"></i> Request Payout</button>' +
+            '</div>' +
+            (pendingReqs.length ?
+                '<div style="margin-top: 12px;"><div class="section-h" style="font-size: 0.72rem;">Pending withdrawals</div>' +
+                pendingReqs.map(r =>
+                    '<div class="row-card" style="padding: 9px 12px; border-left: 3px solid var(--warn-amber-text); display: flex; align-items: center; gap: 10px;">' +
+                    '<div style="flex:1;"><span class="row-title">' + SC.esc(r.id) + '</span> · <strong>' + SC.cedi(r.amount) + '</strong> <span class="pill pending">' + r.status + '</span></div>' +
+                    (r.status === 'pending' && !r.batchId ? '<button type="button" class="mini-btn ghost-btn" onclick="cancelMyPayout(\'' + r.id + '\')">Cancel</button>' : '') +
+                    '</div>').join('') + '</div>' : '') +
+            (myReqs.filter(r => r.status === 'paid' || r.status === 'rejected').length ?
+                '<div style="margin-top: 12px;"><div class="section-h" style="font-size: 0.72rem;">Recent history</div>' +
+                myReqs.filter(r => r.status === 'paid' || r.status === 'rejected').slice(0, 5).map(r =>
+                    '<div class="row-card" style="padding: 8px 12px;"><span class="row-title">' + SC.esc(r.id) + '</span> · ' + SC.cedi(r.amount) + ' · <span class="pill ' + (r.status === 'paid' ? 'success' : 'rejected') + '">' + r.status + '</span>' +
+                    (r.batchId ? ' · <span class="row-sub">batch ' + SC.esc(r.batchId) + '</span>' : '') + '</div>').join('') + '</div>' : '') +
+            '<p class="row-sub" style="margin-top: 8px;"><i class="fa-solid fa-circle-info"></i> Withdrawals are approved by the SkillConnect team and paid in batches within 24 hours — pending amounts stay reserved in your wallet until paid.</p></div>';
+
+        // Customer chat (per confirmed job)
+        const chatJobs = won.filter(j => ['booked', 'in_progress', 'completed'].includes(j.booking.status));
+        html += '<div class="card"><div class="card-title"><i class="fa-solid fa-comments"></i> Customer Chat</div>';
+        if (!chatJobs.length) {
+            html += '<p style="color: var(--text-muted); font-size: 0.85rem;">Chat opens here once a customer accepts your quote — coordinate timing, access and payment details.</p>';
+        } else {
+            html += '<div class="form-group"><label for="chatJobPick">Select Job</label><select id="chatJobPick" onchange="renderChat()">' +
+                chatJobs.map(j => '<option value="' + j.booking.id + '"' + (j.booking.id === chatCurrent ? ' selected' : '') + '>' + j.booking.id + ' — ' + SC.esc(j.booking.name) + ' (' + SC.fmtDate(j.booking.date) + ')</option>').join('') +
+                '</select></div><div id="chatThread"></div>';
+        }
+        html += '</div>';
+
+        // ---- side column: reference material ----
+        html += '</div><div class="dash-col" id="dashColSide">';
+
+        // Notifications
+        html += '<div class="card"><div class="card-title"><i class="fa-solid fa-bell"></i> Job Alerts & Notifications</div><div class="notif-list">';
+        html += notifs.length ? notifs.map(n =>
+            '<div class="notif-item' + (n.read ? '' : ' unread') + '"><i class="fa-solid ' +
+            ({ job: 'fa-briefcase', escrow: 'fa-lock', review: 'fa-star', dispute: 'fa-triangle-exclamation', payout: 'fa-money-bill-wave' }[n.type] || 'fa-circle-info') +
+            '"></i><span>' + SC.esc(n.text) + '<br><small style="color: var(--text-muted);">' + new Date(n.at).toLocaleString('en-GB') + '</small></span></div>'
+        ).join('') : '<p style="color: var(--text-muted); font-size: 0.85rem;">No notifications yet. Alerts appear here when customers request your category.</p>';
+        html += '</div></div>';
+
+        // Notification preference center — mute the low-priority noise, keep
+        // the money-critical alerts. Critical types are SERVER-ENFORCED (they
+        // arrive no matter what), so they render locked, not unchecked.
+        const prefs = SC.notificationPrefsGet(me.id);
+        const mutedNow = (prefs && prefs.ok) ? prefs.muted : [];
+        const prefMeta = {
+            booking: { icon: 'fa-calendar-plus', label: 'New-match invitations', sub: '“You were invited to quote on SC-BK-…”' },
+            application: { icon: 'fa-id-card', label: 'Verification & document updates', sub: 'Card received, verified, window extended' },
+            review: { icon: 'fa-star', label: 'New reviews', sub: '“New ★5 review on SC-BK-…”' }
+        };
+        html += '<div class="card"><div class="card-title"><i class="fa-solid fa-bell-slash"></i> Notification Preferences</div>' +
+            '<p class="row-sub" style="margin-bottom: 10px;">Tune the noise down. Money alerts — bookings, escrow, payouts — are always delivered and cannot be turned off.</p>' +
+            (Object.keys(prefMeta).map(t =>
+                '<label class="consent" style="margin: 0 0 8px;"><input type="checkbox" class="npref" data-type="' + t + '"' + (mutedNow.includes(t) ? '' : ' checked') + '>' +
+                '<span><i class="fa-solid ' + prefMeta[t].icon + '"></i> <strong>' + prefMeta[t].label + '</strong><br>' +
+                '<small style="color: var(--text-muted);">' + prefMeta[t].sub + '</small></span></label>').join('')) +
+            '<div class="pro-select-row" style="margin-top: 10px;">' +
+            '<div class="form-group"><label><i class="fa-solid fa-lock"></i> Always delivered (locked)</label>' +
+            '<div style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.6;">' +
+            '<i class="fa-solid fa-briefcase"></i> New jobs & assignments &nbsp; <i class="fa-solid fa-lock"></i> Escrow & payments<br>' +
+            '<i class="fa-solid fa-money-bill-wave"></i> Payouts & withdrawals &nbsp; <i class="fa-solid fa-triangle-exclamation"></i> Disputes & ID enforcement</div></div>' +
+            '</div>' +
+            '<button type="button" class="btn-submit" style="width:auto; padding: 12px 20px;" onclick="saveNotifyPrefs()"><i class="fa-solid fa-floppy-disk"></i> Save Alert Preferences</button>' +
+            '</div>';
+
+        // ---- Suggest-rate nudge (listed rate vs LIVE market band) ----
+        // SC.PRICE_STATS (boot payload, 60s server cache) carries the observed
+        // verified-pro rate band per category. A rate outside that band cuts
+        // both ways: too low leaves money on the table, too high gets the pro
+        // silently skipped by the budget-ceiling matcher. Inside the band →
+        // no nagging. Needs ≥2 observed pros for a meaningful band.
+        function rateNudgeHtml(me) {
+            const stats = SC.PRICE_STATS && SC.PRICE_STATS[me.cat];
+            const obs = stats && stats.observed;
+            if (!obs || obs.pros < 2 || !me.price) return '';
+            const TOL = 0.10;   /* a hair outside the band is still healthy */
+            const rate = Number(me.price);
+            const catName = stats.name || 'this category';
+            const band = 'GH\u20B5 ' + obs.lo.toLocaleString() + ' \u2013 ' + obs.hi.toLocaleString();
+            const accepted = stats.acceptedAvg ? ' Recent accepted quotes average GH\u20B5 ' + Number(stats.acceptedAvg).toLocaleString() + '.' : '';
+            if (rate < obs.lo * (1 - TOL)) {
+                return '<div class="id-status-banner warn"><i class="fa-solid fa-arrow-trend-down"></i><span><strong>Rate check:</strong> your ' + SC.cedi(rate) + ' starting rate sits below what all ' + obs.pros + ' verified ' + SC.esc(catName) + ' pros charge today (' + band + '). You may be leaving money on the table \u2014 consider raising it.' + accepted + '</span></div>';
+            }
+            if (rate > obs.hi * (1 + TOL)) {
+                return '<div class="id-status-banner warn"><i class="fa-solid fa-arrow-trend-up"></i><span><strong>Rate check:</strong> your ' + SC.cedi(rate) + ' starting rate is above what all ' + obs.pros + ' verified ' + SC.esc(catName) + ' pros charge today (' + band + '). Customers with a stated budget below your rate are matched to other pros automatically \u2014 consider bringing it closer to the band.' + accepted + '</span></div>';
+            }
+            return '';
+        }
+        html += rateNudgeHtml(me);
+
+        // Availability calendar
+        const blocked = me.blocked || [];
+        const jobDates = activeJobs.map(j => j.booking.date).filter(Boolean);
+        html += '<div class="card"><div class="card-title"><i class="fa-solid fa-calendar-check"></i> Availability This Month</div>' +
+            '<div class="cal-grid">' +
+            ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => '<div class="cal-dow">' + d + '</div>').join('') +
+            '</div><div class="cal-grid" id="calDays">';
+        const first = new Date(); first.setDate(1);
+        const startDow = first.getDay();
+        const days = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+        const todayIso = SC.todayISO();
+        for (let i = 0; i < startDow; i++) html += '<div></div>';
+        for (let d = 1; d <= days; d++) {
+            const ds = first.getFullYear() + '-' + String(first.getMonth() + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+            const hasJob = jobDates.includes(ds);
+            const isBlocked = blocked.includes(ds);
+            html += '<div class="cal-day' + (hasJob ? ' hasjob' : '') + (isBlocked ? ' blocked' : '') + (ds === todayIso ? ' today' : '') + '" onclick="toggleBlocked(\'' + ds + '\')" title="' +
+                (hasJob ? 'Booked job this day' : (isBlocked ? 'Blocked — click to reopen' : 'Click to block this date')) + '">' + d + '</div>';
+        }
+        html += '</div><p class="row-sub" style="margin-top: 8px;">Tap a date to block it — blocked days hide you from the "Available Today" list and customers see you as booked. Green dots are confirmed jobs.</p></div>';
+
+        // Portfolio manager
+        html += '<div class="card"><div class="card-title"><i class="fa-solid fa-images"></i> Portfolio</div>' + pfCardHtml() + '</div>';
+        setTimeout(() => { const h = document.getElementById('contactHint'); if (h) h.textContent = contactHintText(me.contactChannels || 'both'); }, 0);
+
+        // Off-website notifications (Web Push): new requests, quotes, payments — even with the dashboard closed.
+        if (window.SCPush && SCPush.isSupported()) {
+            const perm = SCPush.permission();
+            const pref = SCPush.readPref();
+            const pushOn = pref && pref.enabled && perm === 'granted';
+            html += '<div class="card"><div class="card-title"><i class="fa-solid fa-bell"></i> Job Alerts On This Device</div>';
+            if (pushOn) {
+                html += '<p class="row-sub"><i class="fa-solid fa-circle-check" style="color: var(--success-green);"></i> Alerts are ON — new requests, quotes, payments and customer messages reach this device even with SkillConnect closed.</p>' +
+                    '<button type="button" class="btn-edit" onclick="toggleProPushOff()"><i class="fa-solid fa-bell-slash"></i> Turn Off On This Device</button>';
+            } else if (perm === 'denied') {
+                html += '<p class="row-sub">Notifications are blocked for this site in your browser settings — unblock them to get job alerts on this device.</p>';
+            } else {
+                html += '<p class="row-sub">Win more jobs: get instant alerts for new requests and customer messages on this phone or computer — even when SkillConnect is closed.</p>' +
+                    '<button type="button" class="btn-submit" style="width:auto; padding: 12px 22px;" onclick="toggleProPushOn()"><i class="fa-solid fa-bell"></i> Alert Me On This Device</button>';
+            }
+            html += '</div>';
+        }
+
+        // Contact preferences: how customers & dispatch reach this pro
+        const CH = me.contactChannels || 'both';
+        html += '<div class="card"><div class="card-title"><i class="fa-solid fa-address-book"></i> Contact Preferences</div>' +
+            '<p class="row-sub" style="margin-bottom: 10px;">How do you want customers and the SkillConnect dispatch team to reach you? In-app alerts always arrive here in the dashboard.</p>' +
+            '<div class="form-group"><label for="contactChannels">Preferred Channel</label>' +
+            '<select id="contactChannels">' +
+            '<option value="both"' + (CH === 'both' ? ' selected' : '') + '>SMS + WhatsApp (both)</option>' +
+            '<option value="whatsapp"' + (CH === 'whatsapp' ? ' selected' : '') + '>WhatsApp only</option>' +
+            '<option value="sms"' + (CH === 'sms' ? ' selected' : '') + '>SMS only</option>' +
+            '</select></div>' +
+            '<p class="row-sub" id="contactHint" style="font-size: 0.72rem;"></p>' +
+            '<button type="button" class="btn-submit" style="width:auto; padding: 12px 20px;" onclick="saveContactChannels()"><i class="fa-solid fa-floppy-disk"></i> Save Preference</button>' +
+            '</div>';
+
+        // Security
+        html += securityCardHtml();
+
+        html += '</div></div>';   /* /dash-col-side /dash-cols */
+
+        $('dashArea').innerHTML = html;
+        const sel = document.getElementById('chatJobPick');
+        if (sel && !chatCurrent) chatCurrent = sel.value;
+        if (sel) renderChat();
+    }
+
+    /* ---------------- Quote responses ---------------- */
+    function quoteRespond(qid, act) {
+        let found = null;
+        SC.proBookings(me.id).forEach(j => { if (j.quote && j.quote.id === qid) found = j.quote; });
+        if (!found) return;
+        if (act === 'confirm') {
+            SC.proRespondQuote(qid, 'confirm');
+            UI.toast('Quote confirmed — the customer can now accept and pay into escrow.', 'success');
+        } else if (act === 'edit') {
+            UI.prompt('New price (GH₵):', String(found.price), { title: 'Edit Quote' }).then(v => {
+                if (v === null || v === '') return;
+                SC.proRespondQuote(qid, 'confirm', Number(v));
+                UI.toast('Quote updated — customer notified.', 'success');
+                renderDash();
+            });
+            return;
+        } else if (act === 'decline') {
+            UI.confirm('Decline this request? The customer will be matched with other pros.', { title: 'Decline Quote', type: 'danger' }).then(y => {
+                if (y) { SC.proRespondQuote(qid, 'decline'); UI.toast('Request declined.'); renderDash(); }
+            });
+            return;
+        }
+        renderDash();
+    }
+
+    /* ---------------- Payouts (controlled workflow) ---------------- */
+    function requestPayout() {
+        const amt = Number($('payoutAmt').value);
+        const r = SC.requestPayout(me.id, amt);
+        if (!r.ok) { UI.alert(r.error, { title: 'Payout Request Failed', type: 'error' }); return; }
+        UI.toast('Withdrawal ' + (r.requestId || '') + ' requested — ' + SC.cedi(amt) + ' is now reserved. The team has been notified.', 'success', 4200);
+        renderDash();
+    }
+
+    async function cancelMyPayout(requestId) {
+        const ok = await UI.confirm('Cancel withdrawal ' + requestId + '? The reserved amount returns to your available balance immediately.', { title: 'Cancel Withdrawal', okLabel: 'Yes, Cancel It' });
+        if (!ok) return;
+        const r = SC.cancelPayout(me.id, requestId);
+        if (!r.ok) { UI.alert(r.error, { title: 'Could Not Cancel', type: 'error' }); return; }
+        UI.toast('Withdrawal cancelled — amount released back to your balance.', 'success', 3600);
+        renderDash();
+    }
+
+    /* ---------------- Customer chat ---------------- */
+    function renderChat() {
+        const sel = document.getElementById('chatJobPick');
+        if (!sel) return;
+        chatCurrent = sel.value;
+        const msgs = SC.chatMessages(chatCurrent);
+        const thread = document.getElementById('chatThread');
+        thread.innerHTML = '<div class="chat-panel" id="chatPanel">' +
+            (msgs.length ? msgs.map(m =>
+                '<div class="chat-msg ' + m.from + '"><b>' + (m.from === 'pro' ? 'You' : (m.from === 'system' ? 'System' : 'Customer')) + ':</b> ' + SC.esc(m.text) +
+                '<small>' + new Date(m.at).toLocaleString('en-GB') + '</small></div>'
+            ).join('') : '<p style="color: var(--text-muted); font-size: 0.8rem;">No messages yet — say hello and confirm the schedule.</p>') +
+            '</div>' +
+            '<div style="display:flex; gap:8px;"><input type="text" id="chatInput" placeholder="Type a message…" style="flex:1;" onkeydown="if(event.key===\'Enter\')sendChatMsg()">' +
+            '<button type="button" class="btn-submit" style="width:auto; padding: 10px 18px;" onclick="sendChatMsg()"><i class="fa-solid fa-paper-plane"></i></button></div>';
+        const p = document.getElementById('chatPanel');
+        p.scrollTop = p.scrollHeight;
+    }
+
+    function sendChatMsg() {
+        const inp = document.getElementById('chatInput');
+        const text = (inp.value || '').trim();
+        if (!text) return;
+        SC.sendChat(chatCurrent, 'pro', text);
+        renderChat();
+    }
+
+    /* ---------------- Availability calendar ---------------- */
+    function toggleBlocked(ds) {
+        SC.toggleProDate(me.id, ds);
+        renderDash();
+    }
+
+    /* ---------------- Portfolio manager ---------------- */
+    function pfWorkingList() { return pfWorking || (me.portfolio || []); }
+
+    function pfCardHtml() {
+        const list = pfWorkingList();
+        if (pfWorking) {
+            return '<div class="pf-grid">' + list.map((it, i) =>
+                '<div class="pf-item"><img src="' + it.src + '"><input class="pf-cap" data-i="' + i + '" maxlength="80" placeholder="Caption" value="' + SC.esc(it.caption || '') + '">' +
+                '<button type="button" class="pf-del" onclick="pfRemove(' + i + ')"><i class="fa-solid fa-xmark"></i></button></div>'
+            ).join('') +
+            '<div class="pf-item pf-add" onclick="pfAddPick()"><i class="fa-solid fa-plus"></i></div></div>' +
+            '<input type="file" id="pfFile" accept="image/*" multiple style="display:none">' +
+            '<div id="pfMsg" class="error-box" style="display:none; margin-top: 8px;"></div>' +
+            '<div style="display:flex; gap:8px; margin-top: 10px;"><button type="button" class="btn-submit" onclick="pfSave()"><i class="fa-solid fa-floppy-disk"></i> Save Portfolio</button>' +
+            '<button type="button" class="btn-clear" onclick="pfWorking=null; renderDash()">Cancel</button></div>';
+        }
+        const n = (me.portfolio || []).length;
+        return '<p class="row-sub">' + (n ? n + ' photo' + (n === 1 ? '' : 's') + ' live on your public profile.' : 'No portfolio photos yet — add real work samples to win more jobs.') + '</p>' +
+            '<div style="display:flex; gap:8px; flex-wrap: wrap;">' +
+            '<button type="button" class="mini-btn" onclick="pfStart()"><i class="fa-solid fa-pen-to-square"></i> Manage Portfolio</button>' +
+            (n ? '<button type="button" class="mini-btn ghost-btn" onclick="pfResetDemo()"><i class="fa-solid fa-rotate-left"></i> Reset To Demo Gallery</button>' : '') +
+            '</div>';
+    }
+
+    function pfStart() { pfWorking = (me.portfolio || []).map(x => ({ src: x.src, caption: x.caption || '' })); renderDash(); }
+
+    function pfAddPick() { document.getElementById('pfFile').click(); }
+
+    document.addEventListener('change', e => {
+        if (e.target && e.target.id === 'pfFile' && e.target.files && e.target.files.length) {
+            const files = Array.from(e.target.files).slice(0, 6);
+            let pending = files.length;
+            files.forEach(f => {
+                compressImage(f, 900, dataUrl => {
+                    pfWorkingList().push({ src: dataUrl, caption: '' });
+                    if (--pending === 0) renderDash();
+                });
+            });
+        }
+        if (e.target && (e.target.id === 'rvFront' || e.target.id === 'rvBack')) {
+            rvPicked(e.target.id, e.target.files && e.target.files[0]);
+        }
+    });
+
+    function pfRemove(i) {
+        pfWorkingList().splice(i, 1);
+        renderPfGrid();
+    }
+
+    function pfResetDemo() {
+        SC.updateProProfile(me.id, { portfolio: [], hasRealPortfolio: false });
+        pfWorking = null;
+        UI.toast('Portfolio reset to demo gallery');
+        renderDash();
+    }
+
+    async function pfSave() {
+        document.querySelectorAll('.pf-cap').forEach(inp => {
+            const i = Number(inp.dataset.i);
+            if (pfWorkingList()[i]) pfWorkingList()[i].caption = inp.value.trim().slice(0, 80);
+        });
+        const r = SC.setPortfolio(me.id, pfWorkingList());
+        const msg = $('pfMsg');
+        if (!r.ok) {
+            msg.textContent = r.error;
+            msg.style.display = 'block';
+            return;
+        }
+        pfWorking = null;
+        UI.toast('Portfolio saved — live on your public profile', 'success');
+        renderDash();
+    }
+
+    function renderPfGrid() {
+        const grid = document.querySelector('.pf-grid');
+        if (!grid) { renderDash(); return; }
+        const list = pfWorkingList();
+        grid.innerHTML = list.map((it, i) =>
+            '<div class="pf-item"><img src="' + it.src + '"><input class="pf-cap" data-i="' + i + '" maxlength="80" placeholder="Caption" value="' + SC.esc(it.caption || '') + '">' +
+            '<button type="button" class="pf-del" onclick="pfRemove(' + i + ')"><i class="fa-solid fa-xmark"></i></button></div>'
+        ).join('') +
+        '<div class="pf-item pf-add" onclick="pfAddPick()"><i class="fa-solid fa-plus"></i></div>';
+    }
+
+    /* ---------------- Identity re-verification ---------------- */
+    let rvPickedData = {};
+    function rvPicked(inputId, file) {
+        if (!file) return;
+        compressImage(file, 900, dataUrl => {
+            rvPickedData[inputId === 'rvFront' ? 'front' : 'back'] = dataUrl;
+            UI.toast((inputId === 'rvFront' ? 'Front' : 'Back') + ' photo attached.', 'default', 2000);
+        });
+    }
+
+    function compressImage(file, maxPx, cb) {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+            const scale = Math.min(1, maxPx / Math.max(img.width, img.height));
+            const cv = document.createElement('canvas');
+            cv.width = Math.round(img.width * scale);
+            cv.height = Math.round(img.height * scale);
+            cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+            URL.revokeObjectURL(url);
+            cb(cv.toDataURL('image/jpeg', 0.72));
+        };
+        img.src = url;
+    }
+
+    async function submitReverify() {
+        if (!rvPickedData.front || !rvPickedData.back) {
+            UI.alert('Attach BOTH sides of your renewed Ghana Card first.', { title: 'Photos Needed', type: 'error' });
+            return;
+        }
+        const r = await SC.submitReverify(me.id, rvPickedData.front, rvPickedData.back);
+        if (r.ok) {
+            rvPickedData = {};
+            UI.toast('Renewed card submitted — usually verified within 24 hours.', 'success', 4000);
+        } else {
+            UI.alert(r.error, { title: 'Could Not Submit', type: 'error' });
+        }
+        renderDash();
+    }
+
+    // live refresh when tab regains focus
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && me) renderDash(); });
+</script>
+</body>
+</html>

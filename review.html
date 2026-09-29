@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>try{if(localStorage.getItem('sc_theme')!=="dark")document.documentElement.setAttribute("data-theme","light")}catch(e){document.documentElement.setAttribute("data-theme","light")}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Review | SKILLCONNECT GH</title>
+    <meta name="description" content="Quick review queue for SkillConnect professional applications: check Ghana Card documents and approve or reject applicants.">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css?v=17">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta name="theme-color" content="#FFCC00">
+    <style>
+/* review-specific */
+        .review-wrap { max-width: 640px; margin: 0 auto; }
+        .app-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+        .app-name { font-weight: 800; font-size: 0.95rem; }
+        .app-meta { font-size: 0.76rem; color: var(--text-muted); line-height: 1.6; margin-top: 6px; }
+        .actions { display: flex; gap: 10px; margin-top: 12px; }
+        .btn-approve {
+            flex: 1; background: var(--success-green); color: var(--on-accent); border: none; padding: 12px;
+            border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 0.8rem;
+            text-transform: uppercase; font-family: inherit;
+        }
+        .btn-approve:disabled { opacity: 0.4; cursor: not-allowed; }
+        /* Pre-verification edit grid: correct rate/city/category before approving */
+        .edit-grid {
+            display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 10px;
+            background: var(--bg-strong); border: 1px dashed var(--border); border-radius: 8px;
+            padding: 12px; margin: 10px 0;
+        }
+        .edit-field label { display: block; font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .edit-field input, .edit-field select { width: 100%; }
+        .edit-hint { grid-column: 1 / -1; font-size: 0.68rem; color: var(--text-faint); }
+        .edit-hint i { color: var(--accent-text); margin-right: 4px; }
+        /* Session bar (persistent admin login) */
+        .session-bar { display: flex; align-items: center; gap: 10px; padding: 8px 2px; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; }
+        .session-bar button { margin-left: auto; }
+        /* Verification outreach panel */
+        .notify-link-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: var(--bg-strong); border: 1px solid var(--card-black); border-radius: 8px; padding: 10px 12px; margin: 10px 0; }
+        .notify-link-row .k { font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .notify-link { font-size: 0.72rem; color: var(--accent-text); word-break: break-all; flex: 1; min-width: 160px; font-family: monospace; }
+        .notify-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        /* Ghana Card lightbox (page-local, mirrors admin.html's viewer) */
+        #docLightbox {
+            position: fixed; inset: 0; z-index: 5500; display: none;
+            background: rgba(0,0,0,.92); backdrop-filter: blur(3px);
+            flex-direction: column; align-items: center; justify-content: center; padding: 18px;
+        }
+        #docLightbox.open { display: flex; }
+        #docLightbox .doc-photo { max-width: min(88vw, 480px); max-height: 62vh; border-radius: 10px; border: 2px solid var(--primary-yellow); object-fit: contain; }
+        #docLightbox .id-ph { width: min(80vw, 420px); height: 260px; font-size: 4rem; }
+        .mini-btn.green { background: var(--success-green); color: var(--on-accent); }
+        .mini-btn a, a.mini-btn { text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-reject {
+            flex: 1; background: transparent; border: 1px solid var(--danger-red); color: var(--danger-red);
+            padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer;
+            font-size: 0.8rem; text-transform: uppercase; font-family: inherit;
+        }
+        .btn-reject:hover { background: var(--danger-red); color: var(--on-accent); }
+        .filter-row { display: flex; gap: 8px; margin-bottom: 14px; }
+        .filter-row button {
+            flex: 1; background: var(--bg-strong); border: 1px solid var(--card-black); color: var(--text-muted);
+            padding: 9px; border-radius: 8px; font-weight: 700; cursor: pointer;
+            font-size: 0.75rem; text-transform: uppercase; font-family: inherit;
+        }
+        .filter-row button.on { border-color: var(--accent-text); color: var(--accent-text); }
+        .done-note { font-size: 0.74rem; color: var(--text-muted); margin-top: 8px; }
+        /* Search + bulk actions toolbar (high-volume days) */
+        .search-row { position: relative; margin-bottom: 10px; }
+        .search-row i.s-ic { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-faint); font-size: 0.8rem; pointer-events: none; }
+        .search-row input {
+            width: 100%; padding: 10px 12px 10px 34px; background: var(--bg-strong);
+            border: 1px solid var(--card-black); border-radius: 8px; color: var(--text-light);
+            font-size: 0.85rem; font-family: inherit;
+        }
+        .search-row input:focus { outline: none; border-color: var(--accent-text); }
+        .bulk-bar {
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+            background: var(--bg-strong); border: 1px solid var(--card-black); border-radius: 10px;
+            padding: 9px 12px; margin-bottom: 14px; font-size: 0.74rem;
+        }
+        .bulk-bar .cnt { color: var(--accent-text); font-weight: 800; }
+        .bulk-bar .grow { flex: 1; }
+        .bulk-bar label { display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-muted); font-size: 0.72rem; }
+        .bulk-bar input { width: 16px; height: 16px; accent-color: var(--accent-text); cursor: pointer; }
+        .bulk-bar .mini-btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+        .app-sel { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .app-sel input { width: 17px; height: 17px; accent-color: var(--accent-text); cursor: pointer; flex: 0 0 17px; }
+    </style>
+</head>
+<body>
+
+<header class="site-header" data-partial></header>
+
+<section class="hero">
+    <h2>APPLICATION REVIEW QUEUE</h2>
+    <p>Check each applicant's Ghana Card number and documents, then approve to list them on the platform — or reject with a reason.</p>
+</section>
+
+<div class="page-wrap review-wrap">
+
+    <!-- PIN gate -->
+    <div id="loginArea" class="card login-box">
+        <div class="card-title" style="justify-content: center;"><i class="fa-solid fa-key"></i> Reviewer Sign-In</div>
+        <div class="form-group">
+            <label for="pinInput">Enter Admin Password</label>
+            <input type="password" id="pinInput" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <button type="button" class="btn-submit" onclick="doLogin()"><i class="fa-solid fa-unlock"></i> Open Review Queue</button>
+        <div id="loginErr" class="error-box" style="margin-top: 12px;"></div>
+        <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 14px;">Same password as the Admin console (default <strong style="color: var(--accent-text);">4321</strong>).</p>
+    </div>
+
+    <div id="reviewArea" style="display: none;">
+        <div class="session-bar"><i class="fa-solid fa-shield-halved" style="color: var(--success-green);"></i> Session active · expires in ~<span id="sessLeft"></span> min
+            <button class="mini-btn ghost-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
+        </div>
+        <div class="filter-row">
+            <button type="button" class="on" data-f="pending" onclick="setFilter('pending', this)">Pending</button>
+            <button type="button" data-f="verified" onclick="setFilter('verified', this)">Approved</button>
+            <button type="button" data-f="rejected" onclick="setFilter('rejected', this)">Rejected</button>
+            <button type="button" data-f="all" onclick="setFilter('all', this)">All</button>
+        </div>
+        <div class="search-row">
+            <i class="fa-solid fa-magnifying-glass s-ic"></i>
+            <input type="search" id="revSearch" placeholder="Search name, phone, reference or city…" oninput="renderQueue()" aria-label="Search applications">
+        </div>
+        <div class="bulk-bar" id="bulkBar">
+            <label><input type="checkbox" id="selAll" onchange="toggleSelAll(this)"><span id="selAllLbl">Select all</span></label>
+            <span class="cnt" id="selCount">0 selected</span>
+            <span class="grow"></span>
+            <button type="button" class="mini-btn green" id="bulkApprove" disabled onclick="bulkApprove()"><i class="fa-solid fa-check"></i> Approve Selected</button>
+            <button type="button" class="mini-btn red" id="bulkReject" disabled onclick="bulkReject()"><i class="fa-solid fa-xmark"></i> Reject Selected</button>
+            <button type="button" class="mini-btn ghost-btn" id="bulkClear" disabled onclick="clearSelection()">Clear</button>
+        </div>
+        <div id="appList"></div>
+    </div>
+
+</div>
+
+<!-- Ghana Card lightbox -->
+<div id="docLightbox" onclick="if(event.target===this)closeDoc()">
+    <div class="id-ph" style="display:none;"><i class="fa-solid fa-id-card"></i></div>
+    <div class="lb-cap" id="docLbCap"></div>
+    <button type="button" class="mini-btn" onclick="closeDoc()" style="margin-top: 6px;">Close</button>
+</div>
+
+<div class="floating-contact-bar">
+    <a href="https://wa.me/233244211595" class="float-btn whatsapp" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+    <a href="tel:+233244211595" class="float-btn phone"><i class="fa-solid fa-phone"></i></a>
+</div>
+
+<footer></footer>
+
+<script src="data-store.js?v=29"></script>
+<script>window.SC_PARTIALS = {logoIcon: "fa-user-check", logoTag: "Application Review", actions: [{kind: "link", href: "admin.html", icon: "gauge-high", label: "Full Console"}]};</script>
+    <script src="header.js?v=3"></script>
+    <script src="site-partials.js?v=10"></script>
+    <script src="nav.js?v=3"></script>
+<script src="ui.js?v=4"></script>
+<script src="sc-session.js?v=3"></script>
+    <script src="admin-session.js?v=3"></script>
+<script>
+    let filter = 'pending';
+    const selected = new Set();   // application ids checked for bulk actions
+
+    function currentApps() {
+        const q = (document.getElementById('revSearch') && document.getElementById('revSearch').value.trim().toLowerCase()) || '';
+        return SC.getApplications().filter(a => {
+            if (filter !== 'all' && a.status !== filter) return false;
+            if (!q) return true;
+            return [a.name, a.phone, a.whatsapp, a.city, a.id, a.idNumber]
+                .some(v => String(v || '').toLowerCase().includes(q));
+        });
+    }
+
+    async function doLogin() {
+        const ok = await SC.adminLogin(document.getElementById('pinInput').value.trim());
+        if (ok) {
+            SCSession.create();
+            openQueue();
+        } else {
+            const e = document.getElementById('loginErr');
+            e.textContent = 'Wrong password. Same credential as the Admin console (default 4321).';
+            e.style.display = 'block';
+        }
+    }
+
+    function openQueue() {
+        document.getElementById('loginArea').style.display = 'none';
+        document.getElementById('reviewArea').style.display = 'block';
+        const left = document.getElementById('sessLeft');
+        if (left) left.textContent = SCSession.minutesLeft();
+        renderQueue();
+    }
+
+    function logout() {
+        SCSession.clear();
+        document.getElementById('reviewArea').style.display = 'none';
+        document.getElementById('loginArea').style.display = 'block';
+        document.getElementById('pinInput').value = '';
+        document.getElementById('loginErr').style.display = 'none';
+    }
+
+    // ---- Ghana Card viewer ----
+    function viewDoc(appId, side) {
+        const a = SC.getApplications().find(x => x.id === appId);
+        if (!a) return;
+        const data = side === 'front' ? a.idFrontData : a.idBackData;
+        if (!data) { UI.toast('The card photo is stored on the applicant\'s device — open this page on their machine, or ask them to re-apply.', 'default', 4200); return; }
+        document.querySelector('#docLightbox .id-ph').style.display = 'none';
+        const cap = document.getElementById('docLbCap');
+        let img = document.querySelector('#docLightbox .doc-photo');
+        if (!img) { img = document.createElement('img'); img.className = 'doc-photo'; img.alt = 'Ghana Card ' + side; document.getElementById('docLightbox').insertBefore(img, cap); }
+        img.src = data; img.style.display = 'block';
+        cap.textContent = a.name + ' — Ghana Card ' + side.toUpperCase() + (side === 'front' ? (a.idFrontName ? ' · ' + a.idFrontName : '') : (a.idBackName ? ' · ' + a.idBackName : ''));
+        document.getElementById('docLightbox').classList.add('open');
+    }
+    function closeDoc() { document.getElementById('docLightbox').classList.remove('open'); }
+
+    function setFilter(f, btn) {
+        filter = f;
+        document.querySelectorAll('.filter-row button').forEach(b => b.classList.toggle('on', b === btn));
+        renderQueue();
+    }
+
+    const catName = c => SC.CAT_LABELS[c] || c;
+    const dt = ts => new Date(ts).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+    function renderQueue() {
+        const apps = currentApps();
+        const box = document.getElementById('appList');
+        updateBulkBar(apps);
+
+        if (!apps.length) {
+            box.innerHTML = '<div class="empty-note"><i class="fa-solid fa-inbox"></i>' +
+                (filter === 'pending'
+                    ? ((document.getElementById('revSearch') && document.getElementById('revSearch').value.trim())
+                        ? 'No pending applications match your search.'
+                        : 'Queue is clear — no applications waiting for review.')
+                    : 'No ' + filter + ' applications match.')
+                + '</div>';
+            return;
+        }
+
+        box.innerHTML = apps.map(a => {
+            const eid = a.id.replace(/-/g, '_');
+            const isPending = a.status === 'pending';
+            const check = isPending
+                ? '<label class="app-sel"><input type="checkbox" data-app="' + a.id + '" ' + (selected.has(a.id) ? 'checked' : '') + ' onchange="onSel(this)"><span></span></label>'
+                : '';
+            const docsOk = !!(a.idFrontName && a.idBackName);
+            const idNumOk = /^GHA[- ]?\d{9}[- ]?\d$/.test(a.idNumber || '');
+            return '<div class="app-card">' +
+                '<div class="app-head"><div style="display:flex; align-items:center; gap:8px;">' + check +
+                '<span class="app-name">' + SC.esc(a.name) + '</span> <span class="pill ' + a.status + '">' + a.status + '</span></div>' +
+                '<small style="color: var(--text-faint);">' + a.id + '</small></div>' +
+                '<div class="app-meta">' + catName(a.cat) + ' · ' + SC.esc(a.city) + ' · ' + SC.esc(a.phone) +
+                ' · rate ' + SC.cedi(a.rate) + '/' + SC.esc(a.unit || 'job') +
+                '<br>' + dt(a.submittedAt) +
+                (a.regFeePaid ? ' · <span style="color:var(--success-green);">reg fee paid</span>' : ' · <span style="color: var(--accent-text);">reg fee pending</span>') +
+                '</div>' +
+                '<div class="doc-box">' +
+                '<div class="doc-row"><span class="doc-k">Ghana Card No.</span><span class="doc-v ' + (idNumOk ? 'ok' : 'bad') + '">' +
+                SC.esc(a.idNumber || '— missing —') + (idNumOk ? ' <i class="fa-solid fa-circle-check"></i>' : ' <i class="fa-solid fa-triangle-exclamation"></i>') + '</span></div>' +
+                '<div class="doc-row"><span class="doc-k">TIN</span><span class="doc-v">' + (a.tin ? SC.esc(a.tin) : '<em>not provided</em>') + '</span></div>' +
+                '<div class="doc-row"><span class="doc-k">Documents</span><span class="doc-v ' + (docsOk ? 'ok' : 'bad') + '">' +
+                (docsOk ? 'Front ✔ + Back ✔' : '<i class="fa-solid fa-triangle-exclamation"></i> missing') + '</span></div>' +
+                (docsOk
+                    ? '<div class="doc-thumbs">' +
+                      '<div class="id-ph" onclick="viewDoc(\'' + a.id + '\',\'front\')" ' + (a.idFrontData ? '' : 'title="Photo not stored on this device"') + '>' + (a.idFrontData ? '<img src="' + a.idFrontData + '" alt="Card front"></div>' : '<i class="fa-solid fa-id-card"></i></div>') +
+                      '<div class="id-ph" onclick="viewDoc(\'' + a.id + '\',\'back\')" ' + (a.idBackData ? '' : 'title="Photo not stored on this device"') + '>' + (a.idBackData ? '<img src="' + a.idBackData + '" alt="Card back"></div>' : '<i class="fa-solid fa-id-card-clip"></i></div>') +
+                      '</div>'
+                    : '') +
+                '</div>' +
+                (a.status === 'pending'
+                    ? '<div class="edit-grid">' +
+                      '<div class="edit-field"><label>Listed Rate (GH₵ / ' + SC.esc(a.unit || 'job') + ')</label><input type="number" min="1" id="er_' + eid + '" value="' + (Number(a.rate) || '') + '"></div>' +
+                      '<div class="edit-field"><label>City</label><input type="text" id="ec_' + eid + '" value="' + SC.esc(a.city || '') + '"></div>' +
+                      '<div class="edit-field"><label>Category</label><select id="ek_' + eid + '">' +
+                      Object.keys(SC.CAT_LABELS).map(k => '<option value="' + k + '"' + (k === a.cat ? ' selected' : '') + '>' + SC.CAT_LABELS[k] + '</option>').join('') +
+                      '</select></div>' +
+                      '<div class="edit-hint"><i class="fa-solid fa-pen-to-square"></i> Correct before approving — the live profile uses these values.</div>' +
+                      '</div>' +
+                      '<div class="actions">' +
+                      '<button type="button" class="btn-approve" ' + (docsOk && idNumOk ? '' : 'disabled title="Needs both card images and a valid GHA- number"') +
+                      ' onclick="approve(\'' + a.id + '\')"><i class="fa-solid fa-check"></i> Approve & List</button>' +
+                      '<button type="button" class="btn-reject" onclick="reject(\'' + a.id + '\')"><i class="fa-solid fa-xmark"></i> Reject</button>' +
+                      '</div>'
+                    : '<div class="done-note">' + (a.editedFields ? 'Listed with corrections (see admin console). ' : '') + (a.reviewNote ? 'Note: ' + SC.esc(a.reviewNote) : 'Reviewed') + '</div>') +
+                '</div>';
+        }).join('');
+    }
+
+    async function approve(id) {
+        const a = SC.getApplications().find(x => x.id === id);
+        // Collect admin corrections before listing
+        const eid = id.replace(/-/g, '_');
+        const rEl = document.getElementById('er_' + eid);
+        const cEl = document.getElementById('ec_' + eid);
+        const kEl = document.getElementById('ek_' + eid);
+        let edits = null;
+        if (rEl && cEl && kEl) {
+            edits = { rate: rEl.value, city: cEl.value, cat: kEl.value };
+            if (!Number(edits.rate) || Number(edits.rate) <= 0) {
+                await UI.alert('Listed rate must be a positive number — fix it before approving.', { title: 'Invalid Rate', type: 'error' });
+                return;
+            }
+            if (!edits.city.trim()) {
+                await UI.alert('City cannot be empty — fix it before approving.', { title: 'City Required', type: 'error' });
+                return;
+            }
+        }
+        const changed = edits && (Number(edits.rate) !== Number(a.rate) || edits.city.trim() !== a.city || edits.cat !== a.cat);
+        const ok = await UI.confirm(
+            'Approve ' + SC.esc(a.name) + '?' + (changed ? '\n\nListing with corrections — the live profile uses the edited rate, city and category.' : ' They will be listed publicly as a verified professional immediately.'),
+            { title: 'Approve Application', okLabel: 'Approve', okGreen: true, icon: 'user-check' });
+        if (!ok) return;
+        SC.reviewApplication(id, 'verified', '', edits);
+        UI.toast(SC.esc(a.name) + ' approved and listed' + (changed ? ' with corrections' : ''), 'success');
+        showNotifyPanel(id);
+    }
+
+    // WhatsApp / SMS / email drafts with the pro's personal directory link
+    function showNotifyPanel(appRef) {
+        const n = SC.verifiedNotices(appRef);
+        const box = document.getElementById('appList');
+        if (!n.ok || !box) { renderQueue(); return; }
+        box.innerHTML =
+            '<div class="card" style="border-color: var(--success-green); padding: 18px;">' +
+                '<h3 style="color: var(--accent-text); margin-bottom: 6px;"><i class="fa-solid fa-paper-plane"></i> Notify ' + SC.esc(n.name) + ' (' + n.proId + ')</h3>' +
+                '<p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">Send the congratulations message with their personal directory link — the draft opens pre-filled.</p>' +
+                '<div class="notify-link-row"><span class="k">Directory link</span><code class="notify-link">' + SC.esc(n.link) + '</code>' +
+                '<button class="mini-btn" onclick="copyProLink(\'' + n.proId + '\')"><i class="fa-regular fa-copy"></i> Copy</button></div>' +
+                '<div class="notify-actions">' +
+                    '<a class="mini-btn green" href="' + n.channels.wa + '" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp" style="color:var(--success-green);"></i> Send on WhatsApp</a>' +
+                    (n.channels.sms ? '<a class="mini-btn" href="' + n.channels.sms + '"><i class="fa-solid fa-comment-sms"></i> Send SMS</a>' : '') +
+                    (n.channels.email ? '<a class="mini-btn ghost-btn" href="' + n.channels.email + '"><i class="fa-solid fa-envelope"></i> Send Email</a>' : '<span class="row-sub">No email on file — WhatsApp/SMS only.</span>') +
+                '</div>' +
+                '<button class="mini-btn ghost-btn" onclick="renderQueue()" style="margin-top: 12px;"><i class="fa-solid fa-arrow-left"></i> Back To Queue</button>' +
+            '</div>';
+    }
+
+    function copyProLink(proId) {
+        const done = () => UI.toast('Directory link copied', 'success');
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(SC.proDirectoryUrl(proId)).then(done, done);
+        else done();
+    }
+
+    async function reject(id) {
+        const note = await UI.prompt('Reason for rejection (sent to the applicant):', '', { title: 'Reject Application', okLabel: 'Reject', icon: 'user-slash' });
+        if (note === null) return;
+        SC.reviewApplication(id, 'rejected', note);
+        UI.toast('Application rejected');
+        renderQueue();
+    }
+
+    // ---- Bulk selection + actions ----
+    function onSel(cb) {
+        if (cb.checked) selected.add(cb.dataset.app);
+        else selected.delete(cb.dataset.app);
+        const all = [...document.querySelectorAll('#appList input[data-app]')];
+        const allOn = all.length && all.every(c => c.checked);
+        const selAll = document.getElementById('selAll');
+        selAll.checked = !!allOn;
+        document.getElementById('selAllLbl').textContent = allOn ? 'All' : 'Select all';
+        updateBulkBar();
+    }
+
+    function toggleSelAll(cb) {
+        const pending = currentApps().filter(a => a.status === 'pending');
+        pending.forEach(a => { if (cb.checked) selected.add(a.id); else selected.delete(a.id); });
+        renderQueue();
+    }
+
+    function clearSelection() { selected.clear(); renderQueue(); }
+
+    function updateBulkBar(apps) {
+        const bar = document.getElementById('bulkBar');
+        if (!bar) return;
+        const n = selected.size;
+        document.getElementById('selCount').textContent = n + ' selected';
+        document.getElementById('bulkApprove').disabled = !n;
+        document.getElementById('bulkReject').disabled = !n;
+        document.getElementById('bulkClear').disabled = !n;
+        const pending = (apps || currentApps()).filter(a => a.status === 'pending');
+        const noPending = !pending.length;
+        document.getElementById('selAll').disabled = noPending;
+        if (noPending) document.getElementById('selAll').checked = false;
+        else document.getElementById('selAll').checked = pending.every(a => selected.has(a.id));
+        document.getElementById('selAllLbl').textContent = pending.length && pending.every(a => selected.has(a.id)) ? 'All' : 'Select all';
+    }
+
+    async function bulkApprove() {
+        const ids = [...selected];
+        if (!ids.length) return;
+        const names = SC.getApplications().filter(a => ids.includes(a.id)).map(a => a.name);
+        const ok = await UI.confirm(
+            'Approve ' + ids.length + ' application' + (ids.length > 1 ? 's' : '') + '?\n\n' + names.join(', ') +
+            '\n\nThey go live immediately with the rates/cities currently in their forms.',
+            { title: 'Bulk Approve', okLabel: 'Approve All', okGreen: true, icon: 'user-check' });
+        if (!ok) return;
+        let done = 0;
+        ids.forEach(id => {
+            const eid = id.replace(/-/g, '_');
+            const rEl = document.getElementById('er_' + eid), cEl = document.getElementById('ec_' + eid), kEl = document.getElementById('ek_' + eid);
+            const edits = (rEl && cEl && kEl) ? { rate: rEl.value, city: cEl.value, cat: kEl.value } : null;
+            SC.reviewApplication(id, 'verified', '', edits);
+            selected.delete(id);
+            done++;
+        });
+        UI.toast(done + ' application' + (done > 1 ? 's' : '') + ' approved and listed', 'success', 3600);
+        renderQueue();
+    }
+
+    async function bulkReject() {
+        const ids = [...selected];
+        if (!ids.length) return;
+        const note = await UI.prompt('Rejection reason for all ' + ids.length + ' selected application(s):', '', { title: 'Bulk Reject', okLabel: 'Reject All', icon: 'user-slash' });
+        if (note === null) return;
+        ids.forEach(id => { SC.reviewApplication(id, 'rejected', note); selected.delete(id); });
+        UI.toast(ids.length + ' application' + (ids.length > 1 ? 's' : '') + ' rejected', 'default', 3200);
+        renderQueue();
+    }
+
+    // Auto-login on load when a valid session exists
+    if (SCSession.active()) openQueue();
+</script>
+</body>
+</html>
